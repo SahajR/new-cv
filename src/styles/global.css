@@ -22,6 +22,9 @@
   --rule: #cbc9d6;
   --accent: #3a53ed;
   --accent-rgb: 44, 111, 255;
+  /* Journey rail highlight */
+  --rail-lit: #4a2c82;
+  --rail-lit-rgb: 74, 44, 130;
   --surface-hover: rgba(23, 22, 15, 0.035);
   --surface-chip: #f2f0f0;
   --keyline: #fff;
@@ -47,6 +50,8 @@
   --mute: #7d7c7c;
   --rule: #39383f;
   --accent: #2c6fff;
+  --rail-lit: #9b7fe0;
+  --rail-lit-rgb: 155, 127, 224;
   --surface-hover: rgba(255, 255, 255, 0.045);
   --surface-chip: #2b2928;
   --keyline: rgba(255, 255, 255, 0.14);

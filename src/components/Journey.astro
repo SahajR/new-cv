@@ -67,19 +67,37 @@ import JourneyPart from './JourneyPart.astro';
         };
       });
 
-      // Lead-in from the centre (under the title) down to the first rail.
-      let d = `M ${xC} 0`;
+      /**
+       * Orthogonal crossover: continue down to the midpoint of the gap, turn a
+       * rounded 90° corner, run horizontally, turn again and head down into
+       * the next rail. Arc sweep flags depend on the travel direction.
+       */
+      const R = 28; // corner radius
+      const crossover = (x1: number, x2: number, midY: number) => {
+        const r = Math.min(R, Math.abs(x2 - x1) / 2);
+        const dir = x2 > x1 ? 1 : -1;
+        const sweep1 = dir > 0 ? 0 : 1; // down → horizontal
+        const sweep2 = dir > 0 ? 1 : 0; // horizontal → down
+        return (
+          ` L ${x1} ${midY - r}` +
+          ` A ${r} ${r} 0 0 ${sweep1} ${x1 + dir * r} ${midY}` +
+          ` L ${x2 - dir * r} ${midY}` +
+          ` A ${r} ${r} 0 0 ${sweep2} ${x2} ${midY + r}`
+        );
+      };
+
+      // Lead-in from the centre (under the title) across to the first rail.
       const first = segs[0];
-      const lead = first.top;
-      d += ` C ${xC} ${lead * 0.55}, ${first.x} ${lead * 0.45}, ${first.x} ${first.top}`;
+      let d = `M ${xC} 0`;
+      d += crossover(xC, first.x, first.top / 2);
+      d += ` L ${first.x} ${first.top}`;
 
       segs.forEach((s, i) => {
         d += ` L ${s.x} ${s.bottom}`;
         const next = segs[i + 1];
         if (next) {
-          // S-curve across the column to the other side
-          const mid = (s.bottom + next.top) / 2;
-          d += ` C ${s.x} ${mid}, ${next.x} ${mid}, ${next.x} ${next.top}`;
+          d += crossover(s.x, next.x, (s.bottom + next.top) / 2);
+          d += ` L ${next.x} ${next.top}`;
         }
       });
       // Tail
@@ -170,10 +188,10 @@ import JourneyPart from './JourneyPart.astro';
   }
   .jr-lit {
     fill: none;
-    stroke: var(--accent);
+    stroke: var(--rail-lit);
     stroke-width: 1.25;
     stroke-linecap: round;
-    filter: drop-shadow(0 0 3px rgba(var(--accent-rgb), 0.25));
+    filter: drop-shadow(0 0 3px rgba(var(--rail-lit-rgb), 0.25));
     transition: stroke-dashoffset 0.12s linear;
   }
   .journey-parts {
