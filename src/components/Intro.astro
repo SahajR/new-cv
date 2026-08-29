@@ -4,34 +4,37 @@ import { profile } from '../data/profile';
 
 <div class="folio-intro reveal" style="--reveal-delay: 60ms">
   <h1 class="folio-tagline">{profile.tagline}</h1>
-  <p class="folio-sub">{profile.sub}</p>
+  {profile.sub && <p class="folio-sub">{profile.sub}</p>}
 </div>
 
 <style>
   .folio-intro {
     width: 100%;
     max-width: 460px;
-    margin-top: -28px;
+    margin-top: 0;
     text-align: center;
   }
+  /* Type scale: 2.5rem title (2× the 20px it was), 1.25rem lead — a 2:1
+     ratio, scaling down to 2rem / 1.0625rem on small screens. */
   .folio-tagline {
-    font-family: var(--font-main);
+    font-family: var(--font-serif);
     font-weight: 500;
-    font-size: 16px;
-    line-height: 1.8;
-    letter-spacing: -0.12px;
+    font-size: clamp(2rem, 1.4rem + 1.6vw, 2.5rem);
+    line-height: 1.2;
+    letter-spacing: 0.01em;
     color: var(--ink);
   }
   .folio-sub {
-    font-size: 16px;
-    line-height: 1.6;
-    letter-spacing: -0.12px;
+    margin-top: 0.5rem;
+    font-size: clamp(1.0625rem, 0.9rem + 0.5vw, 1.25rem);
+    line-height: 1.5;
+    letter-spacing: -0.005em;
     color: var(--body);
     opacity: 0.8;
   }
   @media (max-width: 1219px) {
     .folio-intro {
-      margin-top: -34px;
+      margin-top: 0;
     }
   }
 </style>

@@ -38,12 +38,30 @@ export interface FooterLink {
 
 export const profile = {
   name: 'Sahaj Ramachandran',
-  location: 'San Francisco Bay Area',
-  coords: { display: '37.7749° N, 122.4194° W', spoken: '37.7749° north, 122.4194° west' },
-  timezone: 'GMT-7',
-  tagline: 'Software Engineer & Founding Team Builder',
-  sub: 'Building infrastructure and products at early-stage startups for a decade — from React frontends to Kubernetes platforms and MLOps.',
+  tagline: "Hi, I'm Sahaj, programmer & adventurer of the world",
+  sub: '',
   description: "Sahaj Ramachandran's personal website",
+};
+
+/**
+ * About copy, ported from the previous site. Each string is one paragraph;
+ * `focus` renders as a list, `closing` in the display face.
+ */
+export const about = {
+  paragraphs: [
+    "I've been programming since I was 16, starting with ROM hacks for GBA Pokémon games. I've been hooked ever since.",
+    "Over the years I've worked across the stack — front-end in Android and React (back when Next.js wasn't even mainstream), and games and 3D graphics in Unity.",
+    "From there to backend systems in Node.js and Go, then orchestrating whole platforms in Kubernetes, for which I'm a certified Kubernetes Administrator.",
+    "These days it's GPU-accelerated machine learning and distributed systems.",
+  ],
+  focusIntro: 'My current development and research has shifted towards:',
+  focus: [
+    'improving the infrastructure and optimisations behind voice-agent systems',
+    "building custom integrations, and tuning custom voice and small language models to fit our clients' enterprise systems",
+    'scaling virtual-machine sandboxes for the core agent loops behind human-like, action-capable agents',
+  ],
+  closing:
+    'In the real world, I dive through skies and oceans alike, and race the earth on machines — mechanical or otherwise.',
 };
 
 export const timeline: TimelineEntry[] = [

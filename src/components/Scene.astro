@@ -1,0 +1,148 @@
+---
+/**
+ * A layer of photographic objects scattered around a section's content.
+ *
+ * Usage: place inside a `position: relative` section; the layer stretches to
+ * cover it. Objects are described as data (see src/data/scene.ts) so adding
+ * more to a section is a data change, not a markup change.
+ *
+ * Parallax: a single scroll listener updates one CSS var (--py) per object,
+ * scaled by its `depth`, relative to how far the section is from the centre
+ * of the viewport. Transforms only — no layout work on scroll.
+ */
+import type { SceneObject } from '../data/scene';
+
+interface Props {
+  objects: SceneObject[];
+  /** Extra class on the layer, if a section needs to tweak it. */
+  class?: string;
+}
+
+const { objects, class: className } = Astro.props;
+
+const styleFor = (o: SceneObject) => {
+  const m = o.mobile ?? {};
+  const vars: Record<string, string | number> = {
+    '--x': o.x,
+    '--y': o.y,
+    '--w': o.width,
+    '--r': `${o.rotate ?? 0}deg`,
+    '--ty': o.anchor === 'top' ? '0%' : '-50%',
+    '--depth': o.depth ?? 0,
+    '--z': o.z ?? 1,
+    '--xm': m.x ?? o.x,
+    '--ym': m.y ?? o.y,
+    '--wm': m.width ?? o.width,
+    '--rm': `${m.rotate ?? o.rotate ?? 0}deg`,
+  };
+  return Object.entries(vars)
+    .map(([k, v]) => `${k}: ${v}`)
+    .join('; ');
+};
+---
+
+<div class:list={['scene', className]} aria-hidden="true" data-scene>
+  {objects.map((o) => (
+    <div
+      class:list={['scene-obj', { 'is-mobile-hidden': o.mobile?.hidden }]}
+      style={styleFor(o)}
+      data-id={o.id}
+    >
+      <img
+        src={o.src}
+        width={o.w}
+        height={o.h}
+        alt={o.alt}
+        draggable="false"
+        decoding="async"
+        loading={o.eager ? 'eager' : 'lazy'}
+        fetchpriority={o.eager ? 'high' : 'auto'}
+      />
+    </div>
+  ))}
+</div>
+
+<script>
+  const scenes = Array.from(document.querySelectorAll<HTMLElement>('[data-scene]'));
+  const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  if (scenes.length && !reduced) {
+    // How many px an object with depth 1 moves per px the section is off-centre.
+    const STRENGTH = 0.12;
+
+    const entries = scenes.map((scene) => ({
+      scene,
+      objs: Array.from(scene.querySelectorAll<HTMLElement>('.scene-obj')).map((el) => ({
+        el,
+        depth: parseFloat(el.style.getPropertyValue('--depth')) || 0,
+      })),
+    }));
+
+    let raf = 0;
+    const update = () => {
+      raf = 0;
+      const vh = window.innerHeight;
+      for (const { scene, objs } of entries) {
+        const r = scene.getBoundingClientRect();
+        if (r.bottom < -vh || r.top > vh * 2) continue; // far off-screen, skip
+        const offset = r.top + r.height / 2 - vh / 2; // 0 when section is centred
+        for (const { el, depth } of objs) {
+          el.style.setProperty('--py', `${(-offset * depth * STRENGTH).toFixed(1)}px`);
+        }
+      }
+    };
+    const schedule = () => {
+      if (!raf) raf = requestAnimationFrame(update);
+    };
+
+    window.addEventListener('scroll', schedule, { passive: true });
+    window.addEventListener('resize', schedule);
+    update();
+  }
+</script>
+
+<style>
+  .scene {
+    position: absolute;
+    inset: 0;
+    overflow: visible;
+    pointer-events: none;
+    z-index: 0;
+  }
+  .scene-obj {
+    position: absolute;
+    left: calc(var(--x) * 100%);
+    top: calc(var(--y) * 100%);
+    width: var(--w);
+    z-index: var(--z);
+    /* align to the anchor → parallax shift → rotate, in that order */
+    transform: translate(-50%, var(--ty, -50%)) translate3d(0, var(--py, 0px), 0) rotate(var(--r));
+    will-change: transform;
+    filter: drop-shadow(0 18px 28px rgba(var(--shadow-rgb), 0.16)) drop-shadow(0 2px 4px rgba(var(--shadow-rgb), 0.08));
+  }
+  .scene-obj img {
+    display: block;
+    width: 100%;
+    height: auto;
+    user-select: none;
+  }
+
+  @media (max-width: 760px) {
+    .scene-obj {
+      left: calc(var(--xm) * 100%);
+      top: calc(var(--ym) * 100%);
+      width: var(--wm);
+      transform: translate(-50%, var(--ty, -50%)) translate3d(0, var(--py, 0px), 0) rotate(var(--rm));
+      filter: drop-shadow(0 10px 16px rgba(var(--shadow-rgb), 0.16)) drop-shadow(0 1px 2px rgba(var(--shadow-rgb), 0.08));
+    }
+    .is-mobile-hidden {
+      display: none;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .scene-obj {
+      will-change: auto;
+    }
+  }
+</style>

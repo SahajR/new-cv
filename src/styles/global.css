@@ -14,7 +14,7 @@
   --logo-size: 28px;
 
   /* Light palette */
-  --bg: #faf5f5;
+  --bg: #f3f2ee;
   --ink: #060606;
   --body: #434445;
   --mute: #9b9b9b;
@@ -32,9 +32,9 @@
   --dot-case: #a9a7ad;
   --route: #c2c0c0;
   --shadow-rgb: 0, 0, 0;
-  --footer-tint-rgb: 255, 255, 255;
-  --placeholder-a: #e9e4e4;
-  --placeholder-b: #d5cfd3;
+  --footer-tint-rgb: 243, 242, 238;
+  --placeholder-a: #e6e4de;
+  --placeholder-b: #d2cfc7;
 
   color-scheme: light;
 }
@@ -88,6 +88,11 @@ body {
 
 h1, h2, h3, h4, h5, h6, p, ul, ol {
   margin: 0;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-serif);
+  font-weight: 500;
 }
 
 ul, ol {
