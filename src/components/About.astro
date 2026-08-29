@@ -1,5 +1,7 @@
 ---
 import { about } from '../data/profile';
+import { albums } from '../data/albums';
+import AlbumStack from './AlbumStack';
 ---
 
 <div class="about" id="about">
@@ -12,7 +14,14 @@ import { about } from '../data/profile';
 
   <hr class="about-rule" />
 
-  <p class="about-closing">{about.closing}</p>
+  <p class="about-closing">
+    {about.closing.map((part) => (
+      <>
+        {part.text}
+        {part.album && <AlbumStack client:visible images={albums[part.album]} rotation={part.rotation} />}
+      </>
+    ))}
+  </p>
 </div>
 
 <style>

@@ -60,8 +60,14 @@ export const about = {
     "building custom integrations, and tuning custom voice and small language models to fit our clients' enterprise systems",
     'scaling virtual-machine sandboxes for the core agent loops behind human-like, action-capable agents',
   ],
-  closing:
-    'In the real world, I dive through skies and oceans alike, and race the earth on machines — mechanical or otherwise.',
+  /** Closing line, split so an <AlbumStack> can follow the marked words. */
+  closing: [
+    { text: 'In the real world, I dive through skies', album: 'skydive', rotation: -7 },
+    { text: ' and oceans', album: 'scuba', rotation: 5 },
+    { text: ' alike, and race the earth on machines — mechanical', album: 'mx', rotation: -9 },
+    { text: ' or otherwise', album: 'eq', rotation: 6 },
+    { text: '.' },
+  ] as { text: string; album?: import('./albums').AlbumKey; rotation?: number }[],
 };
 
 export const timeline: TimelineEntry[] = [
