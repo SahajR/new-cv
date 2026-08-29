@@ -1,0 +1,37 @@
+---
+import { profile } from '../data/profile';
+---
+
+<div class="folio-intro reveal" style="--reveal-delay: 60ms">
+  <h1 class="folio-tagline">{profile.tagline}</h1>
+  <p class="folio-sub">{profile.sub}</p>
+</div>
+
+<style>
+  .folio-intro {
+    width: 100%;
+    max-width: 460px;
+    margin-top: -28px;
+    text-align: center;
+  }
+  .folio-tagline {
+    font-family: var(--font-main);
+    font-weight: 500;
+    font-size: 16px;
+    line-height: 1.8;
+    letter-spacing: -0.12px;
+    color: var(--ink);
+  }
+  .folio-sub {
+    font-size: 16px;
+    line-height: 1.6;
+    letter-spacing: -0.12px;
+    color: var(--body);
+    opacity: 0.8;
+  }
+  @media (max-width: 1219px) {
+    .folio-intro {
+      margin-top: -34px;
+    }
+  }
+</style>

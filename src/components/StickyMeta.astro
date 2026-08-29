@@ -1,0 +1,59 @@
+---
+import { profile } from '../data/profile';
+---
+
+<aside class="folio-sticky">
+  <span class="fs-rail" aria-hidden="true"></span>
+  <div class="fs-lines label">
+    <p class="fs-name">{profile.name}</p>
+    <p>{profile.location}</p>
+    <p aria-hidden="true">{profile.coords.display}</p>
+    <p class="sr-only">{profile.coords.spoken}</p>
+    <p>{profile.timezone}</p>
+  </div>
+</aside>
+
+<style>
+  .folio-sticky {
+    position: fixed;
+    top: 72px;
+    left: clamp(24px, calc((100vw - var(--col-w)) / 2 - 306px), 72px);
+    z-index: 3;
+    display: flex;
+    align-items: center;
+    gap: 22px;
+    pointer-events: none;
+  }
+  .fs-rail {
+    align-self: stretch;
+    width: 8px;
+    flex-shrink: 0;
+    background-image: radial-gradient(circle at 0.8px 0.8px, var(--rule) 0.8px, transparent 0.9px);
+    background-size: 3.2px 3.6px;
+  }
+  .fs-lines {
+    padding: 12px 0;
+    color: var(--mute);
+    white-space: nowrap;
+  }
+  .fs-name {
+    color: var(--ink);
+  }
+
+  @media (max-width: 1219px) {
+    .folio-sticky {
+      position: static;
+      align-self: center;
+      padding: 40px 0 0;
+      gap: 0;
+      pointer-events: auto;
+    }
+    .fs-rail {
+      display: none;
+    }
+    .fs-lines {
+      padding: 0;
+      text-align: center;
+    }
+  }
+</style>

@@ -1,0 +1,200 @@
+---
+import type { TimelineEntry } from '../data/profile';
+import CaseCard from './CaseCard.astro';
+
+interface Props {
+  entry: TimelineEntry;
+  index: number;
+}
+
+const { entry, index } = Astro.props;
+const delay = 120 + index * 70;
+---
+
+<li class="tl-entry reveal" style={`--reveal-delay: ${delay}ms`}>
+  <span class="tl-logos">
+    {entry.orgs.map((org) => {
+      const Tag = org.href ? 'a' : 'span';
+      return (
+        <span class="tl-avatar">
+          <Tag
+            class="tl-logo"
+            href={org.href}
+            target={org.href ? '_blank' : undefined}
+            rel={org.href ? 'noreferrer noopener' : undefined}
+            aria-label={org.href ? `${org.name} website (opens in a new tab)` : org.name}
+            title={org.name}
+          >
+            {org.logo ? <img src={org.logo} alt="" /> : <span class="tl-initial">{org.name[0]}</span>}
+          </Tag>
+        </span>
+      );
+    })}
+  </span>
+
+  <span class="tl-head">
+    <span class="tl-year">
+      {entry.route && <span class="tl-route">{entry.route}</span>}
+      <span class="tl-yearnum">{entry.year}</span>
+    </span>
+    <span class:list={['tl-dot', entry.current ? 'tl-dot-now' : 'tl-dot-past']} aria-hidden="true"></span>
+    {entry.href ? (
+      <a class="tl-company" href={entry.href} target="_blank" rel="noreferrer noopener">{entry.company}</a>
+    ) : (
+      <span class="tl-company">{entry.company}</span>
+    )}
+    {entry.current && <span class="tl-badge label">Current</span>}
+  </span>
+
+  <div class="tl-body">
+    <p class="tl-role">{entry.role}</p>
+    <p class="tl-desc">{entry.desc}</p>
+  </div>
+
+  {entry.cases?.length && (
+    <ul class="tl-cases">
+      {entry.cases.map((c) => <CaseCard item={c} />)}
+    </ul>
+  )}
+</li>
+
+<style>
+  .tl-entry {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    list-style: none;
+  }
+
+  /* Gutter: year + route code, left of the rail */
+  .tl-year {
+    position: absolute;
+    left: -70px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 33px;
+    text-align: center;
+    font-family: var(--font-label);
+    font-weight: 500;
+    text-transform: uppercase;
+  }
+  .tl-route {
+    display: block;
+    font-size: 8px;
+    line-height: 9px;
+    letter-spacing: 0.9px;
+    color: var(--route);
+  }
+  .tl-yearnum {
+    display: block;
+    font-size: 12px;
+    line-height: 14px;
+    letter-spacing: 1.05px;
+    color: var(--mute);
+  }
+
+  /* Logos */
+  .tl-logos {
+    display: flex;
+    align-items: center;
+    margin-bottom: 6px;
+  }
+  .tl-avatar {
+    position: relative;
+    display: block;
+    flex-shrink: 0;
+  }
+  .tl-avatar + .tl-avatar {
+    margin-left: -6px;
+  }
+  .tl-logo {
+    width: var(--logo-size);
+    height: var(--logo-size);
+    border: 0.5px solid var(--keyline);
+    border-radius: 50%;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    box-shadow: 0 0 0 1px var(--keyline);
+    background: linear-gradient(160deg, var(--placeholder-a), var(--placeholder-b));
+    text-decoration: none;
+    transition: transform 0.32s var(--ease-in);
+  }
+  .tl-logo:hover {
+    transform: translateY(-4px) scale(1.05);
+  }
+  .tl-logo img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    transform: scale(1.1);
+  }
+  .tl-initial {
+    font-family: var(--font-serif);
+    font-weight: 500;
+    font-size: 13px;
+    color: var(--body);
+  }
+
+  /* Head row */
+  .tl-head {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .tl-company {
+    font-weight: 500;
+    font-size: 16px;
+    line-height: 1.8;
+    letter-spacing: -0.12px;
+    color: var(--ink);
+    text-decoration: none;
+  }
+  a.tl-company:hover {
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+  .tl-badge {
+    line-height: 0.99;
+    letter-spacing: 0.96px;
+    color: var(--accent);
+    padding-top: 3px;
+  }
+
+  /* Body */
+  .tl-role {
+    font-weight: 500;
+    font-size: 16px;
+    line-height: 1.6;
+    letter-spacing: -0.12px;
+    color: var(--body);
+    margin-bottom: 2px;
+  }
+  .tl-desc {
+    font-size: 16px;
+    line-height: 1.6;
+    letter-spacing: -0.12px;
+    color: var(--body);
+    opacity: 0.8;
+  }
+  .tl-cases {
+    list-style: none;
+    margin-top: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  @media (max-width: 760px) {
+    .tl-entry {
+      padding-left: var(--entry-indent);
+    }
+    .tl-year {
+      display: none;
+    }
+  }
+</style>

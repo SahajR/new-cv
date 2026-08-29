@@ -1,0 +1,116 @@
+---
+import { outro, memories } from '../data/profile';
+
+// Fan the cards out symmetrically around the centre.
+const n = memories.length;
+const mid = (n - 1) / 2;
+const cards = memories.map((m, i) => {
+  const t = i - mid; // -2 … 2
+  return {
+    ...m,
+    x: (t * 27).toFixed(1),
+    y: (Math.abs(t) * 1.1 - 2.1).toFixed(1),
+    r: (t * 3.8).toFixed(2),
+    z: n - i,
+  };
+});
+---
+
+<div class="folio-outro reveal" style="--reveal-delay: 520ms">
+  <div class="outro-text">
+    <p class="outro-title">{outro.title}</p>
+    <p class="outro-sub">{outro.sub}</p>
+  </div>
+  <div class="memories">
+    {cards.map((c) => (
+      <span
+        class="mem-card"
+        style={`--x: ${c.x}px; --y: ${c.y}px; --r: ${c.r}deg; z-index: ${c.z}`}
+        title={c.alt}
+      >
+        {c.src ? <img src={c.src} alt={c.alt} draggable="false" /> : <span class="mem-blank" role="img" aria-label={c.alt}></span>}
+      </span>
+    ))}
+  </div>
+</div>
+
+<style>
+  .folio-outro {
+    position: relative;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 24px;
+  }
+  .outro-text {
+    flex: 1 1 260px;
+    min-width: min(100%, 260px);
+  }
+  .outro-title {
+    font-weight: 500;
+    font-size: 16px;
+    line-height: 1.6;
+    letter-spacing: -0.12px;
+    color: var(--body);
+  }
+  .outro-sub {
+    font-size: 14px;
+    line-height: 1.6;
+    letter-spacing: -0.12px;
+    color: var(--body);
+    opacity: 0.8;
+  }
+  .memories {
+    position: relative;
+    width: 161px;
+    height: 62px;
+    flex-shrink: 0;
+    margin-right: 29px;
+    --mem-w: 42.4px;
+    --mem-h: 56.5px;
+  }
+  .mem-card {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: var(--mem-w);
+    height: var(--mem-h);
+    border: 1.25px solid var(--keyline);
+    border-radius: 5.65px;
+    overflow: hidden;
+    transform: translate(-50%, -50%) translate(var(--x), var(--y)) rotate(var(--r)) scale(var(--s, 1));
+    box-shadow:
+      0 0.6px 3.6px rgba(var(--shadow-rgb), 0.1),
+      0 0.3px 0.9px rgba(var(--shadow-rgb), 0.06);
+    transition:
+      transform 0.42s var(--ease-in),
+      box-shadow 0.42s var(--ease-in);
+  }
+  .mem-card:hover {
+    --s: 1.12;
+    --y: -8px;
+    z-index: 10 !important;
+    box-shadow:
+      0 6px 18px rgba(var(--shadow-rgb), 0.16),
+      0 1px 3px rgba(var(--shadow-rgb), 0.08);
+  }
+  .mem-card img,
+  .mem-blank {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 4.4px;
+  }
+  .mem-blank {
+    background: linear-gradient(160deg, var(--placeholder-a), var(--placeholder-b));
+  }
+  @media (max-width: 760px) {
+    .folio-outro {
+      padding-left: var(--entry-indent);
+    }
+    .memories {
+      margin-right: 0;
+    }
+  }
+</style>
