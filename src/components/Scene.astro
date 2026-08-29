@@ -20,18 +20,21 @@ interface Props {
 
 const { objects, class: className } = Astro.props;
 
+// Vertical anchors: fractions become percentages of the section; strings pass through.
+const yVal = (y: number | string) => (typeof y === 'number' ? `${y * 100}%` : y);
+
 const styleFor = (o: SceneObject) => {
   const m = o.mobile ?? {};
   const vars: Record<string, string | number> = {
     '--x': o.x,
-    '--y': o.y,
+    '--y': yVal(o.y),
     '--w': o.width,
     '--r': `${o.rotate ?? 0}deg`,
     '--ty': o.anchor === 'top' ? '0%' : '-50%',
     '--depth': o.depth ?? 0,
     '--z': o.z ?? 1,
     '--xm': m.x ?? o.x,
-    '--ym': m.y ?? o.y,
+    '--ym': yVal(m.y ?? o.y),
     '--wm': m.width ?? o.width,
     '--rm': `${m.rotate ?? o.rotate ?? 0}deg`,
   };
@@ -85,9 +88,12 @@ const styleFor = (o: SceneObject) => {
       for (const { scene, objs } of entries) {
         const r = scene.getBoundingClientRect();
         if (r.bottom < -vh || r.top > vh * 2) continue; // far off-screen, skip
-        const offset = r.top + r.height / 2 - vh / 2; // 0 when section is centred
+        // How far the section top has scrolled past the viewport top. Zero at
+        // load, so declared positions are exact; objects then drift up faster
+        // than the page (foreground feel) by depth × STRENGTH.
+        const scrolled = Math.max(0, -r.top);
         for (const { el, depth } of objs) {
-          el.style.setProperty('--py', `${(-offset * depth * STRENGTH).toFixed(1)}px`);
+          el.style.setProperty('--py', `${(-scrolled * depth * STRENGTH).toFixed(1)}px`);
         }
       }
     };
@@ -112,7 +118,7 @@ const styleFor = (o: SceneObject) => {
   .scene-obj {
     position: absolute;
     left: calc(var(--x) * 100%);
-    top: calc(var(--y) * 100%);
+    top: var(--y);
     width: var(--w);
     z-index: var(--z);
     /* align to the anchor → parallax shift → rotate, in that order */
@@ -130,7 +136,7 @@ const styleFor = (o: SceneObject) => {
   @media (max-width: 760px) {
     .scene-obj {
       left: calc(var(--xm) * 100%);
-      top: calc(var(--ym) * 100%);
+      top: var(--ym);
       width: var(--wm);
       transform: translate(-50%, var(--ty, -50%)) translate3d(0, var(--py, 0px), 0) rotate(var(--rm));
       filter: drop-shadow(0 10px 16px rgba(var(--shadow-rgb), 0.16)) drop-shadow(0 1px 2px rgba(var(--shadow-rgb), 0.08));

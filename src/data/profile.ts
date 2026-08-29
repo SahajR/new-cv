@@ -1,3 +1,5 @@
+import type { AlbumKey } from './albums';
+
 export interface CaseStudy {
   title: string;
   desc: string;
@@ -26,11 +28,6 @@ export interface TimelineEntry {
   cases?: CaseStudy[];
 }
 
-export interface Memory {
-  src?: string;
-  alt: string;
-}
-
 export interface FooterLink {
   label: string;
   href: string;
@@ -43,32 +40,70 @@ export const profile = {
   description: "Sahaj Ramachandran's personal website",
 };
 
+/** A fragment of the closing line; an <AlbumStack> follows it when `album` is set. */
+export interface ClosingPart {
+  text: string;
+  album?: AlbumKey;
+  rotation?: number;
+}
+
 /**
- * About copy, ported from the previous site. Each string is one paragraph;
- * `focus` renders as a list, `closing` in the display face.
+ * One stop on the journey path. Not time-based — each part reveals a little
+ * more as the reader scrolls. The rail alternates sides per part.
  */
-export const about = {
-  paragraphs: [
-    "I've been programming since I was 16, starting with ROM hacks for GBA Pokémon games. I've been hooked ever since.",
-    "Over the years I've worked across the stack — front-end in Android and React (back when Next.js wasn't even mainstream), and games and 3D graphics in Unity.",
-    "From there to backend systems in Node.js and Go, then orchestrating whole platforms in Kubernetes, for which I'm a certified Kubernetes Administrator.",
-    "These days it's GPU-accelerated machine learning and distributed systems.",
-  ],
-  focusIntro: 'My current development and research has shifted towards:',
-  focus: [
-    'improving the infrastructure and optimisations behind voice-agent systems',
-    "building custom integrations, and tuning custom voice and small language models to fit our clients' enterprise systems",
-    'scaling virtual-machine sandboxes for the core agent loops behind human-like, action-capable agents',
-  ],
-  /** Closing line, split so an <AlbumStack> can follow the marked words. */
-  closing: [
-    { text: 'In the real world, I dive through skies', album: 'skydive', rotation: -7 },
-    { text: ' and oceans', album: 'scuba', rotation: 5 },
-    { text: ' alike, and race the earth on machines — mechanical', album: 'mx', rotation: -9 },
-    { text: ' or otherwise', album: 'eq', rotation: 6 },
-    { text: '.' },
-  ] as { text: string; album?: import('./albums').AlbumKey; rotation?: number }[],
-};
+export interface JourneyPart {
+  id: string;
+  label: string;
+  title: string;
+  paragraphs?: string[];
+  focusIntro?: string;
+  focus?: string[];
+  closing?: ClosingPart[];
+}
+
+export const journey: JourneyPart[] = [
+  {
+    id: 'origins',
+    label: '01',
+    title: 'Origins',
+    paragraphs: [
+      "I've been programming since I was 16, starting with ROM hacks for GBA Pokémon games. I've been hooked ever since.",
+    ],
+  },
+  {
+    id: 'stack',
+    label: '02',
+    title: 'Across the stack',
+    paragraphs: [
+      "Over the years I've worked across the stack — front-end in Android and React (back when Next.js wasn't even mainstream), and games and 3D graphics in Unity.",
+      "From there to backend systems in Node.js and Go, then orchestrating whole platforms in Kubernetes, for which I'm a certified Kubernetes Administrator.",
+    ],
+  },
+  {
+    id: 'now',
+    label: '03',
+    title: 'These days',
+    paragraphs: ["It's GPU-accelerated machine learning and distributed systems."],
+    focusIntro: 'My current development and research has shifted towards:',
+    focus: [
+      'improving the infrastructure and optimisations behind voice-agent systems',
+      "building custom integrations, and tuning custom voice and small language models to fit our clients' enterprise systems",
+      'scaling virtual-machine sandboxes for the core agent loops behind human-like, action-capable agents',
+    ],
+  },
+  {
+    id: 'real-world',
+    label: '04',
+    title: 'The real world',
+    closing: [
+      { text: 'I dive through skies', album: 'skydive', rotation: -7 },
+      { text: ' and oceans', album: 'scuba', rotation: 5 },
+      { text: ' alike, and race the earth on machines — mechanical', album: 'mx', rotation: -9 },
+      { text: ' or otherwise', album: 'eq', rotation: 6 },
+      { text: '.' },
+    ],
+  },
+];
 
 export const timeline: TimelineEntry[] = [
   {
@@ -136,19 +171,6 @@ export const timeline: TimelineEntry[] = [
     desc: 'Built an application for viewing housing interiors and plots remotely in virtual reality. Earlier that year, front-end and graphic design intern at Analyttica Datalab.',
     orgs: [{ name: 'Housing.com', href: 'https://housing.com' }, { name: 'Analyttica' }],
   },
-];
-
-export const outro = {
-  title: 'Thanks for scrolling this far.',
-  sub: 'A few moments from along the way.',
-};
-
-export const memories: Memory[] = [
-  { alt: 'Bengaluru' },
-  { alt: 'Dubai' },
-  { alt: 'San Francisco' },
-  { alt: 'On the road' },
-  { alt: 'Home' },
 ];
 
 export const footerLinks: FooterLink[] = [

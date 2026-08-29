@@ -17,9 +17,14 @@ export interface SceneObject {
   h: number;
   /** Empty string for purely decorative images (the layer is aria-hidden anyway). */
   alt: string;
-  /** Anchor position as a fraction of the section (the object's centre by default). */
+  /** Horizontal anchor as a fraction of the section width (object centre). */
   x: number;
-  y: number;
+  /**
+   * Vertical anchor: a fraction of the section height, or a CSS length string
+   * (e.g. '320px') measured from the section's top. Use lengths for objects
+   * that should stay near the top regardless of how tall the section grows.
+   */
+  y: number | string;
   /** Which edge `y` refers to. 'top' pins the image's top edge at `y`. Default 'center'. */
   anchor?: 'center' | 'top';
   /** Rendered width — use clamp()/vw so it scales with the viewport. */
@@ -43,13 +48,13 @@ export const headerScene: SceneObject[] = [
     h: 960,
     alt: '',
     x: 0.19,
-    y: 0.42,
+    y: '380px',
     width: 'clamp(150px, 22vw, 320px)',
     rotate: 12,
     depth: 0.55,
     z: 2,
     eager: true,
-    mobile: { x: 0.1, y: 0.055, width: '30vw', rotate: 10 },
+    mobile: { x: 0.1, y: '48px', width: '30vw', rotate: 10 },
   },
   {
     id: 'dive-watch',
@@ -58,13 +63,13 @@ export const headerScene: SceneObject[] = [
     h: 1600,
     alt: '',
     x: 0.75,
-    y: 0.59,
+    y: '530px',
     width: 'clamp(50px, 6.6vw, 96px)',
     rotate: 13,
     depth: 1,
     z: 3,
     eager: true,
-    mobile: { x: 0.5, y: 0.74, width: '14vw', rotate: 15 },
+    mobile: { x: 0.72, y: '150px', width: '12vw', rotate: 15 },
   },
   {
     id: 'action-camera',
@@ -73,14 +78,14 @@ export const headerScene: SceneObject[] = [
     h: 1600,
     alt: '',
     x: 0.5,
-    y: 0,
+    y: '0px',
     anchor: 'top', // flush with the top edge
     width: 'clamp(140px, 16.8vw, 252px)',
     rotate: 0,
     depth: 0.8,
     z: 2,
     eager: true,
-    mobile: { x: 0.5, y: 0, width: '31vw', rotate: 0 },
+    mobile: { x: 0.5, y: '0px', width: '31vw', rotate: 0 },
   },
   {
     id: 'dive-mask',
@@ -88,13 +93,13 @@ export const headerScene: SceneObject[] = [
     w: 998,
     h: 711,
     alt: '',
-    x: 0.82,
-    y: 0.36,
+    x: 0.87,
+    y: '325px',
     width: 'clamp(150px, 20vw, 300px)',
     rotate: -9,
     depth: 0.45,
     z: 1,
     eager: true,
-    mobile: { x: 0.88, y: 0.06, width: '30vw', rotate: -7 },
+    mobile: { x: 0.88, y: '50px', width: '30vw', rotate: -7 },
   },
 ];

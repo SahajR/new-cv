@@ -1,0 +1,197 @@
+---
+/**
+ * The journey path: a rail that zig-zags between the left and right side of
+ * the content column, one part per side, lighting up as the reader scrolls.
+ *
+ * The rail is a single SVG path whose geometry is computed from the real
+ * positions of the parts (so it adapts to content and viewport), drawn twice:
+ * a dotted base and a solid "lit" stroke revealed via stroke-dashoffset.
+ */
+import { journey } from '../data/profile';
+import JourneyPart from './JourneyPart.astro';
+---
+
+<div class="journey" data-journey>
+  <svg class="journey-rail" aria-hidden="true" data-journey-svg>
+    <path class="jr-base" data-journey-base d="" />
+    <path class="jr-lit" data-journey-lit d="" />
+  </svg>
+
+  <ol class="journey-parts">
+    {journey.map((part, i) => <JourneyPart part={part} side={i % 2 === 0 ? 'left' : 'right'} index={i} />)}
+  </ol>
+</div>
+
+<script>
+  const root = document.querySelector<HTMLElement>('[data-journey]');
+  const svg = root?.querySelector<SVGSVGElement>('[data-journey-svg]');
+  const base = root?.querySelector<SVGPathElement>('[data-journey-base]');
+  const lit = root?.querySelector<SVGPathElement>('[data-journey-lit]');
+
+  if (root && svg && base && lit) {
+    const parts = Array.from(root.querySelectorAll<HTMLElement>('[data-journey-part]'));
+    const dots = parts.map((p) => p.querySelector<HTMLElement>('[data-journey-dot]')!);
+    const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const READ_LINE = 0.42; // fraction of the viewport height that counts as "read"
+    const PAD = 40;         // svg bleed beyond the column so the rail isn't clipped
+
+    let total = 0;
+    let samples: { len: number; y: number }[] = [];
+    let dotYs: number[] = [];
+    let raf = 0;
+
+    const railX = () => parseFloat(getComputedStyle(root).getPropertyValue('--rail-x')) || -22;
+
+    /** Rebuild the path from the current layout. */
+    const layout = () => {
+      const rr = root.getBoundingClientRect();
+      const w = rr.width + PAD * 2;
+      const h = rr.height + PAD;
+      svg.setAttribute('width', `${w}`);
+      svg.setAttribute('height', `${h}`);
+      svg.setAttribute('viewBox', `0 0 ${w} ${h}`);
+      svg.style.left = `${-PAD}px`;
+      svg.style.top = `0px`;
+
+      const xL = PAD + railX();          // rail left of the column
+      const xR = PAD + rr.width - railX(); // rail right of the column (railX is negative)
+      const xC = PAD + rr.width / 2;
+
+      // Each part: the rail runs straight from its top to its bottom on its side.
+      const segs = parts.map((p) => {
+        const r = p.getBoundingClientRect();
+        return {
+          x: p.dataset.side === 'right' ? xR : xL,
+          top: r.top - rr.top,
+          bottom: r.bottom - rr.top,
+        };
+      });
+
+      // Lead-in from the centre (under the title) down to the first rail.
+      let d = `M ${xC} 0`;
+      const first = segs[0];
+      const lead = first.top;
+      d += ` C ${xC} ${lead * 0.55}, ${first.x} ${lead * 0.45}, ${first.x} ${first.top}`;
+
+      segs.forEach((s, i) => {
+        d += ` L ${s.x} ${s.bottom}`;
+        const next = segs[i + 1];
+        if (next) {
+          // S-curve across the column to the other side
+          const mid = (s.bottom + next.top) / 2;
+          d += ` C ${s.x} ${mid}, ${next.x} ${mid}, ${next.x} ${next.top}`;
+        }
+      });
+      // Tail
+      const last = segs[segs.length - 1];
+      d += ` L ${last.x} ${Math.min(h, last.bottom + 24)}`;
+
+      base.setAttribute('d', d);
+      lit.setAttribute('d', d);
+
+      total = lit.getTotalLength();
+      lit.style.strokeDasharray = `${total}`;
+
+      // Sample the path so scroll → length lookups are cheap (path is monotonic in y).
+      const N = 300;
+      samples = Array.from({ length: N + 1 }, (_, i) => {
+        const len = (total * i) / N;
+        return { len, y: lit.getPointAtLength(len).y };
+      });
+      dotYs = dots.map((dot) => dot.getBoundingClientRect().top + dot.offsetHeight / 2 - rr.top);
+    };
+
+    const lengthAtY = (y: number) => {
+      if (y <= 0) return 0;
+      for (let i = 1; i < samples.length; i++) {
+        if (samples[i].y >= y) {
+          const a = samples[i - 1], b = samples[i];
+          const t = b.y === a.y ? 0 : (y - a.y) / (b.y - a.y);
+          return a.len + (b.len - a.len) * t;
+        }
+      }
+      return total;
+    };
+
+    const update = () => {
+      raf = 0;
+      const rr = root.getBoundingClientRect();
+      const lineY = window.innerHeight * READ_LINE - rr.top; // reading line in root coords
+      const litLen = lengthAtY(lineY);
+      lit.style.strokeDashoffset = `${total - litLen}`;
+      dots.forEach((dot, i) => dot.classList.toggle('is-lit', dotYs[i] <= lineY));
+    };
+
+    const schedule = () => {
+      if (!raf) raf = requestAnimationFrame(update);
+    };
+    const relayout = () => {
+      layout();
+      update();
+    };
+
+    // Reveal parts as they enter the viewport
+    const io = new IntersectionObserver(
+      (entries) => entries.forEach((e) => e.isIntersecting && e.target.classList.add('is-in')),
+      { rootMargin: '0px 0px -12% 0px' }
+    );
+    parts.forEach((p) => (reduced ? p.classList.add('is-in') : io.observe(p)));
+
+    window.addEventListener('scroll', schedule, { passive: true });
+    window.addEventListener('resize', relayout);
+    new ResizeObserver(relayout).observe(root);
+    document.fonts?.ready.then(relayout);
+    relayout();
+  }
+</script>
+
+<style>
+  .journey {
+    position: relative;
+    width: 100%;
+    --rail-x: -22px;      /* rail offset outside the column edge */
+    --rail-gutter: 0px;   /* content inset on the rail side (desktop: none needed) */
+    margin-top: 1.5rem;
+  }
+  .journey-rail {
+    position: absolute;
+    top: 0;
+    left: -40px;
+    overflow: visible;
+    pointer-events: none;
+    z-index: 0;
+  }
+  .jr-base {
+    fill: none;
+    stroke: var(--rule);
+    stroke-width: 1;
+    stroke-linecap: round;
+    stroke-dasharray: 2 3.5;
+  }
+  .jr-lit {
+    fill: none;
+    stroke: var(--accent);
+    stroke-width: 1.25;
+    stroke-linecap: round;
+    filter: drop-shadow(0 0 3px rgba(var(--accent-rgb), 0.25));
+    transition: stroke-dashoffset 0.12s linear;
+  }
+  .journey-parts {
+    position: relative;
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: clamp(88px, 12vh, 140px); /* room for the crossover curve */
+    padding-top: 96px;             /* room for the lead-in curve */
+  }
+
+  @media (max-width: 760px) {
+    .journey {
+      --rail-x: 4px;
+      --rail-gutter: 28px;
+    }
+    .journey-rail {
+      left: -40px;
+    }
+  }
+</style>
