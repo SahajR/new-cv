@@ -25,11 +25,14 @@ import { headerScene } from '../data/scene';
     min-height: 100svh;
     display: flex;
     justify-content: center;
-    /* top: clear the camera hanging from the top edge.
+    /* top: clear the camera hanging from the top edge — its rendered height
+       is width × 1.14 (see scene.ts), so never go below that plus a gap, even
+       on short viewports.
        bottom: the journey rail lights up to a reading line 42% down the
        viewport, so leave the remaining 58% (plus footer room) below the last
        part — that way the whole path can light when scrolled to the bottom. */
-    padding: clamp(200px, 32vh, 340px) 1.5rem calc(58vh + 48px);
+    --camera-h: calc(clamp(140px, 16.8vw, 252px) * 1.14);
+    padding: max(clamp(200px, 32vh, 340px), calc(var(--camera-h) + 40px)) 1.5rem calc(58vh + 48px);
     padding-bottom: calc(58svh + 48px);
   }
   .hero-content {
@@ -43,7 +46,8 @@ import { headerScene } from '../data/scene';
   }
   @media (max-width: 760px) {
     .hero {
-      padding-top: clamp(170px, 26vh, 240px);
+      --camera-h: calc(31vw * 1.14);
+      padding-top: max(clamp(170px, 26vh, 240px), calc(var(--camera-h) + 40px));
     }
   }
 </style>

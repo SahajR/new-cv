@@ -109,6 +109,21 @@ a {
   color: inherit;
 }
 
+/* Keyboard focus: one ring everywhere, hidden for pointer users */
+:focus-visible {
+  outline: 2px solid var(--rail-lit);
+  outline-offset: 3px;
+  border-radius: 4px;
+}
+:focus:not(:focus-visible) {
+  outline: none;
+}
+
+::selection {
+  background: rgba(var(--rail-lit-rgb), 0.18);
+  color: var(--ink);
+}
+
 img {
   max-width: 100%;
 }

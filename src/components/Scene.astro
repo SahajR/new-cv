@@ -124,13 +124,22 @@ const styleFor = (o: SceneObject) => {
     /* align to the anchor → parallax shift → rotate, in that order */
     transform: translate(-50%, var(--ty, -50%)) translate3d(0, var(--py, 0px), 0) rotate(var(--r));
     will-change: transform;
-    filter: drop-shadow(0 18px 28px rgba(var(--shadow-rgb), 0.16)) drop-shadow(0 2px 4px rgba(var(--shadow-rgb), 0.08));
+
+    /* Shadow geometry. Light source is top-right, so shadows fall down-left.
+       Closer objects (higher --depth) cast longer, softer shadows. */
+    --sx: calc(3px + var(--depth) * 5px);
+    --sy: calc(4px + var(--depth) * 7px);
   }
   .scene-obj img {
     display: block;
     width: 100%;
     height: auto;
     user-select: none;
+    /* On the (non-animated) image, not the transformed wrapper: the filtered
+       raster is cached once and the compositor only moves it during parallax. */
+    filter:
+      drop-shadow(calc(var(--sx) * -0.6) calc(var(--sy) * 0.6) 2px rgba(var(--shadow-rgb), 0.12))
+      drop-shadow(calc(var(--sx) * -2.2) calc(var(--sy) * 2.2) 14px rgba(var(--shadow-rgb), 0.16));
   }
 
   @media (max-width: 760px) {
@@ -139,7 +148,13 @@ const styleFor = (o: SceneObject) => {
       top: var(--ym);
       width: var(--wm);
       transform: translate(-50%, var(--ty, -50%)) translate3d(0, var(--py, 0px), 0) rotate(var(--rm));
-      filter: drop-shadow(0 10px 16px rgba(var(--shadow-rgb), 0.16)) drop-shadow(0 1px 2px rgba(var(--shadow-rgb), 0.08));
+      --sx: calc(2px + var(--depth) * 3px);
+      --sy: calc(3px + var(--depth) * 4px);
+    }
+    .scene-obj img {
+      filter:
+        drop-shadow(calc(var(--sx) * -0.6) calc(var(--sy) * 0.6) 1.5px rgba(var(--shadow-rgb), 0.12))
+        drop-shadow(calc(var(--sx) * -2) calc(var(--sy) * 2) 10px rgba(var(--shadow-rgb), 0.16));
     }
     .is-mobile-hidden {
       display: none;

@@ -2,7 +2,9 @@
    React island and the tokens live in global.css. */
 .album {
   display: inline-block;
-  margin: 0 0.4em;
+  /* Hugs the word before it; a little tighter on the right so trailing
+     punctuation stays close. */
+  margin: 0 0.2em 0 0.4em;
   vertical-align: middle;
   transition: transform 0.22s ease;
   cursor: pointer;
@@ -33,6 +35,10 @@
   width: 100%;
   height: 100%;
   object-fit: cover;
+}
+a.album:focus-visible {
+  outline-offset: 6px;
+  border-radius: 10px;
 }
 @media (prefers-reduced-motion: reduce) {
   .album {

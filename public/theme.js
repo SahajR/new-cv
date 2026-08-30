@@ -9,4 +9,7 @@
     /* no-op */
   }
   document.documentElement.setAttribute('data-theme', theme);
+  // Keep the browser chrome colour in step with the page ground.
+  var meta = document.querySelector('meta[name="theme-color"]');
+  if (meta) meta.setAttribute('content', theme === 'dark' ? '#191817' : '#f3f2ee');
 })();

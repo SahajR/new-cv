@@ -45,8 +45,18 @@ export default function AlbumStack({
 
   useEffect(() => {
     if (reduced || n <= 1) return;
-    const id = setInterval(() => setIdx((i) => (i + 1) % n), intervalMs);
-    return () => clearInterval(id);
+    let interval: ReturnType<typeof setInterval> | undefined;
+    // Random start offset so several stacks on one page don't flip in unison.
+    const start = setTimeout(() => {
+      interval = setInterval(() => {
+        if (document.hidden) return; // don't churn in background tabs
+        setIdx((i) => (i + 1) % n);
+      }, intervalMs);
+    }, Math.random() * intervalMs);
+    return () => {
+      clearTimeout(start);
+      if (interval) clearInterval(interval);
+    };
   }, [n, intervalMs, reduced]);
 
   const card = (src: string | undefined) =>
@@ -68,6 +78,8 @@ export default function AlbumStack({
       }}
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
+      onFocus={() => setHovered(true)}
+      onBlur={() => setHovered(false)}
     >
       <span className="album-stack" style={{ width: SIZE, height: SIZE }}>
         {/* Cards peeking out behind the front card */}
