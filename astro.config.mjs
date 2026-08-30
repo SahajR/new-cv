@@ -5,5 +5,11 @@ import react from '@astrojs/react';
 
 // https://astro.build/config
 export default defineConfig({
-  integrations: [react()]
+  integrations: [react()],
+  vite: {
+    server: {
+      // Allow tunnelled dev access (e.g. sahaje.beta.localcan.dev).
+      allowedHosts: ['.localcan.dev'],
+    },
+  },
 });

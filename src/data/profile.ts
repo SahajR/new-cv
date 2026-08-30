@@ -1,4 +1,5 @@
 import type { AlbumKey } from './albums';
+import type { IconKey } from '../icons';
 
 export interface CaseStudy {
   title: string;
@@ -47,6 +48,15 @@ export interface ClosingPart {
   rotation?: number;
 }
 
+/** A fragment of a paragraph; an inline icon follows it when `icon` is set. */
+export interface TextPart {
+  text: string;
+  icon?: IconKey;
+}
+
+/** A paragraph: a plain string, or parts interleaved with inline icons. */
+export type RichParagraph = string | TextPart[];
+
 /**
  * One stop on the journey path. Not time-based — each part reveals a little
  * more as the reader scrolls. The rail alternates sides per part.
@@ -55,7 +65,7 @@ export interface JourneyPart {
   id: string;
   label: string;
   title: string;
-  paragraphs?: string[];
+  paragraphs?: RichParagraph[];
   focusIntro?: string;
   focus?: string[];
   closing?: ClosingPart[];
@@ -67,7 +77,10 @@ export const journey: JourneyPart[] = [
     label: '01',
     title: 'Origins',
     paragraphs: [
-      "I've been programming since I was 16, starting with ROM hacks for GBA Pokémon games. I've been hooked ever since.",
+      [
+        { text: "I've been programming since I was 16, starting with ROM hacks for GBA Pokémon games", icon: 'gba' },
+        { text: ". I've been hooked ever since." },
+      ],
     ],
   },
   {
@@ -75,15 +88,28 @@ export const journey: JourneyPart[] = [
     label: '02',
     title: 'Across the stack',
     paragraphs: [
-      "Over the years I've worked across the stack — front-end in Android and React (back when Next.js wasn't even mainstream), and games and 3D graphics in Unity.",
-      "From there to backend systems in Node.js and Go, then orchestrating whole platforms in Kubernetes, for which I'm a certified Kubernetes Administrator.",
+      [
+        { text: "Over the years I've worked across the stack — front-end in Android", icon: 'android' },
+        { text: " and React (back when Next.js wasn't even mainstream), and games and 3D graphics in Unity", icon: 'cube' },
+        { text: '.' },
+      ],
+      [
+        { text: 'From there to backend systems in Node.js and Go', icon: 'terminal' },
+        { text: ", then orchestrating whole platforms in Kubernetes", icon: 'server' },
+        { text: ", for which I'm a certified Kubernetes Administrator." },
+      ],
     ],
   },
   {
     id: 'now',
     label: '03',
     title: 'These days',
-    paragraphs: ["It's GPU-accelerated machine learning and distributed systems."],
+    paragraphs: [
+      [
+        { text: "It's GPU-accelerated machine learning", icon: 'ai' },
+        { text: ' and distributed systems.' },
+      ],
+    ],
     focusIntro: 'My current development and research has shifted towards:',
     focus: [
       'improving the infrastructure and optimisations behind voice-agent systems',

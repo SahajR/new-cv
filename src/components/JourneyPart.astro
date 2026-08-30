@@ -1,6 +1,7 @@
 ---
 import type { JourneyPart } from '../data/profile';
 import { albums } from '../data/albums';
+import { icons } from '../icons';
 import AlbumStack from './AlbumStack';
 
 interface Props {
@@ -25,7 +26,25 @@ const { part, side, index } = Astro.props;
   </header>
 
   <div class="jp-body">
-    {part.paragraphs?.map((p) => <p class="jp-p">{p}</p>)}
+    {part.paragraphs?.map((p) => (
+      <p class="jp-p">
+        {typeof p === 'string'
+          ? p
+          : p.map((seg) => {
+              const Icon = seg.icon ? icons[seg.icon] : null;
+              return (
+                <>
+                  {seg.text}
+                  {Icon && (
+                    <span class="jp-icon" aria-hidden="true">
+                      <Icon />
+                    </span>
+                  )}
+                </>
+              );
+            })}
+      </p>
+    ))}
 
     {part.focusIntro && <p class="jp-p jp-focus-intro">{part.focusIntro}</p>}
     {part.focus && (
@@ -158,6 +177,20 @@ const { part, side, index } = Astro.props;
     flex-direction: column;
     gap: 1rem;
   }
+  /* Inline icon: sized to the text with a slight rise above the cap height,
+     lit like the scene objects (top-right light, shadow down-left). */
+  .jp-icon {
+    display: inline-block;
+    line-height: 0;
+    margin: 0 0.15em 0 0.1em;
+    vertical-align: -0.28em;
+  }
+  .jp-icon :global(svg) {
+    width: 1.35em;
+    height: 1.35em;
+    filter: drop-shadow(-1.5px 2px 2px rgba(var(--shadow-rgb), 0.22));
+  }
+
   .jp-p,
   .jp-focus {
     font-size: clamp(1.0625rem, 0.95rem + 0.4vw, 1.1875rem);
