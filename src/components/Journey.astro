@@ -9,6 +9,14 @@
  */
 import { journey } from '../data/profile';
 import JourneyPart from './JourneyPart.astro';
+import RegionWindow from './RegionWindow.astro';
+
+// Sides alternate continuously across regions.
+let globalIndex = 0;
+const regions = journey.map((region) => ({
+  ...region,
+  parts: region.parts.map((part) => ({ part, side: (globalIndex++ % 2 === 0 ? 'left' : 'right') as 'left' | 'right' })),
+}));
 ---
 
 <div class="journey" data-journey>
@@ -17,9 +25,14 @@ import JourneyPart from './JourneyPart.astro';
     <path class="jr-lit" data-journey-lit d="" />
   </svg>
 
-  <ol class="journey-parts">
-    {journey.map((part, i) => <JourneyPart part={part} side={i % 2 === 0 ? 'left' : 'right'} index={i} />)}
-  </ol>
+  {regions.map((region) => (
+    <section class="journey-region" aria-label={region.name}>
+      <RegionWindow name={region.name} description={region.description} accent={region.accent} />
+      <ol class="journey-parts">
+        {region.parts.map(({ part, side }, i) => <JourneyPart part={part} side={side} index={i} />)}
+      </ol>
+    </section>
+  ))}
 </div>
 
 <script>
@@ -31,6 +44,7 @@ import JourneyPart from './JourneyPart.astro';
   if (root && svg && base && lit) {
     const parts = Array.from(root.querySelectorAll<HTMLElement>('[data-journey-part]'));
     const dots = parts.map((p) => p.querySelector<HTMLElement>('[data-journey-dot]')!);
+    const wins = Array.from(root.querySelectorAll<HTMLElement>('[data-journey-window]'));
     const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     const READ_LINE = 0.42; // fraction of the viewport height that counts as "read"
     const PAD = 40;         // svg bleed beyond the column so the rail isn't clipped
@@ -38,6 +52,7 @@ import JourneyPart from './JourneyPart.astro';
     let total = 0;
     let samples: { len: number; y: number }[] = [];
     let dotYs: number[] = [];
+    let winTops: number[] = [];
     let raf = 0;
 
     const railX = () => parseFloat(getComputedStyle(root).getPropertyValue('--rail-x')) || -22;
@@ -57,14 +72,21 @@ import JourneyPart from './JourneyPart.astro';
       const xR = PAD + rr.width - railX(); // rail right of the column (railX is negative)
       const xC = PAD + rr.width / 2;
 
-      // Each part: the rail runs straight from its top to its bottom on its side.
-      const segs = parts.map((p) => {
-        const r = p.getBoundingClientRect();
-        return {
-          x: p.dataset.side === 'right' ? xR : xL,
-          top: r.top - rr.top,
-          bottom: r.bottom - rr.top,
-        };
+      // Segments the rail runs straight through, in document order: region
+      // windows (entered and exited through their centre) and parts (on
+      // their side's rail).
+      type Seg = { x: number; top: number; bottom: number };
+      const segs: Seg[] = [];
+      root.querySelectorAll<HTMLElement>('.journey-region').forEach((region) => {
+        const win = region.querySelector<HTMLElement>('[data-journey-window]');
+        if (win) {
+          const r = win.getBoundingClientRect();
+          segs.push({ x: xC, top: r.top - rr.top, bottom: r.bottom - rr.top });
+        }
+        region.querySelectorAll<HTMLElement>('[data-journey-part]').forEach((p) => {
+          const r = p.getBoundingClientRect();
+          segs.push({ x: p.dataset.side === 'right' ? xR : xL, top: r.top - rr.top, bottom: r.bottom - rr.top });
+        });
       });
 
       /**
@@ -86,19 +108,22 @@ import JourneyPart from './JourneyPart.astro';
         );
       };
 
-      // Lead-in from the centre (under the title) across to the first rail.
+      // Straight drop when two segments share an x; rounded crossover otherwise.
+      const join = (x1: number, x2: number, y1: number, y2: number) =>
+        Math.abs(x2 - x1) < 1 ? ` L ${x2} ${y2}` : crossover(x1, x2, (y1 + y2) / 2) + ` L ${x2} ${y2}`;
+
+      // Start immediately below the header title, not at the container top.
+      const title = document.querySelector('.folio-tagline');
+      const startY = title ? Math.min(0, title.getBoundingClientRect().bottom + 14 - rr.top) : 0;
+
       const first = segs[0];
-      let d = `M ${xC} 0`;
-      d += crossover(xC, first.x, first.top / 2);
-      d += ` L ${first.x} ${first.top}`;
+      let d = `M ${xC} ${startY}`;
+      d += join(xC, first.x, startY, first.top);
 
       segs.forEach((s, i) => {
         d += ` L ${s.x} ${s.bottom}`;
         const next = segs[i + 1];
-        if (next) {
-          d += crossover(s.x, next.x, (s.bottom + next.top) / 2);
-          d += ` L ${next.x} ${next.top}`;
-        }
+        if (next) d += join(s.x, next.x, s.bottom, next.top);
       });
       // Tail
       const last = segs[segs.length - 1];
@@ -117,10 +142,11 @@ import JourneyPart from './JourneyPart.astro';
         return { len, y: lit.getPointAtLength(len).y };
       });
       dotYs = dots.map((dot) => dot.getBoundingClientRect().top + dot.offsetHeight / 2 - rr.top);
+      winTops = wins.map((w) => w.getBoundingClientRect().top - rr.top);
     };
 
     const lengthAtY = (y: number) => {
-      if (y <= 0) return 0;
+      if (!samples.length || y <= samples[0].y) return 0;
       for (let i = 1; i < samples.length; i++) {
         if (samples[i].y >= y) {
           const a = samples[i - 1], b = samples[i];
@@ -138,6 +164,8 @@ import JourneyPart from './JourneyPart.astro';
       const litLen = lengthAtY(lineY);
       lit.style.strokeDashoffset = `${total - litLen}`;
       dots.forEach((dot, i) => dot.classList.toggle('is-lit', dotYs[i] <= lineY));
+      // Windows sit dimmed until the reading line reaches them
+      wins.forEach((w, i) => w.classList.toggle('is-reached', winTops[i] + 24 <= lineY));
     };
 
     const schedule = () => {
@@ -194,13 +222,23 @@ import JourneyPart from './JourneyPart.astro';
     filter: drop-shadow(0 0 3px rgba(var(--rail-lit-rgb), 0.25));
     transition: stroke-dashoffset 0.12s linear;
   }
+  .journey-region {
+    display: flex;
+    flex-direction: column;
+    gap: 56px;
+  }
+  .journey-region + .journey-region {
+    margin-top: 72px;
+  }
+  .journey-region:first-of-type {
+    margin-top: 40px; /* room for the lead-in curve above the first cloud */
+  }
   .journey-parts {
     position: relative;
     list-style: none;
     display: flex;
     flex-direction: column;
     gap: clamp(88px, 12vh, 140px); /* room for the crossover curve */
-    padding-top: 96px;             /* room for the lead-in curve */
   }
 
   @media (max-width: 760px) {

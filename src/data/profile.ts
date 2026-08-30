@@ -71,7 +71,21 @@ export interface JourneyPart {
   closing?: ClosingPart[];
 }
 
-export const journey: JourneyPart[] = [
+/**
+ * A region of the journey. The rail is continuous across regions; each region
+ * is entered through a cloud layer that names it.
+ */
+export interface JourneyRegion {
+  id: string;
+  name: string;
+  /** The large centred line inside the region's dialog window. */
+  description: string;
+  /** Dot + wash colour for the region's dialog window. */
+  accent: string;
+  parts: JourneyPart[];
+}
+
+const workParts: JourneyPart[] = [
   {
     id: 'origins',
     label: '01',
@@ -117,6 +131,9 @@ export const journey: JourneyPart[] = [
       'scaling virtual-machine sandboxes for the core agent loops behind human-like, action-capable agents',
     ],
   },
+];
+
+const interestParts: JourneyPart[] = [
   {
     id: 'real-world',
     label: '04',
@@ -128,6 +145,23 @@ export const journey: JourneyPart[] = [
       { text: ' or otherwise', album: 'eq', rotation: 6 },
       { text: '.' },
     ],
+  },
+];
+
+export const journey: JourneyRegion[] = [
+  {
+    id: 'work',
+    name: 'Work',
+    description: 'What I build, and what I build it with.',
+    accent: '#7aa2e8',
+    parts: workParts,
+  },
+  {
+    id: 'interests',
+    name: 'Interests',
+    description: "The more you scroll, the more you'll know about me.",
+    accent: '#e87aa4',
+    parts: interestParts,
   },
 ];
 

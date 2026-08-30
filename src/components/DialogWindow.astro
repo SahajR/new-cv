@@ -1,0 +1,108 @@
+---
+/**
+ * Retro dialog window: a 2px frame with a title bar — colored square dot,
+ * pixel-caps title, ruled lines, and an old-Windows close glyph — around a
+ * slotted body. Generic on purpose: region breaks use it with text, and
+ * images can be framed with it later.
+ *
+ * `accent` colours the dot; the body wash derives from it via color-mix, so
+ * it stays pastel in light mode and muted in dark mode.
+ */
+interface Props {
+  title: string;
+  /** Dot + body-wash colour. Any CSS color. */
+  accent?: string;
+  class?: string;
+}
+
+const { title, accent = 'var(--accent)', class: className } = Astro.props;
+---
+
+<div class:list={['dw', className]} style={`--dw-accent: ${accent}`}>
+  <header class="dw-bar">
+    <span class="dw-dot" aria-hidden="true"></span>
+    <span class="dw-title">{title}</span>
+    <span class="dw-rules" aria-hidden="true"></span>
+    <span class="dw-close" aria-hidden="true">
+      <svg viewBox="0 0 14 13" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect x="0.766" y="1.25" width="12.239" height="11.344" stroke="currentColor" stroke-width="1.1" />
+        <rect x="6.254" y="6.354" width="6.751" height="6.239" fill="var(--bg)" stroke="currentColor" stroke-width="1.1" />
+      </svg>
+    </span>
+  </header>
+  <div class="dw-body">
+    <slot />
+  </div>
+</div>
+
+<style>
+  .dw {
+    --dw-line: color-mix(in oklab, var(--ink) 88%, var(--bg));
+    --dw-wash: color-mix(in oklab, var(--dw-accent) 14%, var(--bg));
+    width: 100%;
+    border: 1.5px solid var(--dw-line);
+    border-radius: 4px;
+    background: var(--bg);
+    box-shadow:
+      -3px 4px 0 rgba(var(--shadow-rgb), 0.08),
+      -8px 10px 24px rgba(var(--shadow-rgb), 0.08);
+    overflow: hidden;
+  }
+
+  .dw-bar {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 8px 12px;
+    border-bottom: 1.5px solid var(--dw-line);
+    color: var(--dw-line);
+  }
+  .dw-dot {
+    width: 13px;
+    height: 13px;
+    flex-shrink: 0;
+    border: 1.5px solid var(--dw-line);
+    border-radius: 2px;
+    background: var(--dw-accent);
+  }
+  .dw-title {
+    font-family: var(--font-serif);
+    font-weight: 500;
+    font-size: 15px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--ink);
+    white-space: nowrap;
+  }
+  /* Six ruled lines filling the rest of the bar, old System-style */
+  .dw-rules {
+    flex: 1;
+    align-self: center;
+    height: 15px;
+    min-width: 24px;
+    background-image: repeating-linear-gradient(
+      to bottom,
+      var(--dw-line) 0 1.5px,
+      transparent 1.5px 4px
+    );
+  }
+  /* Minimize glyph: two overlapping stroked squares */
+  .dw-close {
+    width: 15px;
+    height: 14px;
+    flex-shrink: 0;
+    display: block;
+  }
+  .dw-close svg {
+    display: block;
+    width: 100%;
+    height: 100%;
+  }
+
+  .dw-body {
+    margin: 9px;
+    border: 1px solid color-mix(in oklab, var(--dw-line) 40%, transparent);
+    border-radius: 3px;
+    background: var(--dw-wash);
+  }
+</style>

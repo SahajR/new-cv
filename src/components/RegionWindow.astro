@@ -1,0 +1,52 @@
+---
+/**
+ * A journey-region break: a dialog window naming the region, with a large
+ * centred line about what's ahead. The rail passes behind it.
+ */
+import DialogWindow from './DialogWindow.astro';
+
+interface Props {
+  name: string;
+  description: string;
+  accent: string;
+}
+
+const { name, description, accent } = Astro.props;
+---
+
+<div class="region-window" data-journey-window>
+  <DialogWindow title={name} accent={accent}>
+    <p class="rw-text">{description}</p>
+  </DialogWindow>
+</div>
+
+<style>
+  .region-window {
+    position: relative;
+    z-index: 1; /* above the rail — the line ducks behind the window */
+    width: 100%;
+    /* Dimmed until the lit rail reaches this region */
+    opacity: 0.4;
+    transition: opacity 0.6s var(--ease-out);
+  }
+  :global(.region-window.is-reached) {
+    opacity: 1;
+  }
+  /* An opacity fade is safe under reduced motion — keep it even though the
+     global rule disables transitions. */
+  @media (prefers-reduced-motion: reduce) {
+    .region-window {
+      transition: opacity 0.6s var(--ease-out) !important;
+    }
+  }
+  .rw-text {
+    font-family: var(--font-serif);
+    font-weight: 500;
+    font-size: clamp(1.25rem, 1rem + 1vw, 1.625rem);
+    line-height: 1.45;
+    text-align: center;
+    text-wrap: balance;
+    color: var(--ink);
+    padding: clamp(28px, 4vw, 44px) clamp(20px, 4vw, 48px);
+  }
+</style>
