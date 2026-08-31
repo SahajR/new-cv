@@ -9,6 +9,9 @@ import { CubeIcon } from './cube';
 import { TerminalConsoleIcon } from './terminal-console';
 import { ServerIcon } from './server';
 import { AiSparkIcon } from './ai';
+import { BriefcaseJob } from './work';
+import { Telescope } from './telescope';
+import { YCombinatorHackerNews } from './yc';
 
 export const icons = {
   gba: GamingPad,
@@ -17,6 +20,9 @@ export const icons = {
   terminal: TerminalConsoleIcon,
   server: ServerIcon,
   ai: AiSparkIcon,
+  work: BriefcaseJob,
+  telescope: Telescope,
+  yc: YCombinatorHackerNews,
 } as const;
 
 export type IconKey = keyof typeof icons;

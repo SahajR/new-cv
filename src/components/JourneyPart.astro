@@ -1,23 +1,30 @@
 ---
 import type { JourneyPart } from '../data/profile';
 import { albums } from '../data/albums';
-import { icons } from '../icons';
+import { icons, type IconKey } from '../icons';
 import AlbumStack from './AlbumStack';
 
 interface Props {
   part: JourneyPart;
   side: 'left' | 'right';
   index: number;
+  /** Icon for the rail stop; omitted falls back to the star. */
+  stopIcon?: IconKey;
 }
 
-const { part, side, index } = Astro.props;
+const { part, side, index, stopIcon } = Astro.props;
+const StopIcon = stopIcon ? icons[stopIcon] : null;
 ---
 
 <li class="jp" data-side={side} data-journey-part id={part.id}>
   <span class="jp-dot" aria-hidden="true" data-journey-dot>
-    <svg class="jp-star" viewBox="0 0 64 64" fill="currentColor">
-      <path d="M32 4 L36 26 L58 30 L36 34 L32 56 L28 34 L6 30 L28 26 Z" />
-    </svg>
+    {StopIcon ? (
+      <span class="jp-mark jp-mark-icon"><StopIcon /></span>
+    ) : (
+      <svg class="jp-mark jp-mark-star" viewBox="0 0 64 64" fill="currentColor">
+        <path d="M32 4 L36 26 L58 30 L36 34 L32 56 L28 34 L6 30 L28 26 Z" />
+      </svg>
+    )}
   </span>
 
   <header class="jp-head">
@@ -121,18 +128,30 @@ const { part, side, index } = Astro.props;
     right: var(--rail-x);
     transform: translate(50%, -50%);
   }
-  .jp-star {
-    width: 16px;
-    height: 16px;
+  .jp-mark {
+    width: 17px;
+    height: 17px;
     display: block;
     transition: transform 0.5s var(--ease-out);
+  }
+  .jp-mark-icon :global(svg) {
+    display: block;
+    width: 100%;
+    height: 100%;
   }
   .jp-dot.is-lit {
     color: var(--region-rail, var(--rail-lit));
   }
-  .jp-dot.is-lit .jp-star {
-    transform: rotate(90deg) scale(1.15);
+  .jp-dot.is-lit .jp-mark {
     filter: drop-shadow(0 0 4px color-mix(in srgb, var(--region-rail, var(--rail-lit)) 45%, transparent));
+  }
+  /* A quarter-turn reads as a twinkle on the star, but would look broken on
+     a briefcase or telescope — those just scale up. */
+  .jp-dot.is-lit .jp-mark-star {
+    transform: rotate(90deg) scale(1.15);
+  }
+  .jp-dot.is-lit .jp-mark-icon {
+    transform: scale(1.12);
   }
   .jp-dot::before {
     content: '';
@@ -244,7 +263,7 @@ const { part, side, index } = Astro.props;
     .jp-dot.is-lit::before {
       animation: none;
     }
-    .jp-star {
+    .jp-mark {
       transition: none;
     }
   }

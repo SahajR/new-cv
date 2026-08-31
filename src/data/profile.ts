@@ -82,6 +82,8 @@ export interface JourneyRegion {
   description: string;
   /** Dot + wash colour for the region's dialog window. */
   accent: string;
+  /** Icon marking each stop on the rail in this region. Defaults to a star. */
+  stopIcon?: IconKey;
   parts: JourneyPart[];
 }
 
@@ -154,6 +156,7 @@ export const journey: JourneyRegion[] = [
     name: 'Work',
     description: 'What I build, and what I build it with.',
     accent: '#7aa2e8',
+    stopIcon: 'work',
     parts: workParts,
   },
   {
@@ -161,6 +164,7 @@ export const journey: JourneyRegion[] = [
     name: 'Interests',
     description: "The more you scroll, the more you'll know about me.",
     accent: '#e87aa4',
+    stopIcon: 'telescope',
     parts: interestParts,
   },
 ];

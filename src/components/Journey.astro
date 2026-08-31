@@ -32,7 +32,7 @@ const regions = journey.map((region) => ({
     <section class="journey-region" aria-label={region.name} style={`--region-accent: ${region.accent}`}>
       <RegionWindow name={region.name} description={region.description} accent={region.accent} />
       <ol class="journey-parts">
-        {region.parts.map(({ part, side }, i) => <JourneyPart part={part} side={side} index={i} />)}
+        {region.parts.map(({ part, side }, i) => <JourneyPart part={part} side={side} index={i} stopIcon={region.stopIcon} />)}
       </ol>
     </section>
   ))}
