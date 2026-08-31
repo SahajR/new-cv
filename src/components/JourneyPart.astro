@@ -128,18 +128,18 @@ const { part, side, index } = Astro.props;
     transition: transform 0.5s var(--ease-out);
   }
   .jp-dot.is-lit {
-    color: var(--rail-lit);
+    color: var(--region-rail, var(--rail-lit));
   }
   .jp-dot.is-lit .jp-star {
     transform: rotate(90deg) scale(1.15);
-    filter: drop-shadow(0 0 4px rgba(var(--rail-lit-rgb), 0.45));
+    filter: drop-shadow(0 0 4px color-mix(in srgb, var(--region-rail, var(--rail-lit)) 45%, transparent));
   }
   .jp-dot::before {
     content: '';
     position: absolute;
     inset: 2px;
     border-radius: 50%;
-    border: 1px solid var(--rail-lit);
+    border: 1px solid var(--region-rail, var(--rail-lit));
     opacity: 0;
   }
   .jp-dot.is-lit::before {
@@ -161,7 +161,7 @@ const { part, side, index } = Astro.props;
     text-align: right;
   }
   .jp-label {
-    color: var(--rail-lit);
+    color: var(--region-rail, var(--rail-lit));
     letter-spacing: 1.4px;
   }
   .jp-title {
@@ -220,7 +220,7 @@ const { part, side, index } = Astro.props;
     width: 6px;
     height: 6px;
     border-radius: 50%;
-    background: var(--rail-lit);
+    background: var(--region-rail, var(--rail-lit));
   }
   .jp-closing {
     font-family: var(--font-serif);

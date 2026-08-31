@@ -21,12 +21,15 @@ const regions = journey.map((region) => ({
 
 <div class="journey" data-journey>
   <svg class="journey-rail" aria-hidden="true" data-journey-svg>
+    <defs>
+      <linearGradient id="jr-grad" data-journey-grad gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="0" y2="1"></linearGradient>
+    </defs>
     <path class="jr-base" data-journey-base d="" />
     <path class="jr-lit" data-journey-lit d="" />
   </svg>
 
   {regions.map((region) => (
-    <section class="journey-region" aria-label={region.name}>
+    <section class="journey-region" aria-label={region.name} style={`--region-accent: ${region.accent}`}>
       <RegionWindow name={region.name} description={region.description} accent={region.accent} />
       <ol class="journey-parts">
         {region.parts.map(({ part, side }, i) => <JourneyPart part={part} side={side} index={i} />)}
@@ -77,17 +80,38 @@ const regions = journey.map((region) => ({
       // their side's rail).
       type Seg = { x: number; top: number; bottom: number };
       const segs: Seg[] = [];
+      const regionStops: { winTop: number; winBottom: number; color: string }[] = [];
       root.querySelectorAll<HTMLElement>('.journey-region').forEach((region) => {
+        // Resolve the region's rail colour from a part label (theme-aware).
+        const label = region.querySelector<HTMLElement>('.jp-label');
+        const color = label ? getComputedStyle(label).color : 'currentColor';
         const win = region.querySelector<HTMLElement>('[data-journey-window]');
         if (win) {
           const r = win.getBoundingClientRect();
           segs.push({ x: xC, top: r.top - rr.top, bottom: r.bottom - rr.top });
+          regionStops.push({ winTop: r.top - rr.top, winBottom: r.bottom - rr.top, color });
         }
         region.querySelectorAll<HTMLElement>('[data-journey-part]').forEach((p) => {
           const r = p.getBoundingClientRect();
           segs.push({ x: p.dataset.side === 'right' ? xR : xL, top: r.top - rr.top, bottom: r.bottom - rr.top });
         });
       });
+
+      // Colour the lit stroke per region: each blend happens across a window
+      // band, where the rail is hidden behind the window.
+      const grad = svg.querySelector<SVGLinearGradientElement>('[data-journey-grad]');
+      if (grad && regionStops.length) {
+        grad.setAttribute('y2', `${h}`);
+        grad.innerHTML = regionStops
+          .map((rs, i) => {
+            const prev = regionStops[i - 1];
+            return (
+              (prev ? `<stop offset="${(rs.winTop / h).toFixed(4)}" stop-color="${prev.color}"></stop>` : '') +
+              `<stop offset="${(i === 0 ? 0 : rs.winBottom / h).toFixed(4)}" stop-color="${rs.color}"></stop>`
+            );
+          })
+          .join('');
+      }
 
       /**
        * Orthogonal crossover: continue down to the midpoint of the gap, turn a
@@ -238,16 +262,19 @@ const regions = journey.map((region) => ({
   }
   .jr-lit {
     fill: none;
-    stroke: var(--rail-lit);
+    stroke: url(#jr-grad);
     stroke-width: 1.25;
     stroke-linecap: round;
-    filter: drop-shadow(0 0 3px rgba(var(--rail-lit-rgb), 0.25));
+    filter: drop-shadow(0 0 3px rgba(var(--rail-lit-rgb), 0.2));
     transition: stroke-dashoffset 0.12s linear;
   }
   .journey-region {
     display: flex;
     flex-direction: column;
     gap: 56px;
+    /* The region's rail colour: its accent, pulled toward ink for contrast
+       (and automatically lightened in dark mode, where ink is near-white). */
+    --region-rail: color-mix(in oklab, var(--region-accent, var(--rail-lit)) 55%, var(--ink));
   }
   .journey-region + .journey-region {
     margin-top: 72px;
