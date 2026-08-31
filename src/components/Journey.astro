@@ -136,7 +136,7 @@ const regions = journey.map((region) => ({
       lit.style.strokeDasharray = `${total}`;
 
       // Sample the path so scroll → length lookups are cheap (path is monotonic in y).
-      const N = 300;
+      const N = 150;
       samples = Array.from({ length: N + 1 }, (_, i) => {
         const len = (total * i) / N;
         return { len, y: lit.getPointAtLength(len).y };
@@ -176,6 +176,28 @@ const regions = journey.map((region) => ({
       update();
     };
 
+    /**
+     * The region windows animate their height open (a layout animation), so
+     * the ResizeObserver fires every frame for ~0.5s. Rebuilding the path and
+     * resampling it per frame is what causes jank — instead, relayout at most
+     * every 160ms while resizes stream in, plus a trailing pass so the rail
+     * settles exactly on the final geometry.
+     */
+    let relayoutTimer = 0;
+    let lastRelayout = 0;
+    const scheduleRelayout = () => {
+      const now = performance.now();
+      if (now - lastRelayout > 160) {
+        lastRelayout = now;
+        relayout();
+      }
+      clearTimeout(relayoutTimer);
+      relayoutTimer = window.setTimeout(() => {
+        lastRelayout = performance.now();
+        relayout();
+      }, 180);
+    };
+
     // Reveal parts as they enter the viewport
     const io = new IntersectionObserver(
       (entries) => entries.forEach((e) => e.isIntersecting && e.target.classList.add('is-in')),
@@ -184,8 +206,8 @@ const regions = journey.map((region) => ({
     parts.forEach((p) => (reduced ? p.classList.add('is-in') : io.observe(p)));
 
     window.addEventListener('scroll', schedule, { passive: true });
-    window.addEventListener('resize', relayout);
-    new ResizeObserver(relayout).observe(root);
+    window.addEventListener('resize', scheduleRelayout);
+    new ResizeObserver(scheduleRelayout).observe(root);
     document.fonts?.ready.then(relayout);
     relayout();
   }

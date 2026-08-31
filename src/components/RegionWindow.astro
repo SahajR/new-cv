@@ -25,18 +25,42 @@ const { name, description, accent } = Astro.props;
     position: relative;
     z-index: 1; /* above the rail — the line ducks behind the window */
     width: 100%;
-    /* Dimmed until the lit rail reaches this region */
-    opacity: 0.4;
-    transition: opacity 0.6s var(--ease-out);
   }
-  :global(.region-window.is-reached) {
+  /* The frame and title bar are always visible; the body starts collapsed
+     (the window is just its bar) and expands open when the region is
+     reached, while the content scales in from the top edge with a fade.
+     The rail relayouts itself as the height animates (ResizeObserver). */
+  .region-window :global(.dw-collapse) {
+    grid-template-rows: 0fr;
+    transition: grid-template-rows 0.55s var(--ease-out);
+  }
+  :global(.region-window.is-reached .dw-collapse) {
+    grid-template-rows: 1fr;
+  }
+  .region-window :global(.dw-body) {
+    /* No vertical margins while collapsed, so the closed window is exactly
+       its title bar — margins would otherwise hold the track open. */
+    margin-top: 0;
+    margin-bottom: 0;
+    opacity: 0;
+    transform: scale(0.9);
+    transform-origin: 50% 0;
+    transition:
+      margin 0.55s var(--ease-out),
+      opacity 0.45s var(--ease-out),
+      transform 0.55s cubic-bezier(0.34, 1.4, 0.64, 1);
+  }
+  :global(.region-window.is-reached .dw-body) {
+    margin-top: 9px;
+    margin-bottom: 9px;
     opacity: 1;
+    transform: none;
   }
-  /* An opacity fade is safe under reduced motion — keep it even though the
-     global rule disables transitions. */
+  /* Under reduced motion: fade only, no scale. */
   @media (prefers-reduced-motion: reduce) {
-    .region-window {
-      transition: opacity 0.6s var(--ease-out) !important;
+    .region-window :global(.dw-body) {
+      transform: none;
+      transition: opacity 0.45s var(--ease-out) !important;
     }
   }
   .rw-text {

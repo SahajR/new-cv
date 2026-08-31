@@ -21,17 +21,19 @@ const { title, accent = 'var(--accent)', class: className } = Astro.props;
 <div class:list={['dw', className]} style={`--dw-accent: ${accent}`}>
   <header class="dw-bar">
     <span class="dw-dot" aria-hidden="true"></span>
+    <span class="dw-rules" aria-hidden="true"></span>
     <span class="dw-title">{title}</span>
     <span class="dw-rules" aria-hidden="true"></span>
     <span class="dw-close" aria-hidden="true">
-      <svg viewBox="0 0 14 13" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <rect x="0.766" y="1.25" width="12.239" height="11.344" stroke="currentColor" stroke-width="1.1" />
-        <rect x="6.254" y="6.354" width="6.751" height="6.239" fill="var(--bg)" stroke="currentColor" stroke-width="1.1" />
+      <svg viewBox="0 0 10 10" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M1.8 1.8 L8.2 8.2 M8.2 1.8 L1.8 8.2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
       </svg>
     </span>
   </header>
-  <div class="dw-body">
-    <slot />
+  <div class="dw-collapse">
+    <div class="dw-body">
+      <slot />
+    </div>
   </div>
 </div>
 
@@ -74,32 +76,44 @@ const { title, accent = 'var(--accent)', class: className } = Astro.props;
     color: var(--ink);
     white-space: nowrap;
   }
-  /* Six ruled lines filling the rest of the bar, old System-style */
+  /* Ruled lines on either side of the centred title, old System-style */
   .dw-rules {
     flex: 1;
     align-self: center;
     height: 15px;
-    min-width: 24px;
+    min-width: 16px;
     background-image: repeating-linear-gradient(
       to bottom,
       var(--dw-line) 0 1.5px,
       transparent 1.5px 4px
     );
   }
-  /* Minimize glyph: two overlapping stroked squares */
+  /* Close glyph: an × in a square */
   .dw-close {
     width: 15px;
-    height: 14px;
+    height: 15px;
     flex-shrink: 0;
-    display: block;
+    display: grid;
+    place-items: center;
+    border: 1.5px solid var(--dw-line);
+    border-radius: 3px;
   }
   .dw-close svg {
     display: block;
-    width: 100%;
-    height: 100%;
+    width: 9px;
+    height: 9px;
   }
 
+  /* Animatable-height wrapper: rows 0fr collapses the body to nothing,
+     1fr opens it to natural height. Open by default; region windows start
+     collapsed and expand when reached. */
+  .dw-collapse {
+    display: grid;
+    grid-template-rows: 1fr;
+    overflow: hidden;
+  }
   .dw-body {
+    min-height: 0;
     margin: 9px;
     border: 1px solid color-mix(in oklab, var(--dw-line) 40%, transparent);
     border-radius: 3px;
