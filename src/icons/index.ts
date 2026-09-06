@@ -3,7 +3,7 @@
  * .tsx components; register each here and reference it from journey copy as
  * { text: '…', icon: '<key>' }.
  */
-import { GamingPad } from './gba';
+import { GameBoyAdvance } from './gba';
 import { AndroidIcon } from './android';
 import { CubeIcon } from './cube';
 import { TerminalConsoleIcon } from './terminal-console';
@@ -14,7 +14,7 @@ import { Telescope } from './telescope';
 import { YCombinatorHackerNews } from './yc';
 
 export const icons = {
-  gba: GamingPad,
+  gba: GameBoyAdvance,
   android: AndroidIcon,
   cube: CubeIcon,
   terminal: TerminalConsoleIcon,

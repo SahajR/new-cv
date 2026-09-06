@@ -1,0 +1,275 @@
+---
+const channels = ['red', 'green', 'blue'];
+---
+
+<aside class="interests-warning" aria-labelledby="interests-warning-title" data-interests-warning>
+  <div class="warning-sheet">
+    <div class="warning-tape" aria-hidden="true"></div>
+
+    <div class="warning-content">
+      <p class="warning-eyebrow">
+        <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <path d="M12 3 22 21H2L12 3Z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" />
+          <path d="M12 9v5m0 3v.5" stroke="currentColor" stroke-width="2" />
+        </svg>
+        Personal territory ahead
+      </p>
+
+      <h2 class="warning-title" id="interests-warning-title">
+        {channels.map((channel) => (
+          <span class={`warning-channel warning-channel-${channel}`} aria-hidden="true">WARNING</span>
+        ))}
+        <span class="warning-word">WARNING</span>
+        <span class="warning-slice" aria-hidden="true">WARNING</span>
+      </h2>
+
+      <p class="warning-message">The deeper you scroll,<br />the more you'll know about me.</p>
+      <p class="warning-caution">Proceed with caution. <span aria-hidden="true">↓</span></p>
+    </div>
+
+    <div class="warning-tape warning-tape-bottom" aria-hidden="true"></div>
+  </div>
+</aside>
+
+<script>
+  /* SCROLL STORYBOARD — reversible; nothing runs on a timer.
+   *   0%  the warning enters cleanly from the bottom of the viewport
+   *  25%  the sheet starts tilting; the RGB channels drift apart
+   *  60%  the title tears in stepped slices as the reader goes deeper
+   * 100%  the warning exits into Interests at maximum distortion
+   */
+  const GLITCH = {
+    steps: 16,             // distinct signal offsets across the section's passage
+    split: 12,             // maximum RGB separation in px
+    tear: 18,              // maximum title-slice offset in px
+    tilt: 2.4,             // maximum sheet tilt in degrees
+    skew: 1.2,             // maximum title skew in degrees
+    tapeTravel: 48,        // hazard-stripe travel in px
+  };
+
+  const warning = document.querySelector<HTMLElement>('[data-interests-warning]');
+
+  if (warning) {
+    const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+    let raf = 0;
+    let visible = false;
+
+    const update = () => {
+      raf = 0;
+      if (reducedMotion.matches || !visible) return;
+
+      // Measure the stationary wrapper, so the animated sheet never feeds
+      // its own rotation back into the scroll-progress calculation.
+      const rect = warning.getBoundingClientRect();
+      const progress = Math.max(0, Math.min(1, (window.innerHeight - rect.top) / (window.innerHeight + rect.height)));
+      const intensity = progress * progress;
+      const step = Math.floor(progress * GLITCH.steps);
+      const signal = Math.sin(step * 2.4);
+      const split = intensity * GLITCH.split;
+
+      warning.style.setProperty('--warning-tilt', `${intensity * (GLITCH.tilt + signal * 0.3)}deg`);
+      warning.style.setProperty('--warning-skew', `${signal * intensity * GLITCH.skew}deg`);
+      warning.style.setProperty('--warning-split', `${split}px`);
+      warning.style.setProperty('--warning-tear', `${signal * intensity * GLITCH.tear}px`);
+      warning.style.setProperty('--warning-rgb-opacity', `${Math.min(0.85, progress * 1.2)}`);
+      warning.style.setProperty('--warning-tape-x', `${progress * GLITCH.tapeTravel}px`);
+    };
+
+    const schedule = () => {
+      if (!raf && visible && !reducedMotion.matches) raf = requestAnimationFrame(update);
+    };
+
+    const syncMotion = () => {
+      if (reducedMotion.matches) {
+        cancelAnimationFrame(raf);
+        raf = 0;
+        warning.removeAttribute('style');
+        window.removeEventListener('scroll', schedule);
+      } else {
+        window.addEventListener('scroll', schedule, { passive: true });
+        schedule();
+      }
+    };
+
+    new IntersectionObserver(([entry]) => {
+      visible = entry.isIntersecting;
+      schedule();
+    }, { rootMargin: '80px 0px' }).observe(warning);
+
+    // Region windows above the warning expand as the rail reaches them.
+    // Their layout shifts must update progress even when scrolling stops.
+    new ResizeObserver(schedule).observe(warning.closest('[data-journey]') ?? warning);
+    window.addEventListener('resize', schedule);
+    reducedMotion.addEventListener('change', syncMotion);
+    syncMotion();
+  }
+</script>
+
+<style>
+  .interests-warning {
+    --warning-red: #c92332;
+    --warning-white: #fff9f2;
+    --warning-tilt: 0deg;
+    --warning-skew: 0deg;
+    --warning-split: 0px;
+    --warning-tear: 0px;
+    --warning-rgb-opacity: 0;
+    --warning-tape-x: 0px;
+    position: relative;
+    z-index: 2;
+    isolation: isolate;
+    width: 100vw;
+    margin-inline: calc(50% - 50vw);
+    margin-block: 32px;
+    padding-block: 32px;
+    overflow: clip;
+    color: var(--warning-white);
+  }
+
+  .warning-sheet {
+    position: relative;
+    width: calc(100% + 96px);
+    margin-inline: -48px;
+    background: var(--warning-red);
+    transform: rotate(var(--warning-tilt));
+    transform-origin: center;
+  }
+
+  .warning-tape {
+    height: 12px;
+    margin-inline: -64px;
+    background: repeating-linear-gradient(
+      -45deg,
+      var(--warning-white) 0 12px,
+      var(--warning-red) 12px 24px
+    );
+    transform: translateX(var(--warning-tape-x));
+  }
+
+  .warning-tape-bottom {
+    transform: translateX(calc(-1 * var(--warning-tape-x)));
+  }
+
+  .warning-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: clamp(40px, 5vw, 64px) 72px;
+    text-align: center;
+  }
+
+  .warning-eyebrow {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    font-size: 11px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+  }
+
+  .warning-eyebrow svg {
+    width: 21px;
+    height: 21px;
+    flex: none;
+  }
+
+  .warning-title {
+    position: relative;
+    isolation: isolate;
+    margin-block: 20px 24px;
+    font-family: var(--font-serif);
+    font-size: clamp(3.75rem, 13.5vw, 10rem);
+    line-height: 0.9;
+    letter-spacing: -0.055em;
+    white-space: nowrap;
+    transform: skewX(var(--warning-skew));
+  }
+
+  .warning-word {
+    position: relative;
+    z-index: 1;
+  }
+
+  .warning-channel,
+  .warning-slice {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    user-select: none;
+  }
+
+  .warning-channel {
+    opacity: var(--warning-rgb-opacity);
+    mix-blend-mode: screen;
+  }
+
+  .warning-channel-red {
+    color: #ff3434;
+    transform: translate(calc(-1 * var(--warning-split)), calc(var(--warning-split) * 0.2));
+  }
+
+  .warning-channel-green {
+    color: #3cff83;
+    transform: translate(var(--warning-split), calc(var(--warning-split) * -0.15));
+  }
+
+  .warning-channel-blue {
+    color: #4263ff;
+    transform: translate(calc(var(--warning-split) * 0.4), calc(var(--warning-split) * 0.35));
+  }
+
+  .warning-slice {
+    z-index: 2;
+    clip-path: polygon(0 32%, 100% 32%, 100% 42%, 0 42%, 0 68%, 100% 68%, 100% 73%, 0 73%);
+    transform: translateX(var(--warning-tear));
+    opacity: var(--warning-rgb-opacity);
+  }
+
+  .warning-message {
+    font-size: clamp(1.125rem, 1rem + 0.75vw, 1.5rem);
+    line-height: 1.5;
+    text-wrap: balance;
+  }
+
+  .warning-caution {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-top: 28px;
+    font-family: var(--font-label);
+    font-size: 14px;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+  }
+
+  .warning-caution span {
+    font-size: 22px;
+    line-height: 1;
+  }
+
+  @media (max-width: 480px) {
+    .warning-content {
+      padding-inline: 64px;
+    }
+    .warning-eyebrow {
+      font-size: 9px;
+      letter-spacing: 0.12em;
+    }
+    .warning-title {
+      margin-block: 24px;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .warning-sheet,
+    .warning-title,
+    .warning-tape {
+      transform: none;
+    }
+    .warning-channel,
+    .warning-slice {
+      display: none;
+    }
+  }
+</style>

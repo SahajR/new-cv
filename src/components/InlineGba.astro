@@ -1,0 +1,129 @@
+---
+import { GameBoyAdvance } from '../icons/gba';
+---
+
+<span class="inline-gba" data-inline-gba aria-hidden="true">
+  <span class="gba-console">
+    <span class="gba-face gba-front"><GameBoyAdvance /></span>
+    <span class="gba-face gba-back"><GameBoyAdvance side="back" /></span>
+    <span class="gba-edge"></span>
+  </span>
+</span>
+
+<script>
+  /* SCROLL STORYBOARD — a single reversible turn, with no idle animation.
+   * 84% viewport height: front faces the reader; the flip starts
+   * 61% viewport height: back and battery cover face the reader
+   * 38% viewport height: full turn complete; front rests at reading height
+   */
+  const FLIP = {
+    start: 0.84, // viewport fraction where the turn begins
+    end: 0.38,   // viewport fraction where the turn finishes
+    degrees: 360,
+  };
+
+  const gba = document.querySelector<HTMLElement>('[data-inline-gba]');
+
+  if (gba) {
+    const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+    let visible = false;
+    let raf = 0;
+
+    const update = () => {
+      raf = 0;
+      if (!visible || reducedMotion.matches) return;
+      // Measure the fixed inline box, never the rotating console within it.
+      const rect = gba.getBoundingClientRect();
+      const center = rect.top + rect.height / 2;
+      const progress = Math.max(0, Math.min(1,
+        (window.innerHeight * FLIP.start - center) / (window.innerHeight * (FLIP.start - FLIP.end))
+      ));
+      gba.style.setProperty('--gba-turn', `${progress * FLIP.degrees}deg`);
+    };
+
+    const schedule = () => {
+      if (visible && !reducedMotion.matches && !raf) raf = requestAnimationFrame(update);
+    };
+
+    const syncMotion = () => {
+      if (reducedMotion.matches) {
+        cancelAnimationFrame(raf);
+        raf = 0;
+        gba.style.removeProperty('--gba-turn');
+        window.removeEventListener('scroll', schedule);
+      } else {
+        window.addEventListener('scroll', schedule, { passive: true });
+        schedule();
+      }
+    };
+
+    new IntersectionObserver(([entry]) => {
+      visible = entry.isIntersecting;
+      schedule();
+    }, { rootMargin: '40px 0px' }).observe(gba);
+
+    // The Work window above this sentence expands as the reader approaches.
+    new ResizeObserver(schedule).observe(gba.closest('[data-journey]') ?? gba);
+    window.addEventListener('resize', schedule);
+    document.fonts.ready.then(schedule);
+    reducedMotion.addEventListener('change', syncMotion);
+    syncMotion();
+  }
+</script>
+
+<style>
+  .inline-gba {
+    display: inline-block;
+    position: relative;
+    width: 1.9em;
+    height: 1.1875em;
+    margin-inline: 0.16em 0.12em;
+    vertical-align: -0.24em;
+    line-height: 0;
+    perspective: 160px;
+  }
+
+  .gba-console {
+    position: absolute;
+    inset: 0;
+    transform-style: preserve-3d;
+    transform: rotateZ(-8deg) rotateX(12deg) rotateY(var(--gba-turn, 0deg));
+  }
+
+  .gba-face {
+    position: absolute;
+    inset: 0;
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+  }
+
+  .gba-face :global(svg) {
+    display: block;
+    width: 100%;
+    height: 100%;
+  }
+
+  .gba-front {
+    transform: translateZ(1px);
+  }
+
+  .gba-back {
+    transform: rotateY(180deg) translateZ(1px);
+  }
+
+  .gba-edge {
+    position: absolute;
+    inset: 12% 0;
+    width: 2px;
+    margin-inline: auto;
+    border-radius: 1px;
+    background: #6a588f;
+    transform: rotateY(90deg);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .gba-console {
+      transform: rotateZ(-8deg);
+    }
+  }
+</style>

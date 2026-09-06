@@ -94,8 +94,8 @@ const workParts: JourneyPart[] = [
     title: 'Origins',
     paragraphs: [
       [
-        { text: "I've been programming since I was 16, starting with ROM hacks for GBA Pokémon games", icon: 'gba' },
-        { text: ". I've been hooked ever since." },
+        { text: "I've been programming since I was 16, starting with ROM hacks for GBA", icon: 'gba' },
+        { text: " Pokémon games. I've been hooked ever since." },
       ],
     ],
   },
@@ -162,7 +162,7 @@ export const journey: JourneyRegion[] = [
   {
     id: 'interests',
     name: 'Interests',
-    description: "The more you scroll, the more you'll know about me.",
+    description: 'Life beyond the keyboard.',
     accent: '#e87aa4',
     stopIcon: 'telescope',
     parts: interestParts,

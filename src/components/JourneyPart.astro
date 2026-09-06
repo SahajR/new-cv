@@ -3,6 +3,7 @@ import type { JourneyPart } from '../data/profile';
 import { albums } from '../data/albums';
 import { icons, type IconKey } from '../icons';
 import AlbumStack from './AlbumStack';
+import InlineGba from './InlineGba.astro';
 
 interface Props {
   part: JourneyPart;
@@ -42,7 +43,7 @@ const StopIcon = stopIcon ? icons[stopIcon] : null;
               return (
                 <>
                   {seg.text}
-                  {Icon && (
+                  {seg.icon === 'gba' ? <InlineGba /> : Icon && (
                     <span class="jp-icon" aria-hidden="true">
                       <Icon />
                     </span>

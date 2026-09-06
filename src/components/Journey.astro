@@ -10,6 +10,7 @@
 import { journey } from '../data/profile';
 import JourneyPart from './JourneyPart.astro';
 import RegionWindow from './RegionWindow.astro';
+import InterestsWarning from './InterestsWarning.astro';
 
 // Sides alternate continuously across regions.
 let globalIndex = 0;
@@ -29,7 +30,8 @@ const regions = journey.map((region) => ({
   </svg>
 
   {regions.map((region) => (
-    <section class="journey-region" aria-label={region.name} style={`--region-accent: ${region.accent}`}>
+    <section class="journey-region" id={region.id} aria-label={region.name} style={`--region-accent: ${region.accent}`}>
+      {region.id === 'interests' && <InterestsWarning />}
       <RegionWindow name={region.name} description={region.description} accent={region.accent} />
       <ol class="journey-parts">
         {region.parts.map(({ part, side }, i) => <JourneyPart part={part} side={side} index={i} stopIcon={region.stopIcon} />)}
