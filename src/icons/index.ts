@@ -18,6 +18,7 @@ import { Github } from './github';
 import { Up } from './up';
 import { Flight } from './flight';
 import { Note } from './note';
+import { Achievement } from './achievement';
 
 export const icons = {
   gba: GameBoyAdvance,
@@ -35,6 +36,7 @@ export const icons = {
   up: Up,
   flight: Flight,
   note: Note,
+  achievement: Achievement,
 } as const;
 
 export type IconKey = keyof typeof icons;

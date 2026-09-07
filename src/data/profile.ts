@@ -272,6 +272,7 @@ export const timeline: TimelineEntry[] = [
 ];
 
 export const footerLinks: FooterLink[] = [
+  { label: 'Achievements', href: '/achievements', icon: 'achievement' },
   { label: 'GitHub', href: 'https://github.com/SahajR', icon: 'github' },
   { label: 'LinkedIn', href: 'https://www.linkedin.com/in/sahajr/', icon: 'linkedin' },
   { label: 'Email', href: 'mailto:hello@sahajr.com?subject=Hello%20Sahaj', icon: 'email' },

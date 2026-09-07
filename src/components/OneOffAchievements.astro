@@ -1,0 +1,96 @@
+---
+import { oneOffAchievements } from '../data/one-off-achievements';
+import AchievementDetails from './AchievementDetails.astro';
+const unlocked = oneOffAchievements.filter((achievement) => achievement.completed).length;
+const inProgress = oneOffAchievements.filter((achievement) => !achievement.completed && achievement.inProgress).length;
+---
+
+<section class="one-offs" aria-labelledby="one-offs-title">
+  <header class="one-offs-heading">
+    <h2 id="one-offs-title">One-off achievements</h2>
+    <p class="unlock-count"><strong>{unlocked}<span> / {oneOffAchievements.length}</span></strong> unlocked{inProgress > 0 && <span> · {inProgress} in progress</span>}</p>
+  </header>
+  <ul class="one-off-list">
+    {oneOffAchievements.map((achievement) => (
+      <li class:list={['one-off', { 'is-unlocked': achievement.completed, 'is-in-progress': !achievement.completed && achievement.inProgress }]}>
+        <img
+          class="one-off-art"
+          src={`/images/achievements/one-offs/${achievement.id}.png`}
+          alt={achievement.imageAlt}
+          width="50"
+          height="50"
+          loading="lazy"
+          decoding="async"
+        />
+        <div class="one-off-content">
+          <h3>{achievement.title}</h3>
+          {achievement.note && <p class="one-off-note">{achievement.note}</p>}
+          <p class="unlock-state">
+            {achievement.completed ? (
+              <svg viewBox="0 0 16 16" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 8h2v2h2v2h2V8h2V6h2V4h2" /></svg>
+            ) : achievement.inProgress ? (
+              <svg viewBox="0 0 16 16" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 2h8v3L9 8l3 3v3H4v-3l3-3-3-3zM4 2h8M4 14h8" /></svg>
+            ) : (
+              <svg viewBox="0 0 16 16" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M5 7V3h6v4M3 7h10v7H3zM8 9v3" /></svg>
+            )}
+            {achievement.completed ? 'Unlocked' : achievement.inProgress ? 'In progress' : 'Locked'}
+          </p>
+        </div>
+        {achievement.completed && <AchievementDetails achievement={achievement} />}
+      </li>
+    ))}
+  </ul>
+</section>
+
+<style>
+  .one-offs { margin-top: 64px; }
+  .one-offs-heading { display: flex; justify-content: space-between; flex-wrap: wrap; align-items: baseline; gap: 12px 24px; margin-bottom: 20px; }
+  h2 { font-size: clamp(1.75rem, 4vw, 2.25rem); line-height: 1.15; }
+  .unlock-count { color: var(--body); font-size: .8125rem; white-space: nowrap; }
+  .unlock-count strong { margin-right: 6px; font-family: var(--font-serif); font-size: 1.5rem; font-weight: 500; color: var(--ink); font-variant-numeric: tabular-nums; }
+  .unlock-count strong span { color: var(--body); }
+  .one-off-list { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; list-style: none; }
+  .one-off {
+    position: relative;
+    display: grid;
+    grid-template-columns: 50px minmax(0, 1fr);
+    align-items: center;
+    gap: 14px;
+    min-height: 102px;
+    padding: 14px;
+    border: 1px solid color-mix(in oklab, var(--ink) 25%, var(--bg));
+    border-radius: 3px;
+    background: color-mix(in oklab, var(--ink) 2%, var(--bg));
+  }
+  .one-off.is-unlocked {
+    border-color: color-mix(in oklab, #aa8036 72%, var(--ink));
+    background: color-mix(in oklab, #d7b568 8%, var(--bg));
+    box-shadow: -2px 3px 0 rgba(var(--shadow-rgb), .06);
+  }
+  .one-off.is-in-progress {
+    border-color: color-mix(in oklab, #237f83 70%, var(--ink));
+    border-style: dashed;
+    background: color-mix(in oklab, #237f83 7%, var(--bg));
+  }
+  .one-off-art { display: block; width: 50px; height: 50px; object-fit: cover; image-rendering: pixelated; background: var(--surface-chip); }
+  .one-off:not(.is-unlocked):not(.is-in-progress) .one-off-art { filter: grayscale(1); opacity: .72; }
+  .is-unlocked .one-off-art { outline: 1px solid color-mix(in oklab, #aa8036 65%, var(--bg)); outline-offset: 2px; }
+  .one-off-content { min-width: 0; }
+  .is-unlocked .one-off-content { padding-right: 36px; }
+  .one-off > :global(achievement-details) { position: absolute; top: 4px; right: 4px; }
+  .one-off-note { margin-top: 5px; font-size: .75rem; line-height: 1.4; color: var(--body); }
+  h3 { font-size: 1.1875rem; line-height: 1.18; text-wrap: pretty; }
+  .unlock-state { display: flex; gap: 5px; align-items: center; margin-top: 8px; color: var(--body); font-size: .6875rem; line-height: 1.3; letter-spacing: .045em; text-transform: uppercase; }
+  .unlock-state svg { flex: none; width: 12px; height: 12px; }
+  .is-unlocked .unlock-state { color: color-mix(in oklab, #aa8036 52%, var(--ink)); }
+  .is-in-progress .unlock-state { color: color-mix(in oklab, #237f83 60%, var(--ink)); }
+  @media (max-width: 767px) {
+    .one-off-list { grid-template-columns: minmax(0, 1fr); }
+  }
+  @media (max-width: 560px) {
+    .one-offs { margin-top: 48px; }
+    .one-off-list { gap: 10px; }
+    .one-off { padding: 12px; gap: 12px; }
+    h3 { font-size: 1.125rem; }
+  }
+</style>

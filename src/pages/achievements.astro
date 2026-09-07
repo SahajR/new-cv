@@ -1,0 +1,47 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Footer from '../components/Footer.astro';
+import AchievementCard from '../components/AchievementCard.astro';
+import OneOffAchievements from '../components/OneOffAchievements.astro';
+import { achievements } from '../data/achievements';
+---
+
+<Layout title="Achievements — Sahaj Ramachandran" description="A few things I'm working toward: travel, diving, skydiving, continents, and languages.">
+  <div class="achievements-page">
+    <main id="main" class="achievements-main">
+      <a class="home-link" href="/"><span aria-hidden="true">←</span> hey.sr<span class="sr-only"> — Back to home</span></a>
+      <header class="achievements-heading">
+        <p class="achievements-eyebrow">The things I’m working toward</p>
+        <h1>Achievements<span aria-hidden="true">.</span></h1>
+        <p>A little further, a little deeper, a little more of the world.</p>
+      </header>
+      <ol class="achievements-list" aria-label="Achievement progress">
+        {achievements.map((achievement, index) => <AchievementCard achievement={achievement} index={index} />)}
+      </ol>
+      <OneOffAchievements />
+      <p class="achievements-end">Still collecting stories.</p>
+    </main>
+    <Footer />
+  </div>
+</Layout>
+
+<style>
+  .achievements-page { min-height: 100svh; background: var(--bg); color: var(--ink); overflow-x: clip; }
+  .achievements-main { width: min(100% - 48px, 720px); margin-inline: auto; padding: 36px 0 132px; }
+  .home-link { display: inline-flex; gap: 10px; align-items: center; min-height: 44px; font-family: var(--font-serif); font-size: 1.5rem; text-decoration: none; }
+  .home-link:hover { color: var(--accent); }
+  .home-link > span:first-child { font-size: 1.25rem; }
+  .achievements-heading { margin: 44px 0 32px; }
+  .achievements-eyebrow { margin-bottom: 10px; font-size: .75rem; text-transform: uppercase; letter-spacing: .1em; color: var(--body); }
+  h1 { font-size: clamp(2.5rem, 7vw, 4.5rem); line-height: 1.04; letter-spacing: -.025em; }
+  h1 > span { color: var(--accent); }
+  .achievements-heading > p:last-child { margin-top: 16px; font-size: 1rem; color: var(--body); line-height: 1.6; }
+  .achievements-list { display: grid; gap: 20px; list-style: none; }
+  .achievements-end { margin-top: 32px; color: var(--body); font-family: var(--font-serif); font-size: 1.25rem; text-align: center; }
+  @media (max-width: 560px) {
+    .achievements-main { width: calc(100% - 32px); padding-top: 20px; }
+    .achievements-heading { margin-top: 28px; }
+    .achievements-heading > p:last-child { font-size: .9375rem; }
+    .achievements-list { gap: 16px; }
+  }
+</style>

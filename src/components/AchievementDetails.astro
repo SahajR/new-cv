@@ -1,0 +1,112 @@
+---
+import DialogWindow from './DialogWindow.astro';
+import type { AchievementDetail, OneOffAchievement } from '../data/one-off-achievements';
+
+interface Props { achievement: OneOffAchievement; }
+const { achievement } = Astro.props;
+const dialogId = `${achievement.id}-details`;
+const content: AchievementDetail[] = achievement.details?.length ? achievement.details : [
+  ...(achievement.note ? [{ type: 'text' as const, text: achievement.note }] : []),
+  { type: 'image', src: `/images/achievements/one-offs/${achievement.id}.png`, alt: achievement.imageAlt, width: 50, height: 50, pixelArt: true },
+];
+---
+
+<achievement-details>
+  <button class="achievement-info" type="button" aria-label={`Details: ${achievement.title}`} aria-haspopup="dialog" aria-controls={dialogId}>
+    <svg viewBox="0 0 20 20" fill="none" aria-hidden="true">
+      <path d="M6 2h8l4 4v8l-4 4H6l-4-4V6z" stroke="currentColor" stroke-width="1.4" />
+      <path d="M10 9v5M8 9h2M8 14h4" stroke="currentColor" stroke-width="1.4" />
+      <path d="M9 5h2v2H9z" fill="currentColor" />
+    </svg>
+  </button>
+  <dialog id={dialogId} class="achievement-dialog" aria-labelledby={`${dialogId}-title`}>
+    <DialogWindow title="Achievement unlocked" accent="#d7b568">
+      <form slot="close" method="dialog" class="dialog-close-form">
+        <button type="submit" class="dialog-close" aria-label="Close achievement details" autofocus>
+          <span aria-hidden="true"><svg viewBox="0 0 10 10" fill="none"><path d="m2 2 6 6m0-6L2 8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" /></svg></span>
+        </button>
+      </form>
+      <div class="details-content">
+        <h2 id={`${dialogId}-title`}>{achievement.title}</h2>
+        {content.map((block) => block.type === 'text' ? <p>{block.text}</p> : (
+          <figure class:list={{ 'pixel-art': block.pixelArt }}>
+            <img src={block.src} alt={block.alt} width={block.width} height={block.height} loading="lazy" decoding="async" />
+            {block.caption && <figcaption>{block.caption}</figcaption>}
+          </figure>
+        ))}
+      </div>
+    </DialogWindow>
+  </dialog>
+</achievement-details>
+
+<script>
+  class AchievementDetails extends HTMLElement {
+    private listeners?: AbortController;
+
+    connectedCallback() {
+      const trigger = this.querySelector<HTMLButtonElement>('.achievement-info');
+      const dialog = this.querySelector<HTMLDialogElement>('dialog');
+      if (!trigger || !dialog) return;
+      this.listeners?.abort();
+      this.listeners = new AbortController();
+      const { signal } = this.listeners;
+      trigger.addEventListener('click', () => {
+        if (!dialog.open) dialog.showModal();
+      }, { signal });
+      dialog.addEventListener('keydown', (event) => {
+        if (event.key !== 'Tab') return;
+        const focusable = [...dialog.querySelectorAll<HTMLElement>('button, [href], input, select, textarea, [tabindex]')]
+          .filter((element) => element.tabIndex >= 0 && !element.hasAttribute('disabled') && element.getClientRects().length > 0);
+        const first = focusable[0];
+        const last = focusable.at(-1);
+        if (first && last && ((event.shiftKey && document.activeElement === first) || (!event.shiftKey && document.activeElement === last))) {
+          event.preventDefault();
+          (event.shiftKey ? last : first).focus();
+        }
+      }, { signal });
+
+      // Dismiss only when a pointer starts and ends on the backdrop.
+      let startedOutside = false;
+      const outside = (event: PointerEvent | MouseEvent) => {
+        const rect = dialog.getBoundingClientRect();
+        return event.clientX < rect.left || event.clientX > rect.right || event.clientY < rect.top || event.clientY > rect.bottom;
+      };
+      dialog.addEventListener('pointerdown', (event) => { startedOutside = event.target === dialog && outside(event); }, { signal });
+      dialog.addEventListener('click', (event) => {
+        if (startedOutside && event.target === dialog && outside(event)) dialog.close();
+        startedOutside = false;
+      }, { signal });
+    }
+
+    disconnectedCallback() { this.listeners?.abort(); }
+  }
+  if (!customElements.get('achievement-details')) customElements.define('achievement-details', AchievementDetails);
+</script>
+
+<style>
+  achievement-details { display: block; flex: none; }
+  .achievement-info { display: grid; place-items: center; width: 44px; height: 44px; padding: 13px; border: 0; border-radius: 3px; background: transparent; color: var(--ink); cursor: pointer; }
+  .achievement-info svg { width: 18px; height: 18px; }
+  .achievement-info:hover { background: color-mix(in oklab, #aa8036 18%, var(--bg)); }
+  .achievement-info:focus-visible, .dialog-close:focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; }
+  .achievement-dialog { width: min(540px, calc(100% - 32px)); max-width: none; max-height: calc(100dvh - 32px); margin: auto; padding: 0; border: 0; border-radius: 4px; color: var(--ink); background: var(--bg); overflow: auto; overscroll-behavior: contain; box-shadow: -8px 12px 0 rgba(var(--shadow-rgb), .16); }
+  .achievement-dialog::backdrop { background: rgba(var(--shadow-rgb), .48); }
+  .dialog-close-form { flex: none; margin: -8px -6px -8px 0; }
+  .dialog-close { display: grid; place-items: center; width: 44px; height: 44px; border: 0; padding: 0; background: transparent; color: var(--ink); cursor: pointer; }
+  .dialog-close > span { display: grid; place-items: center; width: 16px; height: 16px; border: 1.5px solid currentColor; border-radius: 3px; }
+  .dialog-close svg { width: 10px; height: 10px; }
+  .dialog-close:hover > span { background: color-mix(in oklab, #d7b568 28%, var(--bg)); }
+  .details-content { display: grid; gap: 20px; padding: clamp(20px, 5vw, 32px); }
+  .details-content h2 { font-family: var(--font-serif); font-size: clamp(1.75rem, 5vw, 2.25rem); line-height: 1.1; text-wrap: balance; }
+  .details-content p { font-size: .9375rem; line-height: 1.6; color: var(--body); }
+  .details-content figure { margin: 0; min-width: 0; }
+  .details-content img { display: block; width: 100%; height: auto; border-radius: 2px; }
+  .details-content .pixel-art img { width: 100px; height: 100px; image-rendering: pixelated; }
+  .details-content figcaption { margin-top: 8px; color: var(--body); font-size: .75rem; line-height: 1.5; }
+  :global(html:has(.achievement-dialog[open])) { overflow: hidden; }
+  @media (max-width: 560px) {
+    .achievement-dialog :global(.dw-bar) { gap: 8px; padding-inline: 10px; }
+    .achievement-dialog :global(.dw-title) { font-size: 13px; letter-spacing: .08em; }
+    .achievement-dialog :global(.dw-rules) { min-width: 4px; }
+  }
+</style>

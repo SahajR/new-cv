@@ -2,6 +2,7 @@
 import { footerLinks } from '../data/profile';
 import { icons } from '../icons';
 const UpIcon = icons.up;
+const currentPath = Astro.url.pathname.replace(/\/$/, '') || '/';
 ---
 
 <svg class="ff-glass-defs" aria-hidden="true" focusable="false">
@@ -22,12 +23,14 @@ const UpIcon = icons.up;
     <span class="ff-divider" aria-hidden="true"></span>
     {footerLinks.map((link) => {
       const Icon = icons[link.icon];
+      const external = link.href.startsWith('https://') || link.href.startsWith('http://');
       return (
         <a
           class="ff-link"
           href={link.href}
-          target={link.href.startsWith('mailto:') ? undefined : '_blank'}
-          rel={link.href.startsWith('mailto:') ? undefined : 'noreferrer noopener'}
+          target={external ? '_blank' : undefined}
+          rel={external ? 'noreferrer noopener' : undefined}
+          aria-current={currentPath === link.href ? 'page' : undefined}
         >
           <Icon aria-hidden="true" focusable="false" />
           <span class="sr-only">{link.label}</span>
@@ -180,6 +183,8 @@ const UpIcon = icons.up;
   .ff-link:focus-visible::before {
     background: color-mix(in oklab, var(--bg) 86%, transparent);
   }
+  .ff-link[aria-current='page'] { color: var(--accent); }
+  .ff-link[aria-current='page']::before { background: color-mix(in oklab, var(--accent) 14%, var(--bg)); }
   .ff-link:focus-visible {
     outline: 2px solid var(--accent);
     outline-offset: 2px;
