@@ -12,6 +12,10 @@ import { AiSparkIcon } from './ai';
 import { BriefcaseJob } from './work';
 import { Telescope } from './telescope';
 import { YCombinatorHackerNews } from './yc';
+import { Email } from './email';
+import { Linkedin } from './linkedin';
+import { Github } from './github';
+import { Up } from './up';
 
 export const icons = {
   gba: GameBoyAdvance,
@@ -23,6 +27,10 @@ export const icons = {
   work: BriefcaseJob,
   telescope: Telescope,
   yc: YCombinatorHackerNews,
+  email: Email,
+  linkedin: Linkedin,
+  github: Github,
+  up: Up,
 } as const;
 
 export type IconKey = keyof typeof icons;

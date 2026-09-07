@@ -4,6 +4,7 @@ import { albums } from '../data/albums';
 import { icons, type IconKey } from '../icons';
 import AlbumStack from './AlbumStack';
 import InlineGba from './InlineGba.astro';
+import StackConsole from './StackConsole.astro';
 
 interface Props {
   part: JourneyPart;
@@ -71,6 +72,7 @@ const StopIcon = stopIcon ? icons[stopIcon] : null;
         ))}
       </p>
     )}
+    {part.id === 'stack' && <StackConsole />}
   </div>
 </li>
 

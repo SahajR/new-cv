@@ -32,6 +32,7 @@ export interface TimelineEntry {
 export interface FooterLink {
   label: string;
   href: string;
+  icon: IconKey;
 }
 
 export const profile = {
@@ -238,7 +239,7 @@ export const timeline: TimelineEntry[] = [
 ];
 
 export const footerLinks: FooterLink[] = [
-  { label: 'GitHub', href: 'https://github.com/SahajR' },
-  { label: 'LinkedIn', href: 'https://www.linkedin.com/in/sahajr/' },
-  { label: 'Email', href: 'mailto:hello@sahajr.com?subject=Hello%20Sahaj' },
+  { label: 'GitHub', href: 'https://github.com/SahajR', icon: 'github' },
+  { label: 'LinkedIn', href: 'https://www.linkedin.com/in/sahajr/', icon: 'linkedin' },
+  { label: 'Email', href: 'mailto:hello@sahajr.com?subject=Hello%20Sahaj', icon: 'email' },
 ];

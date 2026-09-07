@@ -1,127 +1,258 @@
 ---
 import { footerLinks } from '../data/profile';
+import { icons } from '../icons';
+const UpIcon = icons.up;
 ---
 
-<div class="folio-footer-fx" aria-hidden="true">
-  <div class="pb pb1"></div>
-  <div class="pb pb2"></div>
-  <div class="pb pb3"></div>
-  <div class="pb pb4"></div>
-  <div class="pb pb5"></div>
-  <div class="folio-footer-tint"></div>
-</div>
-
-<footer class="folio-footer">
-  <div class="folio-footer-inner">
-    <nav class="ff-links" aria-label="Footer">
-      <button class="ff-link label" type="button" data-scroll-top>
-        <span class="ff-link-label">Back to top</span>
-      </button>
-      {footerLinks.map((l) => (
+<svg class="ff-glass-defs" aria-hidden="true" focusable="false">
+  <defs>
+    <filter id="footer-refraction" filterUnits="userSpaceOnUse" x="0" y="0" width="223" height="60" color-interpolation-filters="sRGB">
+      <feImage data-glass-map x="0" y="0" width="223" height="60" preserveAspectRatio="none" result="displacement" />
+      <feDisplacementMap in="SourceGraphic" in2="displacement" scale="16" xChannelSelector="R" yChannelSelector="G" />
+    </filter>
+  </defs>
+</svg>
+<footer class="folio-footer" data-footer-entrance="complete">
+  <nav class="ff-links" aria-label="Footer">
+    <button class="ff-link ff-top" type="button" data-scroll-top>
+      <UpIcon aria-hidden="true" focusable="false" />
+      <span class="sr-only">Back to top</span>
+      <span class="ff-tooltip" aria-hidden="true">Back to top</span>
+    </button>
+    <span class="ff-divider" aria-hidden="true"></span>
+    {footerLinks.map((link) => {
+      const Icon = icons[link.icon];
+      return (
         <a
-          class="ff-link label"
-          href={l.href}
-          target={l.href.startsWith('mailto:') ? undefined : '_blank'}
-          rel={l.href.startsWith('mailto:') ? undefined : 'noreferrer noopener'}
+          class="ff-link"
+          href={link.href}
+          target={link.href.startsWith('mailto:') ? undefined : '_blank'}
+          rel={link.href.startsWith('mailto:') ? undefined : 'noreferrer noopener'}
         >
-          <span class="ff-link-label">{l.label}</span>
+          <Icon aria-hidden="true" focusable="false" />
+          <span class="sr-only">{link.label}</span>
+          <span class="ff-tooltip" aria-hidden="true">{link.label}</span>
         </a>
-      ))}
-    </nav>
-  </div>
+      );
+    })}
+  </nav>
 </footer>
 
+<script is:inline>
+  {
+    const footer = document.currentScript.previousElementSibling;
+    if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      footer.dataset.footerEntrance = 'boot';
+      window.setTimeout(() => {
+        if (footer.dataset.footerEntrance === 'boot') footer.dataset.footerEntrance = 'complete';
+      }, 4000);
+    }
+  }
+</script>
+
 <script>
+  import { prepareDockGlass } from '../scripts/dock-glass';
+  import { enterFooter } from '../scripts/footer-entrance';
+  prepareDockGlass();
+  const footer = document.querySelector<HTMLElement>('.folio-footer');
+  if (footer) enterFooter(footer);
+  footer?.querySelectorAll<HTMLElement>('.ff-link').forEach((link) => {
+    const resetTooltip = () => link.removeAttribute('data-tooltip-dismissed');
+    link.addEventListener('pointerenter', resetTooltip);
+    link.addEventListener('focusin', resetTooltip);
+    link.addEventListener('pointerleave', resetTooltip);
+    link.addEventListener('focusout', resetTooltip);
+  });
+  document.addEventListener('keydown', (event) => {
+    if (event.key !== 'Escape') return;
+    footer?.querySelectorAll<HTMLElement>('.ff-link').forEach((link) => {
+      link.setAttribute('data-tooltip-dismissed', '');
+    });
+  });
   document.querySelector<HTMLButtonElement>('[data-scroll-top]')?.addEventListener('click', () => {
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    window.scrollTo({ top: 0, behavior: reduced ? 'instant' : 'smooth' });
   });
 </script>
 
 <style>
-  .folio-footer,
-  .folio-footer-fx {
+  .ff-glass-defs { position: fixed; width: 0; height: 0; pointer-events: none; }
+  .folio-footer {
     position: fixed;
-    left: 0;
-    right: 0;
-    bottom: 0;
-  }
-
-  /* Progressive blur: five stacked backdrop layers with rising masks */
-  .folio-footer-fx {
-    height: 160px;
-    z-index: 4;
+    inset: auto 0 0;
+    z-index: 5;
+    display: flex;
+    justify-content: center;
+    padding: 0 16px max(20px, env(safe-area-inset-bottom));
     pointer-events: none;
   }
-  .pb,
-  .folio-footer-tint {
+  .folio-footer[data-footer-entrance='boot'],
+  .folio-footer[data-footer-entrance='waiting'] {
+    visibility: hidden;
+    opacity: 0;
+  }
+  .folio-footer[data-footer-entrance='entering'] { will-change: transform; }
+  .ff-links {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 7px;
+    border: 1px solid color-mix(in oklab, var(--keyline) 65%, transparent);
+    border-radius: 22px;
+    box-shadow:
+      0 6px 20px rgba(var(--shadow-rgb), 0.1),
+      0 1px 4px rgba(var(--shadow-rgb), 0.08);
+    pointer-events: auto;
+  }
+  /* The optical layer bends only the backdrop; icons and labels stay sharp. */
+  .ff-links::before {
+    content: '';
     position: absolute;
     inset: 0;
+    border-radius: inherit;
+    background: color-mix(in oklab, var(--bg) 8%, transparent);
+    backdrop-filter: blur(0.7px) saturate(1.08);
+    -webkit-backdrop-filter: blur(0.7px) saturate(1.08);
+    pointer-events: none;
   }
-  .pb1 { backdrop-filter: blur(0.6px); -webkit-backdrop-filter: blur(0.6px); mask-image: linear-gradient(to top, #000 0%, #000 92%, transparent 100%); -webkit-mask-image: linear-gradient(to top, #000 0%, #000 92%, transparent 100%); }
-  .pb2 { backdrop-filter: blur(1.5px); -webkit-backdrop-filter: blur(1.5px); mask-image: linear-gradient(to top, #000 0%, #000 55%, transparent 80%);  -webkit-mask-image: linear-gradient(to top, #000 0%, #000 55%, transparent 80%); }
-  .pb3 { backdrop-filter: blur(3px);   -webkit-backdrop-filter: blur(3px);   mask-image: linear-gradient(to top, #000 0%, #000 35%, transparent 60%);  -webkit-mask-image: linear-gradient(to top, #000 0%, #000 35%, transparent 60%); }
-  .pb4 { backdrop-filter: blur(6px);   -webkit-backdrop-filter: blur(6px);   mask-image: linear-gradient(to top, #000 0%, #000 20%, transparent 42%);  -webkit-mask-image: linear-gradient(to top, #000 0%, #000 20%, transparent 42%); }
-  .pb5 { backdrop-filter: blur(12px);  -webkit-backdrop-filter: blur(12px);  mask-image: linear-gradient(to top, #000 0%, #000 8%, transparent 25%);   -webkit-mask-image: linear-gradient(to top, #000 0%, #000 8%, transparent 25%); }
-  .folio-footer-tint {
-    background: linear-gradient(
-      to top,
-      rgba(var(--footer-tint-rgb), 0.9),
-      rgba(var(--footer-tint-rgb), 0.55) 45%,
-      rgba(var(--footer-tint-rgb), 0)
-    );
+  .ff-links[data-glass='refraction']::before {
+    backdrop-filter: url('#footer-refraction') saturate(1.08);
+    -webkit-backdrop-filter: url('#footer-refraction') saturate(1.08);
   }
-
-  .folio-footer {
-    z-index: 5;
-    padding: 44px 0 32px;
-  }
-  .folio-footer-inner {
-    width: min(100% - 3rem, var(--col-w));
-    margin: 0 auto;
-    display: flex;
-    justify-content: center;
-  }
-  .ff-links {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-wrap: wrap;
-    gap: 17px;
+  .ff-links::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    box-shadow:
+      inset 0 1.5px 1px rgb(255 255 255 / 0.72),
+      inset 1px 0 1px rgb(255 255 255 / 0.28),
+      inset 0 -1px 1px rgba(var(--shadow-rgb), 0.16),
+      inset -1px 0 1px rgb(255 255 255 / 0.16);
+    pointer-events: none;
   }
   .ff-link {
-    display: inline-flex;
-    align-items: center;
-    background: none;
-    border: none;
-    padding: 2px 10px;
-    border-radius: 999px;
-    cursor: pointer;
-    letter-spacing: 2.16px;
-    color: var(--mute);
+    position: relative;
+    z-index: 1;
+    display: grid;
+    place-items: center;
+    flex: none;
+    width: 44px;
+    height: 44px;
+    padding: 10px;
+    border: 0;
+    border-radius: 14px;
+    background: transparent;
+    color: var(--ink);
     text-decoration: none;
-    transition:
-      color 0.16s var(--ease-out),
-      background-color 0.16s var(--ease-out);
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+    transition: color 0.16s var(--ease-out), background-color 0.16s var(--ease-out);
   }
-  .ff-link:hover {
-    color: var(--ink-link-hover);
-    background: var(--surface-chip);
+  /* Keep a quiet contrast surface directly under each glyph. The spaces
+     between the controls retain the dock's clear, refractive glass. */
+  .ff-link::before {
+    content: '';
+    position: absolute;
+    width: 34px;
+    height: 34px;
+    border-radius: 11px;
+    background: color-mix(in oklab, var(--bg) 68%, transparent);
+    pointer-events: none;
+    transition: background-color 0.16s var(--ease-out);
   }
-  .ff-link-label {
-    display: inline-block;
-    transition: transform 0.16s var(--ease-out);
+  .ff-link :global(svg) {
+    position: relative;
+    display: block;
+    width: 24px;
+    height: 24px;
+    transition: transform 0.2s var(--ease-out);
   }
-  .ff-link:hover .ff-link-label {
-    transform: scale(1.05);
+  .ff-link :global(svg path) { stroke-width: 2.4px; }
+  .ff-link :global(svg path[opacity]) { opacity: 0.75; }
+  .ff-link:hover,
+  .ff-link:focus-visible {
+    color: var(--ink);
+    background: color-mix(in oklab, var(--ink) 7%, transparent);
   }
-  @media (max-width: 620px) {
-    .ff-links {
-      gap: 4px;
+  .ff-link:hover::before,
+  .ff-link:focus-visible::before {
+    background: color-mix(in oklab, var(--bg) 86%, transparent);
+  }
+  .ff-link:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+    border-radius: 14px;
+  }
+  .ff-link:active :global(svg) { transform: scale(0.92); }
+  .ff-divider {
+    position: relative;
+    width: 1px;
+    height: 24px;
+    margin-inline: 3px;
+    background: color-mix(in oklab, var(--body) 18%, transparent);
+  }
+  .ff-tooltip {
+    position: absolute;
+    bottom: calc(100% + 14px);
+    left: 50%;
+    padding: 5px 9px;
+    border: 1px solid var(--rule);
+    border-radius: 6px;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: var(--font-main);
+    font-size: 12px;
+    line-height: 1.4;
+    white-space: nowrap;
+    pointer-events: auto;
+    visibility: hidden;
+    opacity: 0;
+    transform: translate(-50%, 4px);
+    transition: opacity 0.16s ease-out, transform 0.16s ease-out, visibility 0.16s;
+  }
+  .ff-link:focus-visible .ff-tooltip {
+    visibility: visible;
+    opacity: 1;
+    transform: translate(-50%, 0);
+  }
+  .ff-tooltip::after {
+    content: '';
+    position: absolute;
+    inset: 100% 0 auto;
+    height: 14px;
+  }
+  @media (hover: hover) {
+    .ff-link:hover :global(svg) { transform: translateY(-2px); }
+    .ff-link:hover .ff-tooltip {
+      visibility: visible;
+      opacity: 1;
+      transform: translate(-50%, 0);
     }
-    .ff-link {
-      font-size: 10px;
-      letter-spacing: 1.1px;
-      padding: 2px 6px;
+  }
+  .ff-link[data-tooltip-dismissed] .ff-tooltip {
+    visibility: hidden;
+    opacity: 0;
+  }
+  @supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+    .ff-links::before { background: color-mix(in oklab, var(--bg) 92%, transparent); }
+  }
+  @media (prefers-reduced-transparency: reduce) {
+    .ff-links::before,
+    .ff-links[data-glass='refraction']::before {
+      background: var(--bg);
+      backdrop-filter: none;
+      -webkit-backdrop-filter: none;
     }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .folio-footer[data-footer-entrance] {
+      visibility: visible;
+      opacity: 1 !important;
+      transform: none !important;
+      will-change: auto;
+    }
+    .ff-link :global(svg) { transform: none !important; }
   }
 </style>
