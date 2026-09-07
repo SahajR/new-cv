@@ -12,75 +12,64 @@ const spectrum = Array.from({ length: 36 }, (_, i) => ({
 ---
 
 <figure class="stack-console" data-stack-console aria-label="Animated systems console with simulated GPU, server and voice processing telemetry">
-  <div class="sc-chassis">
-    <header class="sc-faceplate">
-      <span class="sc-name"><span class="sc-emblem" aria-hidden="true"></span> SYSTEMS / 02</span>
-      <span class="sc-model">COMPUTE · SIGNAL · INFRA</span>
-      <button class="sc-pause" type="button" data-console-pause aria-label="Pause console animation" aria-pressed="false" hidden>
-        <svg viewBox="0 0 12 12" aria-hidden="true"><path class="sc-pause-icon" d="M2 2h3v8H2zM7 2h3v8H7z" /><path class="sc-play-icon" d="M3 1v10l8-5z" /></svg>
-      </button>
-    </header>
-
-    <div class="sc-displays">
-      <section class="sc-module sc-compute" aria-label="GPU compute">
-        <div class="sc-module-label"><span>01 / GPU COMPUTE</span><span class="sc-status">RUN</span></div>
-        <div class="sc-screen sc-gpu-screen" aria-hidden="true">
-          <div class="sc-readout"><span>CORE ACTIVITY</span><span><b data-gpu-load>76</b>%</span></div>
-          <div class="sc-visual sc-gpu-visual">
-            <svg class="sc-fallback" viewBox="0 0 160 96" shape-rendering="crispEdges">
-              <path d="M33 3h92v92H33z" fill="#45416e" />
-              {cores.map((c) => <rect x={c.x} y={c.y} width="8" height="8" fill={c.color} />)}
-            </svg>
-            <canvas data-console-gpu width="160" height="96"></canvas>
-          </div>
-          <div class="sc-screen-foot"><span>4 TILES / PARALLEL</span><span><b data-gpu-temp>62</b>°C</span></div>
+  <div class="sc-displays">
+    <section class="sc-module sc-compute" aria-label="GPU compute">
+      <div class="sc-screen sc-gpu-screen" aria-hidden="true">
+        <div class="sc-readout"><span>CORE ACTIVITY</span><span><b data-gpu-load>76</b>%</span></div>
+        <div class="sc-visual sc-gpu-visual">
+          <svg class="sc-fallback" viewBox="0 0 160 96" shape-rendering="crispEdges">
+            <path d="M33 3h92v92H33z" fill="#45416e" />
+            {cores.map((c) => <rect x={c.x} y={c.y} width="8" height="8" fill={c.color} />)}
+          </svg>
+          <canvas data-console-gpu width="160" height="96"></canvas>
         </div>
-        <div class="sc-memory" aria-hidden="true"><span>VRAM</span><div class="sc-memory-track"><i></i></div><span>18.4 / 24 GB</span></div>
-      </section>
+        <div class="sc-screen-foot"><span>4 TILES / PARALLEL</span><span><b data-gpu-temp>62</b>°C</span></div>
+      </div>
+      <div class="sc-memory" aria-hidden="true"><span>VRAM</span><div class="sc-memory-track"><i></i></div><span>18.4 / 24 GB</span></div>
+    </section>
 
-      <section class="sc-module sc-voice" aria-label="Voice digital signal processing">
-        <div class="sc-module-label"><span>02 / VOICE DSP</span><span class="sc-status">24 kHz</span></div>
-        <div class="sc-screen sc-voice-screen" aria-hidden="true">
-          <div class="sc-readout"><span>WAVEFORM / PCM</span><span class="sc-signal-label">SIGNAL IN</span></div>
-          <div class="sc-visual sc-wave-visual">
-            <svg class="sc-fallback" viewBox="0 0 216 44" shape-rendering="crispEdges"><path d="M0 22h22v-4h6v8h6V12h6v20h6V5h6v34h6V16h6v12h6v-8h18v-6h6v20h6V9h6v29h6V4h6v37h6V12h6v22h6V17h6v9h6v-4h42" fill="none" stroke="#c0b7ea" stroke-width="2" /></svg>
-            <canvas data-console-wave width="216" height="44"></canvas>
-          </div>
-          <div class="sc-frequency-rule"><span>FFT / SPECTRUM</span><span>0 — 12 kHz</span></div>
-          <div class="sc-visual sc-spectrum-visual">
-            <svg class="sc-fallback" viewBox="0 0 216 56" shape-rendering="crispEdges">{spectrum.map((bar) => <rect x={bar.x} y={54 - bar.height} width="4" height={bar.height} fill="#d85665" />)}</svg>
-            <canvas data-console-spectrum width="216" height="56"></canvas>
-          </div>
-          <div class="sc-screen-foot"><span>NOISE → CLEAN → VOICE</span><span>28 ms</span></div>
+    <section class="sc-module sc-voice" aria-label="Voice digital signal processing">
+      <div class="sc-screen sc-voice-screen" aria-hidden="true">
+        <div class="sc-readout"><span>WAVEFORM / PCM</span><span class="sc-signal-label">SIGNAL IN</span></div>
+        <div class="sc-visual sc-wave-visual">
+          <svg class="sc-fallback" viewBox="0 0 216 44" shape-rendering="crispEdges"><path d="M0 22h22v-4h6v8h6V12h6v20h6V5h6v34h6V16h6v12h6v-8h18v-6h6v20h6V9h6v29h6V4h6v37h6V12h6v22h6V17h6v9h6v-4h42" fill="none" stroke="#c0b7ea" stroke-width="2" /></svg>
+          <canvas data-console-wave width="216" height="44"></canvas>
         </div>
-        <div class="sc-pipeline" aria-hidden="true"><span>IN</span><i></i><span>DSP</span><i></i><span>VAD</span><i></i><span>OUT</span></div>
-      </section>
-
-      <section class="sc-module sc-infra" aria-label="Server health">
-        <div class="sc-module-label"><span>03 / CLUSTER</span><span class="sc-status">OK</span></div>
-        <div class="sc-screen sc-server-screen" aria-hidden="true">
-          <div class="sc-readout"><span>NODE HEALTH</span><span>6 / 6</span></div>
-          <div class="sc-rack">
-            {Array.from({ length: 6 }, (_, i) => (
-              <div class="sc-node">
-                <span class="sc-node-id">0{i + 1}</span>
-                <svg viewBox="0 0 54 8" shape-rendering="crispEdges"><path d="M0 0h54v8H0z" fill="#45416e" /><path data-node-meter d={`M0 0h${[38, 29, 43, 24, 35, 31][i]}v8H0z`} fill="#a9bbb5" /></svg>
-                <span class="sc-led" data-node-led></span>
-              </div>
-            ))}
-          </div>
-          <div class="sc-screen-foot"><span>ALL SYSTEMS</span><span>HEALTHY</span></div>
+        <div class="sc-frequency-rule"><span>FFT / SPECTRUM</span><span>0 — 12 kHz</span></div>
+        <div class="sc-visual sc-spectrum-visual">
+          <svg class="sc-fallback" viewBox="0 0 216 56" shape-rendering="crispEdges">{spectrum.map((bar) => <rect x={bar.x} y={54 - bar.height} width="4" height={bar.height} fill="#d85665" />)}</svg>
+          <canvas data-console-spectrum width="216" height="56"></canvas>
         </div>
-        <div class="sc-infra-foot" aria-hidden="true"><span>UPLINK</span><span class="sc-network">▂ ▄ ▆ █</span><span>1 Gbps</span></div>
-      </section>
-    </div>
+        <div class="sc-screen-foot"><span>NOISE → CLEAN → VOICE</span><span>28 ms</span></div>
+      </div>
+      <div class="sc-pipeline" aria-hidden="true"><span>IN</span><i></i><span>DSP</span><i></i><span>VAD</span><i></i><span>OUT</span></div>
+    </section>
 
-    <footer class="sc-bottom">
-      <span class="sc-vent" aria-hidden="true"></span>
-      <span>SIMULATED TELEMETRY</span>
-      <span class="sc-power" aria-hidden="true"><i></i> PWR</span>
-    </footer>
+    <section class="sc-module sc-infra" aria-label="Server health">
+      <div class="sc-screen sc-server-screen" aria-hidden="true">
+        <div class="sc-readout"><span>NODE HEALTH</span><span>6 / 6</span></div>
+        <div class="sc-rack">
+          {Array.from({ length: 6 }, (_, i) => (
+            <div class="sc-node">
+              <span class="sc-node-id">0{i + 1}</span>
+              <svg viewBox="0 0 54 8" shape-rendering="crispEdges"><path d="M0 0h54v8H0z" fill="#45416e" /><path data-node-meter d={`M0 0h${[38, 29, 43, 24, 35, 31][i]}v8H0z`} fill="#a9bbb5" /></svg>
+              <span class="sc-led" data-node-led></span>
+            </div>
+          ))}
+        </div>
+        <div class="sc-screen-foot"><span>ALL SYSTEMS</span><span>HEALTHY</span></div>
+      </div>
+      <div class="sc-infra-foot" aria-hidden="true"><span>UPLINK</span><span class="sc-network">▂ ▄ ▆ █</span><span>1 Gbps</span></div>
+    </section>
   </div>
+
+  <footer class="sc-bottom">
+    <span class="sc-vent" aria-hidden="true"></span>
+    <span>SIMULATED TELEMETRY</span>
+    <button class="sc-pause" type="button" data-console-pause aria-label="Pause console animation" aria-pressed="false" hidden>
+      <svg viewBox="0 0 12 12" aria-hidden="true"><path class="sc-pause-icon" d="M2 2h3v8H2zM7 2h3v8H7z" /><path class="sc-play-icon" d="M3 1v10l8-5z" /></svg>
+    </button>
+  </footer>
   <figcaption class="sr-only">An illustrative look inside the stack: GPU core activity and memory, a voice waveform and frequency spectrum, and six healthy server nodes. These are simulated readings.</figcaption>
 </figure>
 
@@ -91,7 +80,6 @@ const spectrum = Array.from({ length: 36 }, (_, i) => ({
 
 <style>
   .stack-console {
-    --sc-case: #9cafb8;
     --sc-edge: #355d73;
     --sc-screen: #242136;
     --sc-ink: #d3d9f5;
@@ -99,36 +87,26 @@ const spectrum = Array.from({ length: 36 }, (_, i) => ({
     --sc-pink: #e57889;
     position: relative;
     z-index: 2;
-    align-self: center;
-    width: min(820px, calc(100vw - 80px));
+    align-self: stretch;
+    width: 100%;
+    min-width: 0;
     margin: 20px 0 8px;
-    color: var(--sc-screen);
+    color: var(--ink);
     font-family: var(--font-serif);
     text-align: left;
     container-type: inline-size;
   }
-  .sc-chassis {
-    background: var(--sc-case);
-    padding: 0 20px;
-    border-top: 6px solid #c6d4de;
-    border-bottom: 8px solid var(--sc-edge);
-    box-shadow: 10px 10px 0 var(--sc-screen);
-  }
-  .sc-faceplate { display: flex; align-items: center; gap: 16px; min-height: 56px; }
-  .sc-name { display: flex; align-items: center; gap: 10px; font-size: 16px; letter-spacing: 0.09em; white-space: nowrap; }
-  .sc-emblem { width: 12px; height: 12px; border: 3px solid var(--sc-edge); box-shadow: 4px 4px 0 var(--sc-screen); }
-  .sc-model { margin-left: auto; font-size: 11px; letter-spacing: 0.08em; }
-  .sc-pause { color: var(--sc-screen); border: 0; padding: 14px; background: transparent; cursor: pointer; margin-right: -12px; }
+  .sc-pause { display: grid; place-items: center; flex: none; width: 44px; height: 44px; color: var(--ink); border: 0; border-radius: 3px; padding: 0; background: transparent; cursor: pointer; margin-left: auto; }
   .sc-pause[hidden] { display: none; }
-  .sc-pause:hover { background: #b3c3ca; }
+  .sc-pause:hover { background: color-mix(in oklab, var(--ink) 8%, transparent); }
+  .sc-pause:focus-visible { outline: 2px solid var(--accent); outline-offset: -3px; }
+  .sc-pause:active { background: color-mix(in oklab, var(--ink) 14%, transparent); }
   .sc-pause svg { display: block; width: 12px; height: 12px; fill: currentColor; }
   .sc-play-icon { display: none; }
   .sc-pause[aria-pressed='true'] .sc-pause-icon { display: none; }
   .sc-pause[aria-pressed='true'] .sc-play-icon { display: block; }
   .sc-displays { display: grid; grid-template-columns: 1fr 1.2fr 0.8fr; gap: 16px; }
   .sc-module { min-width: 0; }
-  .sc-module-label { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 8px; font-size: 12px; line-height: 1; letter-spacing: 0.03em; }
-  .sc-status { font-size: 11px; }
   .sc-screen { position: relative; display: flex; flex-direction: column; height: 236px; overflow: hidden; background: var(--sc-screen); color: var(--sc-ink); border-top: 6px solid var(--sc-edge); border-bottom: 6px solid #cbd5f7; }
   .sc-screen::after { content: ''; position: absolute; inset: 0; pointer-events: none; background: repeating-linear-gradient(to bottom, transparent 0 3px, #14102126 3px 4px); }
   .sc-readout, .sc-screen-foot { position: relative; z-index: 1; display: flex; justify-content: space-between; align-items: baseline; gap: 8px; font-size: 10px; line-height: 1.3; letter-spacing: 0.03em; padding: 10px 10px 0; white-space: nowrap; }
@@ -155,38 +133,26 @@ const spectrum = Array.from({ length: 36 }, (_, i) => ({
   .sc-memory, .sc-infra-foot, .sc-pipeline { display: flex; align-items: center; gap: 8px; height: 28px; font-size: 10px; white-space: nowrap; }
   .sc-memory-track { height: 6px; flex: 1; background: var(--sc-edge); }
   .sc-memory-track i { display: block; height: 100%; width: 77%; background: #d5dcf5; }
-  .sc-pipeline { color: var(--sc-edge); letter-spacing: 0.05em; justify-content: space-between; }
-  .sc-pipeline i { flex: 1; height: 3px; background: var(--sc-edge); position: relative; }
-  .sc-pipeline i::after { content: ''; position: absolute; width: 3px; height: 7px; background: var(--sc-edge); right: 0; top: -2px; }
+  .sc-pipeline { color: var(--body); letter-spacing: 0.05em; justify-content: space-between; }
+  .sc-pipeline i { flex: 1; height: 3px; background: currentColor; position: relative; }
+  .sc-pipeline i::after { content: ''; position: absolute; width: 3px; height: 7px; background: currentColor; right: 0; top: -2px; }
   .sc-infra-foot { justify-content: space-between; }
-  .sc-network { color: var(--sc-edge); letter-spacing: 1px; }
-  .sc-bottom { display: flex; align-items: center; gap: 14px; height: 34px; font-size: 10px; letter-spacing: 0.08em; }
-  .sc-vent { width: 88px; height: 8px; background: repeating-linear-gradient(to right, var(--sc-edge) 0 3px, transparent 3px 6px); }
-  .sc-power { margin-left: auto; display: flex; gap: 6px; align-items: center; }
-  .sc-power i { width: 6px; height: 6px; background: #d4dec4; box-shadow: 0 0 0 2px var(--sc-edge); }
-  @media (max-width: 760px) {
-    .stack-console { width: calc(100% + var(--rail-gutter, 0px)); margin-right: calc(-1 * var(--rail-gutter, 0px)); }
-  }
+  .sc-network { color: var(--body); letter-spacing: 1px; }
+  .sc-bottom { display: flex; align-items: center; gap: 14px; height: 44px; color: var(--body); font-size: 10px; letter-spacing: 0.08em; }
+  .sc-vent { width: 88px; height: 8px; background: repeating-linear-gradient(to right, currentColor 0 3px, transparent 3px 6px); }
   @container (max-width: 650px) {
-    .sc-chassis { padding-inline: 14px; }
     .sc-displays { grid-template-columns: 1fr 1fr; gap: 14px; }
-    .sc-model { display: none; }
-    .sc-pause { margin-left: auto; }
     .sc-infra { grid-column: 1 / -1; }
-    .sc-server-screen { display: grid; grid-template-columns: 1fr 2fr; align-items: center; height: auto; }
-    .sc-server-screen .sc-readout { align-self: start; padding-top: 12px; }
-    .sc-rack { grid-column: 2; grid-row: 1 / 3; grid-template-columns: repeat(3, 1fr); padding: 10px; gap: 6px; }
+    .sc-server-screen { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 2fr); align-items: center; height: auto; }
+    .sc-server-screen .sc-readout { align-self: start; flex-wrap: wrap; padding-top: 12px; }
+    .sc-rack { grid-column: 2; grid-row: 1 / 3; grid-template-columns: repeat(3, minmax(0, 1fr)); padding: 10px; gap: 6px; }
     .sc-node { gap: 5px; }
     .sc-server-screen .sc-screen-foot { flex-wrap: wrap; gap: 2px; padding-bottom: 10px; }
     .sc-infra-foot { display: none; }
   }
   @container (max-width: 420px) {
-    .sc-chassis { padding-inline: 10px; box-shadow: 6px 6px 0 var(--sc-screen); }
     .sc-displays { gap: 12px; }
-    .sc-module-label { font-size: 10px; gap: 3px; }
-    .sc-status { font-size: 9px; }
     .sc-screen:not(.sc-server-screen) { height: 212px; }
-    .sc-name { font-size: 14px; }
     .sc-readout { font-size: 8px; padding-inline: 7px; gap: 4px; }
     .sc-readout b { font-size: 17px; }
     .sc-gpu-visual { height: 133px; }
@@ -204,5 +170,12 @@ const spectrum = Array.from({ length: 36 }, (_, i) => ({
     .sc-node { padding: 2px 3px; gap: 3px; }
     .sc-vent { width: 44px; }
     .sc-bottom { gap: 10px; font-size: 9px; }
+  }
+  @container (max-width: 320px) {
+    .sc-voice-screen .sc-readout { flex-wrap: wrap; gap: 3px; }
+    .sc-screen:not(.sc-server-screen) { height: 224px; }
+    .sc-server-screen .sc-readout { gap: 3px; }
+    .sc-bottom { gap: 8px; font-size: 8px; }
+    .sc-vent { width: 24px; flex: none; }
   }
 </style>
