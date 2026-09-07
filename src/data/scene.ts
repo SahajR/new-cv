@@ -54,7 +54,7 @@ export const headerScene: SceneObject[] = [
     depth: 0.7,
     z: 2,
     eager: true,
-    mobile: { x: 0.3, y: '180px', width: '36vw', rotate: 8 },
+    mobile: { x: 0.3, y: 'clamp(152px, 28vw, 180px)', width: '36vw', rotate: 8 },
   },
   {
     id: 'skydive-helmet',

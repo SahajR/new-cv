@@ -11,6 +11,8 @@ import { GameBoyAdvance } from '../icons/gba';
 </span>
 
 <script>
+  import { animate, frame, scroll, type AnimationPlaybackControlsWithThen } from 'motion';
+
   /* SCROLL STORYBOARD — a single reversible turn, with no idle animation.
    * 84% viewport height: front faces the reader; the flip starts
    * 61% viewport height: back and battery cover face the reader
@@ -25,9 +27,37 @@ import { GameBoyAdvance } from '../icons/gba';
   const gba = document.querySelector<HTMLElement>('[data-inline-gba]');
 
   if (gba) {
+    const console = gba.querySelector<HTMLElement>('.gba-console')!;
     const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+    const nativeTimeline = 'ViewTimeline' in window;
     let visible = false;
     let raf = 0;
+    let playback: AnimationPlaybackControlsWithThen | undefined;
+    let detach: (() => void) | undefined;
+
+    const pose = (degrees: number) => `rotateZ(-8deg) rotateX(12deg) rotateY(${degrees}deg)`;
+    const bindTimeline = () => {
+      detach?.();
+      playback?.stop();
+      detach = undefined;
+      playback = undefined;
+      if (reducedMotion.matches) {
+        console.style.removeProperty('transform');
+        frame.postRender(() => console.style.removeProperty('transform'));
+        return;
+      }
+      // Motion 13 maps its default contain range to a native ViewTimeline. Put the
+      // original 84% → 38% timing in keyframes instead of custom offsets,
+      // which would force Motion back onto its JavaScript scroll tracker.
+      const height = gba.offsetHeight;
+      const distance = window.innerHeight - height;
+      const start = (window.innerHeight * (1 - FLIP.start) - height / 2) / distance;
+      const end = (window.innerHeight * (1 - FLIP.end) - height / 2) / distance;
+      playback = animate(console, { transform: [pose(0), pose(0), pose(FLIP.degrees), pose(FLIP.degrees)] }, {
+        duration: 1, times: [0, start, end, 1], ease: 'linear',
+      });
+      detach = scroll(playback, { target: gba });
+    };
 
     const update = () => {
       raf = 0;
@@ -38,7 +68,7 @@ import { GameBoyAdvance } from '../icons/gba';
       const progress = Math.max(0, Math.min(1,
         (window.innerHeight * FLIP.start - center) / (window.innerHeight * (FLIP.start - FLIP.end))
       ));
-      gba.style.setProperty('--gba-turn', `${progress * FLIP.degrees}deg`);
+      console.style.transform = pose(progress * FLIP.degrees);
     };
 
     const schedule = () => {
@@ -49,7 +79,7 @@ import { GameBoyAdvance } from '../icons/gba';
       if (reducedMotion.matches) {
         cancelAnimationFrame(raf);
         raf = 0;
-        gba.style.removeProperty('--gba-turn');
+        console.style.removeProperty('transform');
         window.removeEventListener('scroll', schedule);
       } else {
         window.addEventListener('scroll', schedule, { passive: true });
@@ -57,17 +87,24 @@ import { GameBoyAdvance } from '../icons/gba';
       }
     };
 
-    new IntersectionObserver(([entry]) => {
-      visible = entry.isIntersecting;
-      schedule();
-    }, { rootMargin: '40px 0px' }).observe(gba);
-
-    // The Work window above this sentence expands as the reader approaches.
-    new ResizeObserver(schedule).observe(gba.closest('[data-journey]') ?? gba);
-    window.addEventListener('resize', schedule);
-    document.fonts.ready.then(schedule);
-    reducedMotion.addEventListener('change', syncMotion);
-    syncMotion();
+    if (nativeTimeline) {
+      // Native timelines follow upstream layout changes without a scroll read.
+      new ResizeObserver(bindTimeline).observe(gba);
+      window.addEventListener('resize', bindTimeline);
+      reducedMotion.addEventListener('change', bindTimeline);
+      bindTimeline();
+    } else {
+      // Keep the existing visibility-gated fallback for older browsers.
+      new IntersectionObserver(([entry]) => {
+        visible = entry.isIntersecting;
+        schedule();
+      }, { rootMargin: '40px 0px' }).observe(gba);
+      new ResizeObserver(schedule).observe(gba.closest('[data-journey]') ?? gba);
+      window.addEventListener('resize', schedule);
+      document.fonts.ready.then(schedule);
+      reducedMotion.addEventListener('change', syncMotion);
+      syncMotion();
+    }
   }
 </script>
 
@@ -87,7 +124,7 @@ import { GameBoyAdvance } from '../icons/gba';
     position: absolute;
     inset: 0;
     transform-style: preserve-3d;
-    transform: rotateZ(-8deg) rotateX(12deg) rotateY(var(--gba-turn, 0deg));
+    transform: rotateZ(-8deg) rotateX(12deg) rotateY(0deg);
   }
 
   .gba-face {
@@ -123,7 +160,7 @@ import { GameBoyAdvance } from '../icons/gba';
 
   @media (prefers-reduced-motion: reduce) {
     .gba-console {
-      transform: rotateZ(-8deg);
+      transform: rotateZ(-8deg) !important;
     }
   }
 </style>

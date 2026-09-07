@@ -4,40 +4,56 @@ const channels = ['red', 'green', 'blue'];
 
 <aside class="interests-warning" aria-labelledby="interests-warning-title" data-interests-warning>
   <div class="warning-sheet">
-    <div class="warning-tape" aria-hidden="true"></div>
+    <div class="warning-reveal">
+      <div class="warning-content">
+        <p class="warning-eyebrow">
+          <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <path d="M12 3 22 21H2L12 3Z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" />
+            <path d="M12 9v5m0 3v.5" stroke="currentColor" stroke-width="2" />
+          </svg>
+          Personal territory ahead
+        </p>
 
-    <div class="warning-content">
-      <p class="warning-eyebrow">
-        <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
-          <path d="M12 3 22 21H2L12 3Z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" />
-          <path d="M12 9v5m0 3v.5" stroke="currentColor" stroke-width="2" />
-        </svg>
-        Personal territory ahead
-      </p>
+        <h2 class="warning-title" id="interests-warning-title">
+          {channels.map((channel) => (
+            <span class={`warning-channel warning-channel-${channel}`} aria-hidden="true">WARNING</span>
+          ))}
+          <span class="warning-word">WARNING</span>
+          <span class="warning-slice" aria-hidden="true">WARNING</span>
+        </h2>
 
-      <h2 class="warning-title" id="interests-warning-title">
-        {channels.map((channel) => (
-          <span class={`warning-channel warning-channel-${channel}`} aria-hidden="true">WARNING</span>
-        ))}
-        <span class="warning-word">WARNING</span>
-        <span class="warning-slice" aria-hidden="true">WARNING</span>
-      </h2>
-
-      <p class="warning-message">The deeper you scroll,<br />the more you'll know about me.</p>
-      <p class="warning-caution">Proceed with caution. <span aria-hidden="true">↓</span></p>
+        <p class="warning-message">The deeper you scroll,<br />the more you'll know about me.</p>
+        <p class="warning-caution">Proceed with caution. <span aria-hidden="true">↓</span></p>
+      </div>
     </div>
 
-    <div class="warning-tape warning-tape-bottom" aria-hidden="true"></div>
+    <div class="warning-bar warning-bar-top" aria-hidden="true">
+      <div class="warning-tape"></div>
+    </div>
+    <div class="warning-bar warning-bar-bottom" aria-hidden="true">
+      <div class="warning-tape warning-tape-bottom"></div>
+    </div>
   </div>
 </aside>
 
 <script>
   /* SCROLL STORYBOARD — reversible; nothing runs on a timer.
-   *   0%  the warning enters cleanly from the bottom of the viewport
-   *  25%  the sheet starts tilting; the RGB channels drift apart
-   *  60%  the title tears in stepped slices as the reader goes deeper
-   * 100%  the warning exits into Interests at maximum distortion
+   * Entrance follows a point 20% down the sheet, from 86% to 48% of the viewport.
+   *   0–24%  top bar flies in from the left, near the top of the section
+   *   4–28%  bottom bar flies in from the right and meets the top bar
+   *  30–100% bars separate upward/downward, opening the warning between them
+   * After opening: RGB separation, title tears, and tilt build on further scroll.
    */
+  const ENTRANCE = {
+    pivot: 0.2,           // start near the top instead of reserving half an empty panel
+    startAt: 0.86,        // viewport fraction where the bars start entering
+    fullOpenAt: 0.48,     // viewport fraction where the warning is fully open
+    topLanded: 0.24,      // top bar finishes its horizontal travel
+    bottomStart: 0.04,    // slight stagger for the bottom bar
+    bottomLanded: 0.28,   // bottom bar finishes its horizontal travel
+    openStart: 0.3,       // both bars land before the panel opens
+    travel: 110,          // percent of the sheet width; clears both viewport edges
+  };
   const GLITCH = {
     steps: 16,             // distinct signal offsets across the section's passage
     split: 12,             // maximum RGB separation in px
@@ -47,26 +63,48 @@ const channels = ['red', 'green', 'blue'];
     tapeTravel: 48,        // hazard-stripe travel in px
   };
 
-  const warning = document.querySelector<HTMLElement>('[data-interests-warning]');
+  const clamp = (value: number) => Math.max(0, Math.min(1, value));
+  const range = (value: number, start: number, end: number) => clamp((value - start) / (end - start));
+  const easeOut = (value: number) => 1 - (1 - value) ** 3;
+  const smoothstep = (value: number) => value * value * (3 - 2 * value);
 
-  if (warning) {
+  const warning = document.querySelector<HTMLElement>('[data-interests-warning]');
+  const sheet = warning?.querySelector<HTMLElement>('.warning-sheet');
+
+  if (warning && sheet) {
     const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
     let raf = 0;
     let visible = false;
 
     const update = () => {
       raf = 0;
-      if (reducedMotion.matches || !visible) return;
+      if (reducedMotion.matches) return;
 
       // Measure the stationary wrapper, so the animated sheet never feeds
       // its own rotation back into the scroll-progress calculation.
       const rect = warning.getBoundingClientRect();
-      const progress = Math.max(0, Math.min(1, (window.innerHeight - rect.top) / (window.innerHeight + rect.height)));
+      const vh = window.innerHeight;
+      // Use layout height so the later tilt cannot change the entrance timing.
+      const anchorOffset = rect.height / 2 - sheet.offsetHeight * (0.5 - ENTRANCE.pivot);
+      const anchor = rect.top + anchorOffset;
+      const entrance = range(vh * ENTRANCE.startAt - anchor, 0, vh * (ENTRANCE.startAt - ENTRANCE.fullOpenAt));
+      const top = easeOut(range(entrance, 0, ENTRANCE.topLanded));
+      const bottom = easeOut(range(entrance, ENTRANCE.bottomStart, ENTRANCE.bottomLanded));
+      const open = smoothstep(range(entrance, ENTRANCE.openStart, 1));
+      // Distortion starts only after the warning is fully open.
+      const progress = range(vh * ENTRANCE.fullOpenAt - anchor, 0, vh * ENTRANCE.fullOpenAt + rect.height - anchorOffset);
       const intensity = progress * progress;
       const step = Math.floor(progress * GLITCH.steps);
       const signal = Math.sin(step * 2.4);
       const split = intensity * GLITCH.split;
 
+      warning.style.setProperty('--warning-top-x', `${(top - 1) * ENTRANCE.travel}%`);
+      warning.style.setProperty('--warning-bottom-x', `${(1 - bottom) * ENTRANCE.travel}%`);
+      warning.style.setProperty('--warning-pivot', `${ENTRANCE.pivot * 100}%`);
+      warning.style.setProperty('--warning-closed', `${1 - open}`);
+      warning.style.setProperty('--warning-mask-top', `${(1 - open) * ENTRANCE.pivot * 100}%`);
+      warning.style.setProperty('--warning-mask-bottom', `${(1 - open) * (1 - ENTRANCE.pivot) * 100}%`);
+      warning.style.setProperty('--warning-content-opacity', `${range(open, 0.08, 0.65)}`);
       warning.style.setProperty('--warning-tilt', `${intensity * (GLITCH.tilt + signal * 0.3)}deg`);
       warning.style.setProperty('--warning-skew', `${signal * intensity * GLITCH.skew}deg`);
       warning.style.setProperty('--warning-split', `${split}px`);
@@ -87,7 +125,9 @@ const channels = ['red', 'green', 'blue'];
         window.removeEventListener('scroll', schedule);
       } else {
         window.addEventListener('scroll', schedule, { passive: true });
-        schedule();
+        // Set the initial pose before intersection/scroll callbacks, including
+        // when reloading directly into the middle of the warning.
+        update();
       }
     };
 
@@ -100,6 +140,7 @@ const channels = ['red', 'green', 'blue'];
     // Their layout shifts must update progress even when scrolling stops.
     new ResizeObserver(schedule).observe(warning.closest('[data-journey]') ?? warning);
     window.addEventListener('resize', schedule);
+    document.fonts.ready.then(schedule);
     reducedMotion.addEventListener('change', syncMotion);
     syncMotion();
   }
@@ -115,6 +156,15 @@ const channels = ['red', 'green', 'blue'];
     --warning-tear: 0px;
     --warning-rgb-opacity: 0;
     --warning-tape-x: 0px;
+    --warning-bar-height: 12px;
+    /* Fully open without JavaScript or with reduced motion. */
+    --warning-top-x: 0%;
+    --warning-bottom-x: 0%;
+    --warning-closed: 0;
+    --warning-pivot: 20%;
+    --warning-mask-top: 0%;
+    --warning-mask-bottom: 0%;
+    --warning-content-opacity: 1;
     position: relative;
     z-index: 2;
     isolation: isolate;
@@ -130,14 +180,46 @@ const channels = ['red', 'green', 'blue'];
     position: relative;
     width: calc(100% + 96px);
     margin-inline: -48px;
-    background: var(--warning-red);
     transform: rotate(var(--warning-tilt));
     transform-origin: center;
   }
 
+  .warning-reveal {
+    padding-block: var(--warning-bar-height);
+    background: var(--warning-red);
+    clip-path: inset(var(--warning-mask-top) 0 var(--warning-mask-bottom));
+  }
+
+  /* Full-height bar layers make percentage translations relative to the
+     stationary sheet. They meet near its top without changing layout. */
+  .warning-bar {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    pointer-events: none;
+  }
+
+  .warning-bar-top {
+    transform: translate3d(
+      var(--warning-top-x),
+      calc(var(--warning-closed) * (var(--warning-pivot) - var(--warning-bar-height))),
+      0
+    );
+  }
+
+  .warning-bar-bottom {
+    transform: translate3d(
+      var(--warning-bottom-x),
+      calc(var(--warning-closed) * (var(--warning-pivot) - 100% + var(--warning-bar-height))),
+      0
+    );
+  }
+
   .warning-tape {
-    height: 12px;
-    margin-inline: -64px;
+    position: absolute;
+    top: 0;
+    inset-inline: -64px;
+    height: var(--warning-bar-height);
     background: repeating-linear-gradient(
       -45deg,
       var(--warning-white) 0 12px,
@@ -147,6 +229,8 @@ const channels = ['red', 'green', 'blue'];
   }
 
   .warning-tape-bottom {
+    top: auto;
+    bottom: 0;
     transform: translateX(calc(-1 * var(--warning-tape-x)));
   }
 
@@ -156,6 +240,7 @@ const channels = ['red', 'green', 'blue'];
     align-items: center;
     padding: clamp(40px, 5vw, 64px) 72px;
     text-align: center;
+    opacity: var(--warning-content-opacity);
   }
 
   .warning-eyebrow {
@@ -263,9 +348,16 @@ const channels = ['red', 'green', 'blue'];
 
   @media (prefers-reduced-motion: reduce) {
     .warning-sheet,
+    .warning-bar,
     .warning-title,
     .warning-tape {
       transform: none;
+    }
+    .warning-reveal {
+      clip-path: none;
+    }
+    .warning-content {
+      opacity: 1;
     }
     .warning-channel,
     .warning-slice {

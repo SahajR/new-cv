@@ -1,16 +1,14 @@
 ---
 /**
- * Retro dialog window: a 2px frame with a title bar — colored square dot,
- * pixel-caps title, ruled lines, and an old-Windows close glyph — around a
- * slotted body. Generic on purpose: region breaks use it with text, and
- * images can be framed with it later.
+ * Pixel desktop window: a white titlebar, bitmap-style app mark, and three
+ * beveled window controls around a slotted body.
  *
- * `accent` colours the dot; the body wash derives from it via color-mix, so
+ * The body wash derives from `accent` via color-mix, so
  * it stays pastel in light mode and muted in dark mode.
  */
 interface Props {
   title: string;
-  /** Dot + body-wash colour. Any CSS color. */
+  /** Body-wash colour. Any CSS color. */
   accent?: string;
   class?: string;
 }
@@ -20,14 +18,21 @@ const { title, accent = 'var(--accent)', class: className } = Astro.props;
 
 <div class:list={['dw', className]} style={`--dw-accent: ${accent}`}>
   <header class="dw-bar">
-    <span class="dw-dot" aria-hidden="true"></span>
-    <span class="dw-rules" aria-hidden="true"></span>
+    <svg class="dw-app" viewBox="0 0 9 5" fill="currentColor" shape-rendering="crispEdges" aria-hidden="true">
+      <path d="M0 0h5v5H0z M6 1h1v1H6z M8 1h1v1H8z M5 2h1v1H5z M6 3h1v1H6z M8 3h1v1H8z M7 4h1v1H7z" />
+      <path class="dw-app-cutout" d="M1 1h1v1H1z M3 1h1v1H3z M1 3h1v1H1z M3 3h1v1H3z" />
+    </svg>
     <span class="dw-title">{title}</span>
-    <span class="dw-rules" aria-hidden="true"></span>
-    <span class="dw-close" aria-hidden="true">
-      <svg viewBox="0 0 10 10" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <path d="M1.8 1.8 L8.2 8.2 M8.2 1.8 L1.8 8.2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
-      </svg>
+    <span class="dw-controls" aria-hidden="true">
+      <span class="dw-control">
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor"><path d="M3 11h10" /></svg>
+      </span>
+      <span class="dw-control">
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor"><path d="M3 3h10v10H3z" /></svg>
+      </span>
+      <span class="dw-control">
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor"><path d="m3 3 10 10m0-10L3 13" /></svg>
+      </span>
     </span>
   </header>
   <div class="dw-collapse">
@@ -41,13 +46,16 @@ const { title, accent = 'var(--accent)', class: className } = Astro.props;
   .dw {
     --dw-line: color-mix(in oklab, var(--ink) 88%, var(--bg));
     --dw-wash: color-mix(in oklab, var(--dw-accent) 14%, var(--bg));
+    --dw-chrome: #fff;
+    --dw-chrome-ink: #252337;
+    --dw-chrome-light: #fff;
+    --dw-chrome-shade: #c8c6d1;
+    --dw-frame: #686d70;
     width: 100%;
-    border: 1.5px solid var(--dw-line);
-    border-radius: 4px;
+    border: 3px solid var(--dw-frame);
+    border-radius: 0;
     background: var(--bg);
-    box-shadow:
-      -3px 4px 0 rgba(var(--shadow-rgb), 0.08),
-      -8px 10px 24px rgba(var(--shadow-rgb), 0.08);
+    box-shadow: 4px 5px 0 rgba(var(--shadow-rgb), 0.18);
     overflow: hidden;
   }
 
@@ -55,53 +63,83 @@ const { title, accent = 'var(--accent)', class: className } = Astro.props;
     display: flex;
     align-items: center;
     gap: 12px;
-    padding: 8px 12px;
-    border-bottom: 1.5px solid var(--dw-line);
-    color: var(--dw-line);
+    min-height: 64px;
+    padding: 10px 12px;
+    border-bottom: 4px solid var(--dw-chrome-ink);
+    background: var(--dw-chrome);
+    color: var(--dw-chrome-ink);
   }
-  .dw-dot {
-    width: 13px;
-    height: 13px;
-    flex-shrink: 0;
-    border: 1.5px solid var(--dw-line);
-    border-radius: 2px;
-    background: var(--dw-accent);
+  .dw-app {
+    display: block;
+    width: 36px;
+    height: 20px;
+    flex: none;
   }
+  .dw-app-cutout { fill: var(--dw-chrome); }
   .dw-title {
+    flex: 1;
+    min-width: 0;
     font-family: var(--font-serif);
     font-weight: 500;
-    font-size: 15px;
-    letter-spacing: 0.14em;
+    font-size: 20px;
+    line-height: 1;
+    letter-spacing: 0.07em;
     text-transform: uppercase;
-    color: var(--ink);
     white-space: nowrap;
   }
-  /* Ruled lines on either side of the centred title, old System-style */
-  .dw-rules {
-    flex: 1;
-    align-self: center;
-    height: 15px;
-    min-width: 16px;
-    background-image: repeating-linear-gradient(
-      to bottom,
-      var(--dw-line) 0 1.5px,
-      transparent 1.5px 4px
-    );
+  .dw-controls {
+    position: relative;
+    display: flex;
+    flex: none;
+    gap: 6px;
+    padding: 4px;
+    margin-left: 12px;
+    background: var(--dw-chrome-ink);
   }
-  /* Close glyph: an × in a square */
-  .dw-close {
-    width: 15px;
-    height: 15px;
-    flex-shrink: 0;
+  /* Full-height divider and square bevels echo the reference's pixel grid. */
+  .dw-controls::before {
+    content: '';
+    position: absolute;
+    top: -11px;
+    bottom: -11px;
+    left: -15px;
+    width: 4px;
+    background: var(--dw-frame);
+    box-shadow: 4px 0 0 color-mix(in srgb, var(--dw-chrome) 70%, var(--dw-chrome-light));
+  }
+  .dw-control {
+    width: 30px;
+    height: 30px;
     display: grid;
     place-items: center;
-    border: 1.5px solid var(--dw-line);
-    border-radius: 3px;
+    background: var(--dw-chrome);
+    box-shadow: inset 0 6px 0 var(--dw-chrome-light), inset 0 -6px 0 var(--dw-chrome-shade);
   }
-  .dw-close svg {
+  .dw-control svg {
     display: block;
-    width: 9px;
-    height: 9px;
+    width: 18px;
+    height: 18px;
+  }
+  .dw-control path {
+    stroke-width: 1.5px;
+    vector-effect: non-scaling-stroke;
+  }
+  @media (max-width: 480px) {
+    .dw-bar {
+      min-height: 56px;
+      gap: 8px;
+      padding: 8px;
+    }
+    .dw-app { width: 27px; height: 15px; }
+    .dw-title { font-size: 18px; letter-spacing: 0.05em; }
+    .dw-controls { gap: 4px; margin-left: 8px; }
+    .dw-controls::before { top: -10px; bottom: -10px; left: -12px; }
+    .dw-control {
+      width: 24px;
+      height: 24px;
+      box-shadow: inset 0 4px 0 var(--dw-chrome-light), inset 0 -4px 0 var(--dw-chrome-shade);
+    }
+    .dw-control svg { width: 12px; height: 12px; }
   }
 
   /* Animatable-height wrapper: rows 0fr collapses the body to nothing,

@@ -36,8 +36,8 @@ export interface FooterLink {
 
 export const profile = {
   name: 'Sahaj Ramachandran',
-  tagline: "Hi, I'm Sahaj, programmer & adventurer of the world",
-  sub: '',
+  tagline: "hey, I'm sahaj ramachandran",
+  sub: 'programmer & adventurer of the world',
   description: "Sahaj Ramachandran's personal website",
 };
 

@@ -1,34 +1,171 @@
 ---
 import { profile } from '../data/profile';
+import { introKerning } from '../data/intro-typography';
+const firstName = 'sahaj';
+const lastName = 'ramachandran';
 ---
 
-<div class="folio-intro reveal" style="--reveal-delay: 60ms">
-  <h1 class="folio-tagline">{profile.tagline}</h1>
-  {profile.sub && <p class="folio-sub">{profile.sub}</p>}
+<div class="folio-intro" data-intro data-intro-phase="complete">
+  <h1 class="folio-tagline">
+    <span class="sr-only">{profile.tagline}</span>
+    <span class="intro-stage" aria-hidden="true" data-intro-stage>
+      <span class="intro-domain">
+        <span class="intro-domain-line">
+          {[...'hey'].map((letter, i) => <span data-origin={letter} style={introKerning('hey', i)}>{letter}</span>)}
+          <span class="intro-period" data-origin="dot"></span>
+          <span data-origin="s">s</span><span data-origin="r" style={introKerning('sr', 1)}>r</span>
+        </span>
+      </span>
+      <span class="intro-expanded">
+        <span class="intro-line">
+          <span class="intro-word">
+            {[...'hey'].map((letter, i) => <span class="intro-glyph" data-seed={letter} style={introKerning('hey', i)}>{letter}</span>)}
+            <span class="intro-glyph" data-unfold="comma" data-index="0" style={introKerning('hey,', 3)}>,</span>
+          </span>
+          <span class="intro-word intro-im">
+            <span class="intro-i" data-intro-i>I<span class="intro-baseline" data-intro-baseline></span></span><span class="intro-im-tail" data-intro-im-tail>'m</span>
+          </span>
+          <span class="intro-word">
+            {[...firstName].map((letter, i) => (
+              <span class="intro-glyph" data-seed={i === 0 ? 's' : undefined} data-unfold={i > 0 ? 's' : undefined} data-index={i} style={introKerning(firstName, i)}>{letter}</span>
+            ))}
+          </span>
+        </span>
+        <span class="intro-line">
+          <span class="intro-word">
+            {[...lastName].map((letter, i) => (
+              <span class="intro-glyph" data-seed={i === 0 ? 'r' : undefined} data-unfold={i > 0 ? 'r' : undefined} data-index={i} style={introKerning(lastName, i)}>{letter}</span>
+            ))}
+          </span>
+        </span>
+      </span>
+      <span class="intro-dot" data-intro-dot><span class="intro-dot-core" data-intro-core></span></span>
+      <span class="intro-ring" data-intro-ring></span>
+    </span>
+  </h1>
+  <p class="folio-sub" data-intro-subtitle>{profile.sub}</p>
 </div>
+
+<script is:inline>
+  // Show the domain before first paint; without JS, the full name stays visible.
+  {
+    const intro = document.currentScript.previousElementSibling;
+    if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      intro.dataset.introPhase = 'boot';
+      window.setTimeout(() => {
+        if (intro.dataset.introPhase === 'boot') intro.dataset.introPhase = 'complete';
+      }, 7000);
+    }
+  }
+</script>
+
+<script>
+  import '../scripts/intro';
+</script>
 
 <style>
   .folio-intro {
+    --intro-size: clamp(2.5rem, 8vw, 4rem);
     width: 100%;
-    max-width: 460px;
     text-align: center;
   }
-  /* Type scale: 2.5rem title (2× the 20px it was), 1.25rem lead — a 2:1
-     ratio, scaling down to 2rem / 1.0625rem on small screens. */
   .folio-tagline {
     font-family: var(--font-serif);
     font-weight: 500;
-    font-size: clamp(2rem, 1.4rem + 1.6vw, 2.5rem);
-    line-height: 1.2;
-    letter-spacing: 0.01em;
+    font-size: var(--intro-size);
+    line-height: 1.08;
+    letter-spacing: 0;
+    font-kerning: normal;
     color: var(--ink);
   }
+  .intro-stage {
+    position: relative;
+    display: grid;
+    align-items: center;
+    height: calc(var(--intro-size) * 2.6);
+    isolation: isolate;
+  }
+  .intro-domain {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    place-items: center;
+    font-size: clamp(6rem, 16vw, 9rem);
+    line-height: 1.08;
+    letter-spacing: -0.02em;
+    visibility: hidden;
+  }
+  .intro-domain-line { display: flex; align-items: baseline; }
+  .intro-domain-line > span { display: inline-block; color: var(--accent); }
+  .intro-period {
+    width: 0.1em;
+    height: 0.1em;
+    margin-inline: 0.045em 0.005em;
+    border-radius: 0;
+    background: var(--accent);
+  }
+  .intro-expanded { display: flex; flex-direction: column; gap: 0.08em; }
+  .intro-line {
+    display: flex;
+    justify-content: center;
+    align-items: baseline;
+    gap: 0.2em;
+    perspective: 700px;
+  }
+  .intro-word { display: inline-flex; white-space: nowrap; }
+  .intro-glyph { display: inline-block; transform-origin: 0 0; }
+  .intro-glyph[data-seed] { color: var(--accent); }
+  .intro-i { display: inline-block; transform-origin: 50% 50%; }
+  .intro-baseline {
+    display: inline-block;
+    width: 0;
+    height: 0.7em;
+    height: 1cap;
+    vertical-align: baseline;
+  }
+  .intro-im-tail { display: inline-block; transform-origin: 0 50%; }
+  .intro-dot,
+  .intro-ring {
+    position: absolute;
+    top: 0;
+    left: 0;
+    opacity: 0;
+    pointer-events: none;
+  }
+  .intro-dot { z-index: 2; transform-origin: 50% 100%; }
+  .intro-dot-core {
+    display: block;
+    width: 100%;
+    height: 100%;
+    border-radius: 0;
+    background: var(--accent);
+    transform-origin: 50% 100%;
+  }
+  .intro-ring { border: 1px solid var(--accent); border-radius: 50%; }
+  [data-intro-phase='boot'] .intro-domain { visibility: visible; }
+  [data-intro-phase='boot'] .intro-expanded { visibility: hidden; }
   .folio-sub {
-    margin-top: 0.5rem;
-    font-size: clamp(1.0625rem, 0.9rem + 0.5vw, 1.25rem);
+    margin: 16px auto 0;
+    max-width: 30em;
+    font-size: clamp(0.9375rem, 0.8rem + 0.4vw, 1.125rem);
     line-height: 1.5;
-    letter-spacing: -0.005em;
+    letter-spacing: -0.015em;
     color: var(--body);
-    opacity: 0.8;
+    text-wrap: balance;
+  }
+  [data-intro]:not([data-intro-phase='complete']) .folio-sub { opacity: 0; }
+  @media (prefers-reduced-motion: reduce) {
+    [data-intro] .intro-domain,
+    .intro-dot,
+    .intro-ring { display: none; }
+    [data-intro] .intro-expanded { visibility: visible; }
+    [data-intro] .folio-sub { opacity: 1 !important; }
+    .intro-glyph,
+    .intro-i,
+    .intro-im-tail {
+      transform: none !important;
+      opacity: 1 !important;
+      clip-path: none !important;
+    }
   }
 </style>

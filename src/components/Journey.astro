@@ -5,7 +5,7 @@
  *
  * The rail is a single SVG path whose geometry is computed from the real
  * positions of the parts (so it adapts to content and viewport), drawn twice:
- * a dotted base and a solid "lit" stroke revealed via stroke-dashoffset.
+ * a dotted base and a solid "lit" stroke clipped at the reading line.
  */
 import { journey } from '../data/profile';
 import JourneyPart from './JourneyPart.astro';
@@ -20,13 +20,16 @@ const regions = journey.map((region) => ({
 }));
 ---
 
-<div class="journey" data-journey>
+<div class="journey" data-journey data-journey-entrance="complete">
   <svg class="journey-rail" aria-hidden="true" data-journey-svg>
     <defs>
       <linearGradient id="jr-grad" data-journey-grad gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="0" y2="1"></linearGradient>
+      <clipPath id="jr-read-clip" clipPathUnits="userSpaceOnUse">
+        <rect data-journey-clip x="0" y="0" width="0" height="0" />
+      </clipPath>
     </defs>
     <path class="jr-base" data-journey-base d="" />
-    <path class="jr-lit" data-journey-lit d="" />
+    <path class="jr-lit" data-journey-lit d="" clip-path="url(#jr-read-clip)" />
   </svg>
 
   {regions.map((region) => (
@@ -40,13 +43,29 @@ const regions = journey.map((region) => ({
   ))}
 </div>
 
+<script is:inline>
+  {
+    const journey = document.currentScript.previousElementSibling;
+    if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      journey.dataset.journeyEntrance = 'boot';
+      window.setTimeout(() => {
+        if (journey.dataset.journeyEntrance === 'boot') journey.dataset.journeyEntrance = 'complete';
+      }, 4000);
+    }
+  }
+</script>
+
 <script>
+  import { frame, scroll } from 'motion';
+  import { enterJourney } from '../scripts/journey-entrance';
+
   const root = document.querySelector<HTMLElement>('[data-journey]');
   const svg = root?.querySelector<SVGSVGElement>('[data-journey-svg]');
   const base = root?.querySelector<SVGPathElement>('[data-journey-base]');
   const lit = root?.querySelector<SVGPathElement>('[data-journey-lit]');
+  const clip = root?.querySelector<SVGRectElement>('[data-journey-clip]');
 
-  if (root && svg && base && lit) {
+  if (root && svg && base && lit && clip) {
     const parts = Array.from(root.querySelectorAll<HTMLElement>('[data-journey-part]'));
     const dots = parts.map((p) => p.querySelector<HTMLElement>('[data-journey-dot]')!);
     const wins = Array.from(root.querySelectorAll<HTMLElement>('[data-journey-window]'));
@@ -54,24 +73,21 @@ const regions = journey.map((region) => ({
     const READ_LINE = 0.42; // fraction of the viewport height that counts as "read"
     const PAD = 40;         // svg bleed beyond the column so the rail isn't clipped
 
-    let total = 0;
-    let samples: { len: number; y: number }[] = [];
+    let rootTop = 0;
+    let clipHeight = 0;
     let dotYs: number[] = [];
     let winTops: number[] = [];
-    let raf = 0;
+    const dotStates: boolean[] = [];
+    const windowStates: boolean[] = [];
 
     const railX = () => parseFloat(getComputedStyle(root).getPropertyValue('--rail-x')) || -22;
 
     /** Rebuild the path from the current layout. */
     const layout = () => {
       const rr = root.getBoundingClientRect();
+      rootTop = rr.top + window.scrollY;
       const w = rr.width + PAD * 2;
       const h = rr.height + PAD;
-      svg.setAttribute('width', `${w}`);
-      svg.setAttribute('height', `${h}`);
-      svg.setAttribute('viewBox', `0 0 ${w} ${h}`);
-      svg.style.left = `${-PAD}px`;
-      svg.style.top = `0px`;
 
       const xL = PAD + railX();          // rail left of the column
       const xR = PAD + rr.width - railX(); // rail right of the column (railX is negative)
@@ -98,6 +114,21 @@ const regions = journey.map((region) => ({
           segs.push({ x: p.dataset.side === 'right' ? xR : xL, top: r.top - rr.top, bottom: r.bottom - rr.top });
         });
       });
+
+      // Finish layout reads before changing any SVG attributes or styles.
+      const title = document.querySelector('.folio-intro');
+      const startY = title ? Math.min(0, title.getBoundingClientRect().bottom + 14 - rr.top) : 0;
+      dotYs = dots.map((dot) => dot.getBoundingClientRect().top + dot.offsetHeight / 2 - rr.top);
+      winTops = wins.map((win) => win.getBoundingClientRect().top - rr.top);
+      clipHeight = h + window.innerHeight;
+
+      svg.setAttribute('width', `${w}`);
+      svg.setAttribute('height', `${h}`);
+      svg.setAttribute('viewBox', `0 0 ${w} ${h}`);
+      svg.style.left = `${-PAD}px`;
+      svg.style.top = '0px';
+      clip.setAttribute('width', `${w}`);
+      clip.setAttribute('height', `${clipHeight}`);
 
       // Colour the lit stroke per region: each blend happens across a window
       // band, where the rail is hidden behind the window.
@@ -138,10 +169,7 @@ const regions = journey.map((region) => ({
       const join = (x1: number, x2: number, y1: number, y2: number) =>
         Math.abs(x2 - x1) < 1 ? ` L ${x2} ${y2}` : crossover(x1, x2, (y1 + y2) / 2) + ` L ${x2} ${y2}`;
 
-      // Start immediately below the header title, not at the container top.
-      const title = document.querySelector('.folio-tagline');
-      const startY = title ? Math.min(0, title.getBoundingClientRect().bottom + 14 - rr.top) : 0;
-
+      // Start below the full introduction, including its subtitle.
       const first = segs[0];
       let d = `M ${xC} ${startY}`;
       d += join(xC, first.x, startY, first.top);
@@ -157,45 +185,25 @@ const regions = journey.map((region) => ({
 
       base.setAttribute('d', d);
       lit.setAttribute('d', d);
+    };
 
-      total = lit.getTotalLength();
-      lit.style.strokeDasharray = `${total}`;
-
-      // Sample the path so scroll → length lookups are cheap (path is monotonic in y).
-      const N = 150;
-      samples = Array.from({ length: N + 1 }, (_, i) => {
-        const len = (total * i) / N;
-        return { len, y: lit.getPointAtLength(len).y };
+    const update = (scrollY = window.scrollY) => {
+      const lineY = window.innerHeight * READ_LINE + scrollY - rootTop;
+      // The rail only travels downward. A horizontal clipping boundary gives
+      // the same reading position without sampling the SVG's length or points.
+      clip.style.transform = `translateY(${lineY - clipHeight}px)`;
+      dots.forEach((dot, i) => {
+        const reached = dotYs[i] <= lineY;
+        if (dotStates[i] === reached) return;
+        dotStates[i] = reached;
+        dot.classList.toggle('is-lit', reached);
       });
-      dotYs = dots.map((dot) => dot.getBoundingClientRect().top + dot.offsetHeight / 2 - rr.top);
-      winTops = wins.map((w) => w.getBoundingClientRect().top - rr.top);
-    };
-
-    const lengthAtY = (y: number) => {
-      if (!samples.length || y <= samples[0].y) return 0;
-      for (let i = 1; i < samples.length; i++) {
-        if (samples[i].y >= y) {
-          const a = samples[i - 1], b = samples[i];
-          const t = b.y === a.y ? 0 : (y - a.y) / (b.y - a.y);
-          return a.len + (b.len - a.len) * t;
-        }
-      }
-      return total;
-    };
-
-    const update = () => {
-      raf = 0;
-      const rr = root.getBoundingClientRect();
-      const lineY = window.innerHeight * READ_LINE - rr.top; // reading line in root coords
-      const litLen = lengthAtY(lineY);
-      lit.style.strokeDashoffset = `${total - litLen}`;
-      dots.forEach((dot, i) => dot.classList.toggle('is-lit', dotYs[i] <= lineY));
-      // Windows sit dimmed until the reading line reaches them
-      wins.forEach((w, i) => w.classList.toggle('is-reached', winTops[i] + 24 <= lineY));
-    };
-
-    const schedule = () => {
-      if (!raf) raf = requestAnimationFrame(update);
+      wins.forEach((win, i) => {
+        const reached = winTops[i] + 24 <= lineY;
+        if (windowStates[i] === reached) return;
+        windowStates[i] = reached;
+        win.classList.toggle('is-reached', reached);
+      });
     };
     const relayout = () => {
       layout();
@@ -205,7 +213,7 @@ const regions = journey.map((region) => ({
     /**
      * The region windows animate their height open (a layout animation), so
      * the ResizeObserver fires every frame for ~0.5s. Rebuilding the path and
-     * resampling it per frame is what causes jank — instead, relayout at most
+     * measuring it per frame is unnecessary — instead, relayout at most
      * every 160ms while resizes stream in, plus a trailing pass so the rail
      * settles exactly on the final geometry.
      */
@@ -226,16 +234,23 @@ const regions = journey.map((region) => ({
 
     // Reveal parts as they enter the viewport
     const io = new IntersectionObserver(
-      (entries) => entries.forEach((e) => e.isIntersecting && e.target.classList.add('is-in')),
+      (entries) => entries.forEach((e) => {
+        if (!e.isIntersecting) return;
+        e.target.classList.add('is-in');
+        io.unobserve(e.target);
+      }),
       { rootMargin: '0px 0px -12% 0px' }
     );
     parts.forEach((p) => (reduced ? p.classList.add('is-in') : io.observe(p)));
 
-    window.addEventListener('scroll', schedule, { passive: true });
+    // Motion batches scroll measurements before these writes. The root's
+    // document position is cached by layout(), so scrolling needs no rect read.
+    scroll((_, info) => update(info.y.current));
     window.addEventListener('resize', scheduleRelayout);
     new ResizeObserver(scheduleRelayout).observe(root);
-    document.fonts?.ready.then(relayout);
+    document.fonts?.ready.then(() => frame.read(relayout));
     relayout();
+    enterJourney(root, relayout);
   }
 </script>
 
@@ -246,6 +261,20 @@ const regions = journey.map((region) => ({
     --rail-x: -22px;      /* rail offset outside the column edge */
     --rail-gutter: 0px;   /* content inset on the rail side (desktop: none needed) */
     margin-top: 1.5rem;
+  }
+  .journey[data-journey-entrance='boot'],
+  .journey[data-journey-entrance='waiting'] {
+    opacity: 0;
+    visibility: hidden;
+  }
+  .journey[data-journey-entrance='revealing'] {
+    /* Extend the feathered mask around the rail's lead-in and side curves. */
+    mask-image: linear-gradient(to bottom, #000 calc(var(--journey-reveal, 0%) - 12%), transparent var(--journey-reveal, 0%));
+    mask-size: calc(100% + 192px) calc(100% + 192px);
+    mask-position: -96px -96px;
+    mask-repeat: no-repeat;
+    mask-clip: no-clip;
+    will-change: transform, opacity;
   }
   .journey-rail {
     position: absolute;
@@ -268,7 +297,6 @@ const regions = journey.map((region) => ({
     stroke-width: 1.25;
     stroke-linecap: round;
     filter: drop-shadow(0 0 3px rgba(var(--rail-lit-rgb), 0.2));
-    transition: stroke-dashoffset 0.12s linear;
   }
   .journey-region {
     display: flex;
@@ -299,6 +327,15 @@ const regions = journey.map((region) => ({
     }
     .journey-rail {
       left: -40px;
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .journey[data-journey-entrance] {
+      opacity: 1 !important;
+      visibility: visible !important;
+      transform: none !important;
+      mask-image: none !important;
+      will-change: auto;
     }
   }
 </style>

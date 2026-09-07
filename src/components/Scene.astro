@@ -16,9 +16,11 @@ interface Props {
   objects: SceneObject[];
   /** Extra class on the layer, if a section needs to tweak it. */
   class?: string;
+  /** Spring the objects in from outside the viewport after the intro. */
+  entrance?: boolean;
 }
 
-const { objects, class: className } = Astro.props;
+const { objects, class: className, entrance = false } = Astro.props;
 
 // Vertical anchors: fractions become percentages of the section; strings pass through.
 const yVal = (y: number | string) => (typeof y === 'number' ? `${y * 100}%` : y);
@@ -44,30 +46,49 @@ const styleFor = (o: SceneObject) => {
 };
 ---
 
-<div class:list={['scene', className]} aria-hidden="true" data-scene>
+<div class:list={['scene', className]} aria-hidden="true" data-scene data-scene-entrance={entrance ? 'complete' : undefined}>
   {objects.map((o) => (
     <div
       class:list={['scene-obj', { 'is-mobile-hidden': o.mobile?.hidden }]}
       style={styleFor(o)}
       data-id={o.id}
     >
-      <img
-        src={o.src}
-        width={o.w}
-        height={o.h}
-        alt={o.alt}
-        draggable="false"
-        decoding="async"
-        loading={o.eager ? 'eager' : 'lazy'}
-        fetchpriority={o.eager ? 'high' : 'auto'}
-      />
+      <div class="scene-flight">
+        <img
+          src={o.src}
+          width={o.w}
+          height={o.h}
+          alt={o.alt}
+          draggable="false"
+          decoding="async"
+          loading={o.eager ? 'eager' : 'lazy'}
+          fetchpriority={o.eager ? 'high' : 'auto'}
+        />
+      </div>
     </div>
   ))}
 </div>
 
+{entrance && <script is:inline>
+  {
+    const scene = document.currentScript.previousElementSibling;
+    if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      scene.dataset.sceneEntrance = 'boot';
+      // Keep the photographs available if the animation module cannot load.
+      window.setTimeout(() => {
+        if (scene.dataset.sceneEntrance === 'boot') scene.dataset.sceneEntrance = 'complete';
+      }, 4000);
+    }
+  }
+</script>}
+
 <script>
+  import { enterScene } from '../scripts/scene-entrance';
+
   const scenes = Array.from(document.querySelectorAll<HTMLElement>('[data-scene]'));
   const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  scenes.filter((scene) => scene.hasAttribute('data-scene-entrance')).forEach(enterScene);
 
   if (scenes.length && !reduced) {
     // How many px an object with depth 1 moves per px the section is off-centre.
@@ -121,8 +142,8 @@ const styleFor = (o: SceneObject) => {
     top: var(--y);
     width: var(--w);
     z-index: var(--z);
-    /* align to the anchor → parallax shift → rotate, in that order */
-    transform: translate(-50%, var(--ty, -50%)) translate3d(0, var(--py, 0px), 0) rotate(var(--r));
+    /* Position/parallax, entrance, and static rotation have separate layers. */
+    transform: translate(-50%, var(--ty, -50%)) translate3d(0, var(--py, 0px), 0);
     will-change: transform;
 
     /* Shadow geometry. Light source is top-right, so shadows fall down-left.
@@ -130,11 +151,22 @@ const styleFor = (o: SceneObject) => {
     --sx: calc(3px + var(--depth) * 5px);
     --sy: calc(4px + var(--depth) * 7px);
   }
+  .scene[data-scene-entrance] {
+    overflow: clip;
+  }
+  .scene[data-scene-entrance='boot'] .scene-flight,
+  .scene[data-scene-entrance='waiting'] .scene-flight {
+    visibility: hidden;
+  }
+  .scene[data-scene-entrance='entering'] .scene-flight {
+    will-change: transform;
+  }
   .scene-obj img {
     display: block;
     width: 100%;
     height: auto;
     user-select: none;
+    transform: rotate(var(--r));
     /* On the (non-animated) image, not the transformed wrapper: the filtered
        raster is cached once and the compositor only moves it during parallax. */
     filter:
@@ -147,11 +179,11 @@ const styleFor = (o: SceneObject) => {
       left: calc(var(--xm) * 100%);
       top: var(--ym);
       width: var(--wm);
-      transform: translate(-50%, var(--ty, -50%)) translate3d(0, var(--py, 0px), 0) rotate(var(--rm));
       --sx: calc(2px + var(--depth) * 3px);
       --sy: calc(3px + var(--depth) * 4px);
     }
     .scene-obj img {
+      transform: rotate(var(--rm));
       filter:
         drop-shadow(calc(var(--sx) * -0.6) calc(var(--sy) * 0.6) 1.5px rgba(var(--shadow-rgb), 0.12))
         drop-shadow(calc(var(--sx) * -2) calc(var(--sy) * 2) 10px rgba(var(--shadow-rgb), 0.16));
@@ -162,6 +194,11 @@ const styleFor = (o: SceneObject) => {
   }
 
   @media (prefers-reduced-motion: reduce) {
+    .scene-flight {
+      visibility: visible !important;
+      transform: none !important;
+      will-change: auto !important;
+    }
     .scene-obj {
       will-change: auto;
     }
