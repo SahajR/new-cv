@@ -1,4 +1,4 @@
-import { animate, type AnimationSequence, type AnimationPlaybackControlsWithThen } from 'motion';
+import { animate, frame, type AnimationSequence, type AnimationPlaybackControlsWithThen } from 'motion';
 import { INTRO_KERNING } from '../data/intro-typography';
 
 /* INTRO STORYBOARD — milliseconds after the title font is ready.
@@ -13,7 +13,7 @@ import { INTRO_KERNING } from '../data/intro-typography';
  * ~3050 ms all title springs settle, then the subtitle fades in
  * ~3550 ms the full introduction rests
  *
- * Motion owns playback, pausing and completion. Layout is measured
+ * Motion owns playback and completion. Layout is measured
  * once before playback; the title and journey rail keep their reserved space.
  */
 const TIMING = {
@@ -66,39 +66,49 @@ if (root && stage && subtitle && iGlyph && baseline && imTail && dot && core && 
   const letters = [...root.querySelectorAll<HTMLElement>('[data-unfold]')];
   const animatedElements = [...seeds, ...letters, iGlyph, imTail, dot, core, ring, subtitle];
   let playback: AnimationPlaybackControlsWithThen | undefined;
-  let run = 0;
+  let sizeObserver: ResizeObserver | undefined;
+  let visibilityObserver: IntersectionObserver | undefined;
+  let started = false;
+  let completed = false;
   let stageWidth = stage.clientWidth;
-  let visible = true;
-  let paused = false;
 
-  const syncVisibility = () => {
-    const shouldPause = document.hidden || !visible;
-    if (!playback || shouldPause === paused) return;
-    paused = shouldPause;
-    if (paused) playback.pause();
-    else playback.play();
-  };
-
-  const finish = () => {
-    run++;
-    playback?.stop();
-    playback = undefined;
-    paused = false;
-    // Motion commits final styles. Clear the animated properties so CSS owns
-    // the static fallback after completion or interruption.
+  const clearStyles = () => {
     animatedElements.forEach((element) => {
       ['transform', 'opacity', 'clip-path', 'color'].forEach((property) => {
         element.style.removeProperty(property);
       });
     });
+  };
+  const finish = () => {
+    if (completed) return;
+    completed = true;
+    playback?.stop();
+    playback = undefined;
+    // Clear again after Motion's deferred render so interrupted keyframes
+    // cannot overwrite the settled CSS state when the header comes back.
+    clearStyles();
+    frame.postRender(clearStyles);
     root.dataset.introPhase = 'complete';
+    sizeObserver?.disconnect();
+    visibilityObserver?.disconnect();
+    reduced.removeEventListener('change', finish);
+    document.removeEventListener('visibilitychange', finishWhenHidden);
+    window.removeEventListener('resize', finish);
+    window.removeEventListener('pagehide', finish);
+  };
+  const finishWhenHidden = () => {
+    if (document.hidden) finish();
   };
 
   const play = (hold: number) => {
-    finish();
-    if (reduced.matches) return;
-    const thisRun = run;
-    root.dataset.introPhase = 'boot';
+    // Font loading, a restored page or a viewport change can finish the intro
+    // before this callback runs. A landing reveal must never start again.
+    if (started || completed) return;
+    started = true;
+    if (reduced.matches || document.hidden || root.dataset.introPhase !== 'boot') {
+      finish();
+      return;
+    }
     stageWidth = stage.clientWidth;
 
     const originRects = new Map(
@@ -206,11 +216,11 @@ if (root && stage && subtitle && iGlyph && baseline && imTail && dot && core && 
       );
     });
 
-    // Phase labels share Motion's clock, so visibility pauses every beat together.
+    // Phase labels share Motion's clock with the animated glyphs.
     const phaseEnd = hold + namesAt + TIMING.lastNameDelay
       + Math.max(...letters.map((el) => Number(el.dataset.index))) * TIMING.letterStagger + TIMING.letterFade;
     sequence.push([(time: number) => {
-      if (run !== thisRun) return;
+      if (completed) return;
       const elapsed = time - hold;
       const phase = elapsed < 0 ? 'holding'
         : elapsed < TIMING.dotTravel ? 'morphing'
@@ -224,35 +234,35 @@ if (root && stage && subtitle && iGlyph && baseline && imTail && dot && core && 
     playback = animate(sequence, { defaultTransition: { ease: MOTION.ease } });
     root.dataset.introPhase = 'holding';
     playback.then(() => {
-      if (run !== thisRun) return;
+      if (completed) return;
       // Wait for every title spring to finish, then hand playback to the fade.
       playback?.stop();
       root.dataset.introPhase = 'subtitle';
-      paused = false;
       playback = animate(subtitle, { opacity: [0, 1] }, {
         duration: TIMING.subtitleFade / 1000,
         ease: 'easeOut',
       });
-      playback.then(() => { if (run === thisRun) finish(); });
-      syncVisibility();
+      playback.then(finish);
     });
-    syncVisibility();
   };
 
   const safePlay = (hold: number) => {
     try { play(hold); } catch { finish(); }
   };
   reduced.addEventListener('change', finish);
-  new ResizeObserver(() => {
+  sizeObserver = new ResizeObserver(() => {
     if (stage.clientWidth !== stageWidth) finish();
     stageWidth = stage.clientWidth;
-  }).observe(stage);
-  document.addEventListener('visibilitychange', syncVisibility);
+  });
+  sizeObserver.observe(stage);
+  document.addEventListener('visibilitychange', finishWhenHidden);
   window.addEventListener('resize', finish);
-  new IntersectionObserver(([entry]) => {
-    visible = entry.isIntersecting;
-    syncVisibility();
-  }).observe(root);
+  visibilityObserver = new IntersectionObserver(([entry]) => {
+    // Scrolling past the intro completes it; coming back never resumes or
+    // replays finished tracks in Motion's animation group.
+    if (!entry.isIntersecting) finish();
+  });
+  visibilityObserver.observe(root);
   window.addEventListener('pagehide', finish);
   document.fonts.ready.then(() => {
     requestAnimationFrame(() => safePlay(TIMING.hold));

@@ -20,18 +20,20 @@ const ENTRANCE = {
 export function enterJourney(root: HTMLElement, relayout: () => void) {
   const scene = root.closest('.hero')?.querySelector<HTMLElement>('[data-scene-entrance]');
   const intro = root.closest('.hero')?.querySelector<HTMLElement>('[data-intro]');
-  // The title pauses when offscreen, sometimes before half a phone viewport
-  // has scrolled. Cache its document boundary so that pause cannot hide content.
+  // Scrolling past the introduction skips the remaining landing entrances.
   const bypassAt = Math.min(window.innerHeight * 0.5,
     intro ? intro.getBoundingClientRect().bottom + window.scrollY : Infinity);
   const reduced = window.matchMedia('(prefers-reduced-motion: reduce)');
   let playback: AnimationPlaybackControlsWithThen | undefined;
   let sceneObserver: MutationObserver | undefined;
+  let completed = false;
 
   const clearStyles = () => {
     ['transform', 'opacity', '--journey-reveal'].forEach((property) => root.style.removeProperty(property));
   };
   const finish = () => {
+    if (completed) return;
+    completed = true;
     sceneObserver?.disconnect();
     playback?.stop();
     playback = undefined;
@@ -45,18 +47,17 @@ export function enterJourney(root: HTMLElement, relayout: () => void) {
     window.removeEventListener('pagehide', finish);
     window.removeEventListener('scroll', skipWhenReading);
     reduced.removeEventListener('change', finish);
-    document.removeEventListener('visibilitychange', syncVisibility);
+    document.removeEventListener('visibilitychange', finishWhenHidden);
   };
-  const syncVisibility = () => {
-    if (document.hidden) playback?.pause();
-    else playback?.play();
+  const finishWhenHidden = () => {
+    if (document.hidden) finish();
   };
   const skipWhenReading = () => {
     // Anchor links and readers scrolling past the intro get the content now.
     if (window.scrollY >= bypassAt) finish();
   };
 
-  if (reduced.matches || root.dataset.journeyEntrance !== 'boot'
+  if (reduced.matches || document.hidden || root.dataset.journeyEntrance !== 'boot'
     || window.scrollY >= bypassAt) {
     finish();
     return;
@@ -67,10 +68,10 @@ export function enterJourney(root: HTMLElement, relayout: () => void) {
   window.addEventListener('pagehide', finish);
   window.addEventListener('scroll', skipWhenReading, { passive: true });
   reduced.addEventListener('change', finish);
-  document.addEventListener('visibilitychange', syncVisibility);
+  document.addEventListener('visibilitychange', finishWhenHidden);
 
   const reveal = () => {
-    if (root.dataset.journeyEntrance !== 'waiting') return;
+    if (completed || root.dataset.journeyEntrance !== 'waiting') return;
     if (scene && scene.dataset.sceneEntrance !== 'complete') return;
     sceneObserver?.disconnect();
 
@@ -87,7 +88,6 @@ export function enterJourney(root: HTMLElement, relayout: () => void) {
       ];
       playback = animate(sequence);
       playback.then(finish);
-      syncVisibility();
     } catch {
       finish();
     }

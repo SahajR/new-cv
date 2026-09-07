@@ -33,10 +33,15 @@ export function enterScene(scene: HTMLElement) {
   const flights = Array.from(scene.querySelectorAll<HTMLElement>('.scene-flight'));
   const images = Array.from(scene.querySelectorAll<HTMLImageElement>('img'));
   const intro = scene.parentElement?.querySelector<HTMLElement>('[data-intro]');
+  const bypassAt = Math.min(window.innerHeight * 0.5,
+    intro ? intro.getBoundingClientRect().bottom + window.scrollY : Infinity);
   let playback: AnimationPlaybackControlsWithThen | undefined;
   let introObserver: MutationObserver | undefined;
+  let completed = false;
 
   const finish = () => {
+    if (completed) return;
+    completed = true;
     introObserver?.disconnect();
     playback?.stop();
     playback = undefined;
@@ -47,27 +52,32 @@ export function enterScene(scene: HTMLElement) {
     scene.dataset.sceneEntrance = 'complete';
     window.removeEventListener('resize', finish);
     window.removeEventListener('pagehide', finish);
+    window.removeEventListener('scroll', finishWhenReading);
     reduced.removeEventListener('change', finish);
-    document.removeEventListener('visibilitychange', syncVisibility);
+    document.removeEventListener('visibilitychange', finishWhenHidden);
   };
 
-  const syncVisibility = () => {
-    if (document.hidden) playback?.pause();
-    else playback?.play();
+  const finishWhenHidden = () => {
+    if (document.hidden) finish();
+  };
+  const finishWhenReading = () => {
+    if (window.scrollY >= bypassAt) finish();
   };
 
-  if (reduced.matches || scene.dataset.sceneEntrance !== 'boot') {
+  if (reduced.matches || document.hidden || scene.dataset.sceneEntrance !== 'boot'
+    || window.scrollY >= bypassAt) {
     finish();
     return;
   }
 
   window.addEventListener('resize', finish);
   window.addEventListener('pagehide', finish);
+  window.addEventListener('scroll', finishWhenReading, { passive: true });
   reduced.addEventListener('change', finish);
-  document.addEventListener('visibilitychange', syncVisibility);
+  document.addEventListener('visibilitychange', finishWhenHidden);
 
   // The module has loaded; keep the images hidden past the boot fallback
-  // while Motion finishes the introduction, including any visibility pauses.
+  // while Motion finishes the introduction.
   scene.dataset.sceneEntrance = 'waiting';
   const introReady = new Promise<void>((resolve) => {
     if (!intro || intro.dataset.introPhase === 'complete') {
@@ -85,9 +95,9 @@ export function enterScene(scene: HTMLElement) {
   // Intrinsic image dimensions reserve the landing positions; decode first
   // so slow image loads cannot pop into the middle of an entrance.
   Promise.all([introReady, Promise.allSettled(images.map((img) => img.decode()))]).then(() => {
-    if (scene.dataset.sceneEntrance !== 'waiting') return;
+    if (completed || scene.dataset.sceneEntrance !== 'waiting') return;
     // Restored scroll positions and anchor links should show the settled scene.
-    if (window.scrollY > window.innerHeight * 0.5) {
+    if (window.scrollY >= bypassAt) {
       finish();
       return;
     }
@@ -118,7 +128,6 @@ export function enterScene(scene: HTMLElement) {
       scene.dataset.sceneEntrance = 'entering';
       playback = animate(sequence);
       playback.then(finish);
-      syncVisibility();
     } catch {
       finish();
     }
