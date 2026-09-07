@@ -7,7 +7,7 @@ import DialogWindow from './DialogWindow.astro';
 
 interface Props {
   name: string;
-  description: string;
+  description?: string;
   accent: string;
 }
 
@@ -16,7 +16,7 @@ const { name, description, accent } = Astro.props;
 
 <div class="region-window" data-journey-window>
   <DialogWindow title={name} accent={accent}>
-    <p class="rw-text">{description}</p>
+    <slot><p class="rw-text">{description}</p></slot>
   </DialogWindow>
 </div>
 

@@ -80,7 +80,7 @@ export interface JourneyRegion {
   id: string;
   name: string;
   /** The large centred line inside the region's dialog window. */
-  description: string;
+  description?: string;
   /** Dot + wash colour for the region's dialog window. */
   accent: string;
   /** Icon marking each stop on the rail in this region. Defaults to a star. */
@@ -149,11 +149,6 @@ const interestParts: JourneyPart[] = [
       { text: '.' },
     ],
   },
-  {
-    id: 'travel',
-    label: '05',
-    title: 'Travel',
-  },
 ];
 
 export const journey: JourneyRegion[] = [
@@ -172,6 +167,23 @@ export const journey: JourneyRegion[] = [
     accent: '#e87aa4',
     stopIcon: 'telescope',
     parts: interestParts,
+  },
+  {
+    id: 'travel',
+    name: 'Travel',
+    accent: '#f29a4a',
+    stopIcon: 'flight',
+    parts: [
+      {
+        id: 'on-the-road',
+        label: '05',
+        title: 'On the road',
+        // Placeholder copy until the travel stories are ready.
+        paragraphs: [
+          'Travel stories, favourite places, and a few unexpected detours. More from the road soon.',
+        ],
+      },
+    ],
   },
 ];
 

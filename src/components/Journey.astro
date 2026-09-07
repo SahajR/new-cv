@@ -11,6 +11,7 @@ import { journey } from '../data/profile';
 import JourneyPart from './JourneyPart.astro';
 import RegionWindow from './RegionWindow.astro';
 import InterestsWarning from './InterestsWarning.astro';
+import TravelBanner from './TravelBanner.astro';
 
 // Sides alternate continuously across regions.
 let globalIndex = 0;
@@ -35,10 +36,14 @@ const regions = journey.map((region) => ({
   {regions.map((region) => (
     <section class="journey-region" id={region.id} aria-label={region.name} style={`--region-accent: ${region.accent}`}>
       {region.id === 'interests' && <InterestsWarning />}
-      <RegionWindow name={region.name} description={region.description} accent={region.accent} />
-      <ol class="journey-parts">
+      {region.id === 'travel' ? (
+        <RegionWindow name={region.name} accent={region.accent}>
+          <TravelBanner />
+        </RegionWindow>
+      ) : <RegionWindow name={region.name} description={region.description} accent={region.accent} />}
+      {region.parts.length > 0 && <ol class="journey-parts">
         {region.parts.map(({ part, side }, i) => <JourneyPart part={part} side={side} index={i} stopIcon={region.stopIcon} />)}
-      </ol>
+      </ol>}
     </section>
   ))}
 </div>
@@ -100,9 +105,8 @@ const regions = journey.map((region) => ({
       const segs: Seg[] = [];
       const regionStops: { winTop: number; winBottom: number; color: string }[] = [];
       root.querySelectorAll<HTMLElement>('.journey-region').forEach((region) => {
-        // Resolve the region's rail colour from a part label (theme-aware).
-        const label = region.querySelector<HTMLElement>('.jp-label');
-        const color = label ? getComputedStyle(label).color : 'currentColor';
+        // Resolve the theme-aware colour even for an intro-only region.
+        const color = getComputedStyle(region).color;
         const win = region.querySelector<HTMLElement>('[data-journey-window]');
         if (win) {
           const r = win.getBoundingClientRect();
@@ -302,9 +306,9 @@ const regions = journey.map((region) => ({
     display: flex;
     flex-direction: column;
     gap: 56px;
-    /* The region's rail colour: its accent, pulled toward ink for contrast
-       (and automatically lightened in dark mode, where ink is near-white). */
-    --region-rail: color-mix(in oklab, var(--region-accent, var(--rail-lit)) 55%, var(--ink));
+    /* Use the same accent as the region window's square. */
+    --region-rail: var(--region-accent, var(--rail-lit));
+    color: var(--region-rail);
   }
   .journey-region + .journey-region {
     margin-top: 72px;
