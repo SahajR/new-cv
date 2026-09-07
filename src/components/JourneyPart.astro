@@ -5,6 +5,7 @@ import { icons, type IconKey } from '../icons';
 import AlbumStack from './AlbumStack';
 import InlineGba from './InlineGba.astro';
 import StackConsole from './StackConsole.astro';
+import TravelBanner from './TravelBanner.astro';
 
 interface Props {
   part: JourneyPart;
@@ -73,6 +74,7 @@ const StopIcon = stopIcon ? icons[stopIcon] : null;
       </p>
     )}
     {part.id === 'stack' && <StackConsole />}
+    {part.id === 'travel' && <TravelBanner />}
   </div>
 </li>
 

@@ -16,6 +16,7 @@ import { Email } from './email';
 import { Linkedin } from './linkedin';
 import { Github } from './github';
 import { Up } from './up';
+import { Flight } from './flight';
 
 export const icons = {
   gba: GameBoyAdvance,
@@ -31,6 +32,7 @@ export const icons = {
   linkedin: Linkedin,
   github: Github,
   up: Up,
+  flight: Flight,
 } as const;
 
 export type IconKey = keyof typeof icons;

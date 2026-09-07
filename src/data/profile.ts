@@ -38,7 +38,7 @@ export interface FooterLink {
 export const profile = {
   name: 'Sahaj Ramachandran',
   tagline: "hey, I'm sahaj ramachandran",
-  sub: 'programmer & adventurer of the world',
+  sub: 'programmer & adventurer of the worlds',
   description: "Sahaj Ramachandran's personal website",
 };
 
@@ -148,6 +148,11 @@ const interestParts: JourneyPart[] = [
       { text: ' or otherwise', album: 'eq', rotation: 6 },
       { text: '.' },
     ],
+  },
+  {
+    id: 'travel',
+    label: '05',
+    title: 'Travel',
   },
 ];
 
