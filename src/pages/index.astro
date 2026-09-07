@@ -3,10 +3,12 @@ import Layout from '../layouts/Layout.astro';
 import Hero from '../components/Hero.astro';
 import Journey from '../components/Journey.astro';
 import Footer from '../components/Footer.astro';
+import MusicAtmosphere from '../components/MusicAtmosphere.astro';
 ---
 
 <Layout>
   <div class="folio">
+    <MusicAtmosphere />
     <main id="main">
       <Hero>
         <Journey />
@@ -23,8 +25,10 @@ import Footer from '../components/Footer.astro';
     min-height: 100svh;
     display: flex;
     flex-direction: column;
-    background: var(--bg);
+    background: var(--music-ground, var(--bg));
     color: var(--ink);
     overflow-x: clip; /* objects may bleed past the edges; never a horizontal scrollbar */
+    isolation: isolate;
   }
+  main { position: relative; z-index: 1; }
 </style>

@@ -185,6 +185,22 @@ export const journey: JourneyRegion[] = [
       },
     ],
   },
+  {
+    id: 'music',
+    name: 'Music',
+    accent: '#237f83',
+    stopIcon: 'note',
+    parts: [
+      {
+        id: 'evanescence',
+        label: '06',
+        title: 'Evanescence',
+        paragraphs: [
+          'My favourite artist. Haunting vocals, heavy guitars, and a little darkness to get lost in.',
+        ],
+      },
+    ],
+  },
 ];
 
 export const timeline: TimelineEntry[] = [

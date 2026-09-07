@@ -12,6 +12,8 @@ import JourneyPart from './JourneyPart.astro';
 import RegionWindow from './RegionWindow.astro';
 import InterestsWarning from './InterestsWarning.astro';
 import TravelBanner from './TravelBanner.astro';
+import MusicIntro from './MusicIntro.astro';
+import MusicTransition from './MusicTransition.astro';
 
 // Sides alternate continuously across regions.
 let globalIndex = 0;
@@ -36,9 +38,14 @@ const regions = journey.map((region) => ({
   {regions.map((region) => (
     <section class="journey-region" id={region.id} aria-label={region.name} style={`--region-accent: ${region.accent}`}>
       {region.id === 'interests' && <InterestsWarning />}
+      {region.id === 'music' && <MusicTransition />}
       {region.id === 'travel' ? (
         <RegionWindow name={region.name} accent={region.accent}>
           <TravelBanner />
+        </RegionWindow>
+      ) : region.id === 'music' ? (
+        <RegionWindow name={region.name} accent={region.accent}>
+          <MusicIntro />
         </RegionWindow>
       ) : <RegionWindow name={region.name} description={region.description} accent={region.accent} />}
       {region.parts.length > 0 && <ol class="journey-parts">

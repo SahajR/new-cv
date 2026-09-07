@@ -10,7 +10,7 @@ import { headerScene } from '../data/scene';
 ---
 
 <section class="hero">
-  <Scene objects={headerScene} entrance />
+  <Scene objects={headerScene} class="header-scene" entrance />
   <div class="hero-content">
     <Intro />
     <slot />
@@ -43,6 +43,21 @@ import { headerScene } from '../data/scene';
     flex-direction: column;
     align-items: center;
     gap: 2.25rem;
+  }
+  @media (min-width: 761px) {
+    /* Keep the expanded name and its shadows clear as the side gutters narrow.
+       The image half-widths include their rotated silhouettes. min/max retain
+       the original composition wherever there is already enough room. */
+    .hero { --title-clearance: 14rem; }
+    .hero :global(.header-scene [data-id='skydive-helmet']) {
+      left: min(calc(var(--x) * 100%), calc(50% - var(--title-clearance) - var(--w) * 0.6));
+    }
+    .hero :global(.header-scene [data-id='dive-watch']) {
+      left: max(calc(var(--x) * 100%), calc(50% + var(--title-clearance) + var(--w) * 0.61));
+    }
+    .hero :global(.header-scene [data-id='dive-mask']) {
+      left: max(calc(var(--x) * 100%), calc(50% + var(--title-clearance) + var(--w) * 0.56));
+    }
   }
   @media (max-width: 760px) {
     .hero {

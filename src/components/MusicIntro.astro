@@ -1,0 +1,90 @@
+<div class="music-intro" data-music-intro>
+  <img
+    src="/images/music/ev-still.png"
+    data-music-logo
+    width="401"
+    height="401"
+    alt="Evanescence emblem"
+    loading="lazy"
+    decoding="async"
+  />
+  <button class="music-pause" data-music-pause type="button" aria-label="Pause logo animation" aria-pressed="false" hidden>
+    <svg class="music-pause-icon" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path d="M5 4h3v12H5zm7 0h3v12h-3z" /></svg>
+    <svg class="music-play-icon" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path d="m6 4 10 6-10 6z" /></svg>
+  </button>
+</div>
+
+<script>
+  const intro = document.querySelector<HTMLElement>('[data-music-intro]');
+  const logo = intro?.querySelector<HTMLImageElement>('[data-music-logo]');
+  const pause = intro?.querySelector<HTMLButtonElement>('[data-music-pause]');
+  if (intro && logo && pause) {
+    const reduced = matchMedia('(prefers-reduced-motion: reduce)');
+    let visible = false;
+    let paused = false;
+    const sync = () => {
+      const playing = visible && !paused && !reduced.matches && !document.hidden;
+      const src = playing ? '/images/music/ev-slow.gif' : '/images/music/ev-still.png';
+      if (logo.getAttribute('src') !== src) logo.src = src;
+      logo.dataset.playing = `${playing}`;
+      pause.hidden = reduced.matches;
+      pause.setAttribute('aria-pressed', `${paused}`);
+      pause.setAttribute('aria-label', paused ? 'Play logo animation' : 'Pause logo animation');
+    };
+    const observer = new IntersectionObserver(([entry]) => {
+      visible = entry.isIntersecting;
+      sync();
+    }, { threshold: 0.08 });
+    observer.observe(intro);
+    pause.addEventListener('click', () => { paused = !paused; sync(); });
+    reduced.addEventListener('change', sync);
+    document.addEventListener('visibilitychange', sync);
+    sync();
+    document.addEventListener('astro:before-swap', () => {
+      observer.disconnect();
+      reduced.removeEventListener('change', sync);
+      document.removeEventListener('visibilitychange', sync);
+    }, { once: true });
+  }
+</script>
+
+<style>
+  .music-intro {
+    position: relative;
+    display: grid;
+    place-items: center;
+    aspect-ratio: 2 / 1;
+    margin: 6px;
+    overflow: hidden;
+    background: #000;
+  }
+  .music-intro > img {
+    position: absolute;
+    inset: 0;
+    margin: auto;
+    width: 50%;
+    height: 100%;
+    object-fit: contain;
+  }
+  .music-pause {
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    display: grid;
+    place-items: center;
+    width: 44px;
+    height: 44px;
+    padding: 0;
+    border: 0;
+    background: #000;
+    color: #a7bebb;
+    cursor: pointer;
+  }
+  .music-pause[hidden] { display: none; }
+  .music-pause svg { width: 16px; height: 16px; }
+  .music-pause:hover { color: #e5ece7; }
+  .music-pause:focus-visible { outline: 2px solid #88b9b4; outline-offset: -4px; }
+  .music-play-icon { display: none; }
+  .music-pause[aria-pressed='true'] .music-pause-icon { display: none; }
+  .music-pause[aria-pressed='true'] .music-play-icon { display: block; }
+</style>

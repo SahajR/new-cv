@@ -5,6 +5,7 @@ import { icons, type IconKey } from '../icons';
 import AlbumStack from './AlbumStack';
 import InlineGba from './InlineGba.astro';
 import StackConsole from './StackConsole.astro';
+import MusicPortal from './MusicPortal.astro';
 
 interface Props {
   part: JourneyPart;
@@ -73,6 +74,13 @@ const StopIcon = stopIcon ? icons[stopIcon] : null;
       </p>
     )}
     {part.id === 'stack' && <StackConsole />}
+    {part.id === 'evanescence' && <MusicPortal />}
+    {part.id === 'evanescence' && (
+      <a class="jp-artist-link" href="https://evanescencestore.com/pages/shop" target="_blank" rel="noreferrer noopener">
+        Into their world <span aria-hidden="true">↗</span>
+        <span class="sr-only"> — Evanescence official store (opens in a new tab)</span>
+      </a>
+    )}
   </div>
 </li>
 
@@ -256,6 +264,19 @@ const StopIcon = stopIcon ? icons[stopIcon] : null;
   .jp[data-side='right'] .jp-closing {
     text-align: right;
   }
+  .jp-artist-link {
+    align-self: flex-end;
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    min-height: 44px;
+    color: var(--ink);
+    font-family: var(--font-serif);
+    font-size: 18px;
+    text-underline-offset: 5px;
+    text-decoration-color: var(--region-rail);
+  }
+  .jp-artist-link:hover { text-decoration-thickness: 2px; }
 
   @media (prefers-reduced-motion: reduce) {
     .jp {

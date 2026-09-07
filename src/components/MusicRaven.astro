@@ -1,0 +1,74 @@
+---
+const sprite = '/images/music/raven-branch.png';
+// Isolate the generated sprite's face at its neck, keeping the perch still.
+const headOutline = 'M110 14H117L120 17 122 22V28L119 32 111 34 106 31 104 26 105 21 107 17Z';
+const headCutout = 'M110 14H117L120 17 122 22V27L119 29 112 30 107 28 105 24V21L107 17Z';
+---
+
+<div class="raven-perch" data-raven-perch role="img" aria-label="A raven with glowing dark red eyes perched on a bare, twisted tree branch, watching the viewer.">
+  <svg class="raven-art" viewBox="0 0 160 100" aria-hidden="true">
+    <defs>
+      <mask id="raven-body-mask" maskUnits="userSpaceOnUse" x="0" y="0" width="160" height="100">
+        <rect width="160" height="100" fill="white" />
+        <path d={headCutout} fill="black" />
+      </mask>
+      <clipPath id="raven-head-clip"><path d={headOutline} /></clipPath>
+      <filter id="raven-eye-glow" x="-150%" y="-250%" width="400%" height="600%" color-interpolation-filters="sRGB">
+        <feGaussianBlur stdDeviation="0.8" />
+        <feMerge><feMergeNode /><feMergeNode in="SourceGraphic" /></feMerge>
+      </filter>
+    </defs>
+    <image href={sprite} width="160" height="100" mask="url(#raven-body-mask)" />
+    <g class="raven-head" data-raven-head>
+      <image href={sprite} width="160" height="100" clip-path="url(#raven-head-clip)" />
+      <g class="raven-eyes" data-raven-eyes shape-rendering="crispEdges">
+        <g fill="#8d1526" filter="url(#raven-eye-glow)">
+          <rect x="109" y="22" width="2" height="1" />
+          <rect x="116" y="22" width="2" height="1" />
+        </g>
+        <path d="M110 22h1v1h-1zm6 0h1v1h-1z" fill="#bd3b48" />
+      </g>
+    </g>
+  </svg>
+</div>
+
+<script>
+  import { startRaven } from '../scripts/music-raven';
+  startRaven();
+</script>
+
+<style>
+  .raven-perch {
+    --raven-width: clamp(440px, 55vw, 640px);
+    position: absolute;
+    width: var(--raven-width);
+    aspect-ratio: 8 / 5;
+    right: calc(100% - 100px);
+    top: calc(50% - var(--raven-width) * 0.325);
+    z-index: 2;
+    pointer-events: none;
+    user-select: none;
+  }
+  .raven-art {
+    display: block;
+    width: 100%;
+    height: 100%;
+    overflow: visible;
+    image-rendering: pixelated;
+  }
+  .raven-art image { image-rendering: pixelated; }
+  .raven-head {
+    transform-box: view-box;
+    transform-origin: 113px 32px;
+    transform: rotate(6deg);
+  }
+  .raven-eyes { opacity: 1; }
+  @media (max-width: 760px) {
+    .raven-perch {
+      --raven-width: 440px;
+      right: calc(100% - 180px);
+      top: auto;
+      bottom: calc(100% - 64px);
+    }
+  }
+</style>

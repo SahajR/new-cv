@@ -1,0 +1,51 @@
+---
+import MusicRaven from './MusicRaven.astro';
+---
+
+<div class="music-portal" data-music-portal>
+  <MusicRaven />
+  <img
+    src="/images/music/moonlit-door.png"
+    width="160"
+    height="80"
+    loading="lazy"
+    decoding="async"
+    alt="Pixel art of a moonlit gothic doorway, bare trees and a feather above dark turquoise water."
+  />
+  <svg class="music-mist" viewBox="0 0 160 80" fill="currentColor" shape-rendering="crispEdges" aria-hidden="true">
+    <g data-music-mist>
+      <path d="M5 65h22v1H5zm25-3h16v1H30zm13 8h28v1H43zm41-4h17v1H84zm29-4h31v1h-31zm22 9h18v1h-18z" />
+      <path d="M14 59h2v1h-2zm42 4h1v1h-1zm52-6h2v1h-2zm38-8h1v1h-1z" />
+    </g>
+  </svg>
+</div>
+
+<style>
+  .music-portal {
+    position: relative;
+    width: 100%;
+    margin-top: 4px;
+    overflow: visible;
+    background: #071315;
+    aspect-ratio: 2 / 1;
+  }
+  .music-portal img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    image-rendering: pixelated;
+  }
+  .music-mist {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    color: #a7bebb;
+    opacity: 0.22;
+    pointer-events: none;
+  }
+  @media (max-width: 760px) {
+    .music-portal { margin-top: 176px; }
+  }
+</style>

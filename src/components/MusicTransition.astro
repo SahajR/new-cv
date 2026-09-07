@@ -1,0 +1,111 @@
+---
+// A 320 × 112 pixel weaving, drawn once at build time. Ordered dithering and
+// square musical tiles share the same grid; there is no per-pixel runtime.
+const width = 320;
+const height = 112;
+const bayer = [
+  [0, 32, 8, 40, 2, 34, 10, 42],
+  [48, 16, 56, 24, 50, 18, 58, 26],
+  [12, 44, 4, 36, 14, 46, 6, 38],
+  [60, 28, 52, 20, 62, 30, 54, 22],
+  [3, 35, 11, 43, 1, 33, 9, 41],
+  [51, 19, 59, 27, 49, 17, 57, 25],
+  [15, 47, 7, 39, 13, 45, 5, 37],
+  [63, 31, 55, 23, 61, 29, 53, 21],
+];
+const offsets = [8, -4, 12, 0, -12, 4, -8, 12, -4, 8, -12, 0, 4, -8, 12, -4, 0, -12, 8, 4];
+let weave = '';
+for (let y = 0; y < height; y++) {
+  let start = -1;
+  for (let x = 0; x <= width; x++) {
+    const density = Math.max(0, Math.min(1, (y - 12 + offsets[Math.floor(x / 16) % offsets.length]) / 84));
+    const dark = x < width && (y >= 104 || (y > 3 && density > (bayer[y % 8][x % 8] + 0.5) / 64));
+    if (dark && start < 0) start = x;
+    if (!dark && start >= 0) {
+      weave += `M${start} ${y}h${x - start}v1H${start}z`;
+      start = -1;
+    }
+  }
+}
+const tiles = [
+  { x: 0, y: 48, w: 32, h: 16, motif: 'keys', light: true },
+  { x: 16, y: 64, w: 48, h: 16, motif: 'notes', light: false },
+  { x: 32, y: 32, w: 16, h: 32, motif: 'speaker', light: false },
+  { x: 48, y: 48, w: 48, h: 16, motif: 'wave', light: true },
+  { x: 64, y: 80, w: 32, h: 16, motif: 'keys', light: true },
+  { x: 80, y: 64, w: 32, h: 16, motif: 'speaker', light: false },
+  { x: 96, y: 32, w: 48, h: 16, motif: 'notes', light: false },
+  { x: 112, y: 48, w: 32, h: 32, motif: 'keys', light: true },
+  { x: 128, y: 80, w: 48, h: 16, motif: 'wave', light: false },
+  { x: 144, y: 64, w: 48, h: 16, motif: 'notes', light: false },
+  { x: 176, y: 32, w: 32, h: 16, motif: 'keys', light: true },
+  { x: 192, y: 48, w: 16, h: 32, motif: 'speaker', light: false },
+  { x: 208, y: 64, w: 48, h: 16, motif: 'wave', light: true },
+  { x: 224, y: 32, w: 48, h: 16, motif: 'notes', light: false },
+  { x: 240, y: 80, w: 32, h: 16, motif: 'keys', light: true },
+  { x: 272, y: 64, w: 48, h: 16, motif: 'notes', light: false },
+  { x: 288, y: 32, w: 32, h: 16, motif: 'wave', light: true },
+  { x: 304, y: 80, w: 16, h: 16, motif: 'speaker', light: true },
+];
+---
+
+<div class="music-transition" data-music-transition aria-hidden="true">
+  <svg class="music-weave" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" shape-rendering="crispEdges" focusable="false">
+    <defs>
+      {(['light', 'dark'] as const).map((tone) => <Fragment>
+      <pattern id={`music-keys-${tone}`} width="28" height="16" patternUnits="userSpaceOnUse" fill={`var(--weave-${tone})`}>
+        <path d="M0 1h28v14H0z" />
+        <path d="M3 1h1v14H3zm4 0h1v14H7zm4 0h1v14h-1zm4 0h1v14h-1zm4 0h1v14h-1zm4 0h1v14h-1zm4 0h1v14h-1zM2 1h3v8H2zm4 0h3v8H6zm8 0h3v8h-3zm4 0h3v8h-3zm4 0h3v8h-3z" fill={`var(--weave-${tone === 'light' ? 'dark' : 'light'})`} />
+      </pattern>
+      <pattern id={`music-notes-${tone}`} width="24" height="16" patternUnits="userSpaceOnUse" fill={`var(--weave-${tone})`}>
+        <path d="M5 3h2v9H5zm2 0h4v2H7zm-5 8h5v3H2zm-1 1h1v2H1zm17-9h2v9h-2zm-6 2h2v9h-2zm2-2h4v2h-4zm-5 9h5v3H9zm6-3h5v3h-5z" />
+      </pattern>
+      <pattern id={`music-wave-${tone}`} width="32" height="16" patternUnits="userSpaceOnUse" fill={`var(--weave-${tone})`}>
+        <path d="M0 7h2v2H0zm4-2h2v6H4zm4-3h2v12H8zm4 2h2v8h-2zm4 3h2v2h-2zm4-3h2v8h-2zm4-3h2v14h-2zm4 4h2v6h-2z" />
+      </pattern>
+      <pattern id={`music-speaker-${tone}`} width="16" height="16" patternUnits="userSpaceOnUse" fill={`var(--weave-${tone})`}>
+        <path d="M5 1h6v1h2v2h2v8h-2v2h-2v1H5v-1H3v-2H1V4h2V2h2zm0 3v1H4v6h1v1h6v-1h1V5h-1V4zM6 6h4v4H6z" fill-rule="evenodd" />
+      </pattern>
+      </Fragment>)}
+      <pattern id="music-tapestry" width="1280" height="448" patternUnits="userSpaceOnUse" viewBox="0 0 320 112">
+        <path d="M0 0h320v112H0z" class="weave-light" />
+        <path d={weave} class="weave-dark" />
+        {tiles.map((tile) => (
+          <g class:list={['music-tile', { 'is-light': tile.light }]}>
+            <rect x={tile.x} y={tile.y} width={tile.w} height={tile.h} class="tile-ground" />
+            <rect x={tile.x} y={tile.y} width={tile.w} height={tile.h} fill={`url(#music-${tile.motif}-${tile.light ? 'dark' : 'light'})`} />
+          </g>
+        ))}
+      </pattern>
+    </defs>
+    <rect width="100%" height="100%" fill="url(#music-tapestry)" />
+  </svg>
+</div>
+
+<style>
+  .music-transition {
+    position: relative;
+    z-index: 1;
+    flex: none;
+    align-self: center;
+    width: 100vw;
+    height: 448px;
+    overflow: hidden;
+    pointer-events: none;
+    contain: paint;
+    --weave-light: var(--music-ground, #e9e3fe);
+    --weave-dark: #071315;
+  }
+  .music-weave { display: block; image-rendering: pixelated; }
+  .weave-light { fill: var(--weave-light); }
+  .weave-dark { fill: var(--weave-dark); }
+  .music-tile { fill: var(--weave-light); }
+  .tile-ground { fill: var(--weave-dark); }
+  .music-tile.is-light { fill: var(--weave-dark); }
+  .is-light .tile-ground { fill: var(--weave-light); }
+  @media (max-width: 760px) {
+    .music-transition { height: 336px; }
+    /* Crop the weaving horizontally; keep square 3px pixels on phones. */
+    .music-weave { width: 133.3334%; height: 448px; transform: scale(.75); transform-origin: top left; }
+  }
+</style>

@@ -1,0 +1,98 @@
+<div class="music-atmosphere" data-music-atmosphere aria-hidden="true">
+  <div class="music-details" data-music-details>
+  <div class="music-glyph music-glyph-e" data-music-glyph>
+    <img src="/images/music/ev-still.png" width="401" height="401" alt="" decoding="async" />
+  </div>
+  <div class="music-glyph music-glyph-door" data-music-glyph>
+    <svg viewBox="0 0 180 360" fill="none" stroke="currentColor" stroke-width="1">
+      <path d="M28 326V136c0-45 30-75 62-99 32 24 62 54 62 99v190M44 326V143c0-36 23-61 46-81 23 20 46 45 46 81v183M90 8v338M12 326h156M16 342h148M64 180h52M72 190h36" />
+      <circle cx="90" cy="139" r="24" />
+      <path d="m90 111 8 28-8 28-8-28zM21 38h18m-9-9v18m114 184h18m-9-9v18" />
+    </svg>
+  </div>
+  <div class="music-dust" data-music-dust>
+    <svg viewBox="0 0 1000 800" preserveAspectRatio="xMidYMid slice" fill="currentColor" shape-rendering="crispEdges">
+      <path d="M80 90h3v3h-3zm100 160h2v2h-2zm-70 230h4v2h-4zm175 240h2v2h-2zm452-632h3v3h-3zm132 191h2v2h-2zm-80 270h3v3h-3zm161 180h2v2h-2zm-498-512h2v2h-2zm154 397h2v2h-2z" />
+    </svg>
+  </div>
+  </div>
+</div>
+
+<script>
+  import { startMusicAtmosphere } from '../scripts/music-atmosphere';
+  startMusicAtmosphere();
+</script>
+
+<style>
+  .music-atmosphere {
+    position: absolute;
+    inset: auto 0 0;
+    z-index: 0;
+    overflow: hidden;
+    pointer-events: none;
+    background: #071315;
+    color: #537b78;
+    visibility: hidden;
+    contain: strict;
+  }
+  .music-details { position: absolute; inset: 0; opacity: 0; }
+  .music-glyph {
+    position: absolute;
+    opacity: 0.2;
+  }
+  .music-glyph svg { display: block; width: 100%; height: 100%; }
+  .music-glyph-e {
+    width: clamp(180px, 24vw, 360px);
+    height: clamp(300px, 55vh, 540px);
+    left: max(-65px, calc(50% - 660px));
+    top: 12%;
+    opacity: 0.07;
+    mix-blend-mode: screen;
+  }
+  .music-glyph-e img { width: 100%; height: 100%; object-fit: contain; }
+  .music-glyph-door {
+    width: clamp(160px, 20vw, 300px);
+    height: clamp(320px, 64vh, 620px);
+    right: max(-75px, calc(50% - 660px));
+    bottom: 6%;
+  }
+  .music-dust { position: absolute; inset: -30px; opacity: 0.32; }
+  .music-dust svg { width: 100%; height: 100%; }
+  @media (max-width: 760px) {
+    .music-glyph { opacity: 0.13; }
+    .music-glyph-e { left: -105px; opacity: 0.055; }
+    .music-glyph-door { right: -100px; }
+  }
+</style>
+
+<style is:global>
+  #music,
+  :root[data-music-theme='dark'] .folio-footer {
+    --bg: #071315;
+    --ink: #e5ece7;
+    --body: #b5c9c5;
+    --mute: #7d9994;
+    --rule: #294449;
+    --surface-hover: rgb(156 195 183 / 0.07);
+    --surface-chip: #152a2c;
+    --keyline: #73958d;
+    --ink-title: #dbe6df;
+    --ink-desc: #adc4bc;
+    --ink-link-hover: #d7e8df;
+    --dot-line: #365355;
+    --dot-fill: #426163;
+    --dot-case: #426163;
+    --route: #52716f;
+    --footer-tint-rgb: 7, 19, 21;
+    --placeholder-a: #132b2c;
+    --placeholder-b: #214244;
+    color-scheme: dark;
+  }
+  #music { margin-top: 80px; }
+  #music .jp-title {
+    font-size: clamp(2rem, 5.5vw, 3rem);
+    letter-spacing: -0.025em;
+    line-height: 1.12;
+  }
+  #music .jp-p { line-height: 1.75; }
+</style>
