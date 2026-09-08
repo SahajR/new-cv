@@ -1,6 +1,7 @@
 ---
 import '../styles/global.css';
 import { profile } from '../data/profile';
+import { HEADER_VISIT_KEY } from '../scripts/header-visit';
 
 interface Props {
   title?: string;
@@ -18,6 +19,15 @@ const { title = profile.name, description = profile.description } = Astro.props;
     <meta name="theme-color" content="#f3f2ee" />
     <!-- Blocking on purpose: sets data-theme (and theme-color) before first paint. -->
     <script is:inline src="/theme.js"></script>
+    <script is:inline define:vars={{ headerVisitKey: HEADER_VISIT_KEY }}>
+      // Snapshot at navigation time so finishing the title cannot skip the
+      // image, timeline and dock entrances on the first landing.
+      try {
+        document.documentElement.dataset.headerSeen = window.sessionStorage.getItem(headerVisitKey) === '1' ? 'true' : 'false';
+      } catch {
+        document.documentElement.dataset.headerSeen = 'false';
+      }
+    </script>
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="preload" href="/fonts/mondwest.woff2" as="font" type="font/woff2" crossorigin />
     <link rel="preload" href="/fonts/yport.woff2" as="font" type="font/woff2" crossorigin />

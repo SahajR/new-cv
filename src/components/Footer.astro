@@ -44,7 +44,8 @@ const currentPath = Astro.url.pathname.replace(/\/$/, '') || '/';
 <script is:inline>
   {
     const footer = document.currentScript.previousElementSibling;
-    if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    if (document.documentElement.dataset.headerSeen !== 'true'
+      && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
       footer.dataset.footerEntrance = 'boot';
       window.setTimeout(() => {
         if (footer.dataset.footerEntrance === 'boot') footer.dataset.footerEntrance = 'complete';

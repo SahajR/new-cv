@@ -72,7 +72,8 @@ const styleFor = (o: SceneObject) => {
 {entrance && <script is:inline>
   {
     const scene = document.currentScript.previousElementSibling;
-    if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    if (document.documentElement.dataset.headerSeen !== 'true'
+      && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
       scene.dataset.sceneEntrance = 'boot';
       // Keep the photographs available if the animation module cannot load.
       window.setTimeout(() => {

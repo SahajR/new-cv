@@ -1,3 +1,13 @@
+export interface AchievementTrack {
+  id: string;
+  title: string;
+  current: number;
+  target: number;
+  labels?: string[];
+  nextInProgress?: boolean;
+  status?: string;
+}
+
 export interface Achievement {
   id: string;
   category: string;
@@ -8,6 +18,7 @@ export interface Achievement {
   unit: string;
   status: string;
   nextInProgress?: boolean;
+  tracks?: AchievementTrack[];
   /** Track a measured percentage against a lower goal, rather than completion. */
   measurement?: 'percentage';
   accent: string;
@@ -26,9 +37,19 @@ export const achievements: Achievement[] = [
   },
   {
     id: 'scuba', category: 'Underwater', title: 'Master scuba diver',
-    description: 'The 50-dive milestone on the way to master level.',
+    description: 'Levels, speciality courses and time underwater.',
     current: 35, target: 50, unit: 'dives logged',
     status: '15 more dives to the milestone',
+    tracks: [
+      {
+        id: 'levels', title: 'Certification levels', current: 3, target: 3,
+        labels: ['Open Water', 'Advanced', 'Rescue'],
+      },
+      {
+        id: 'specialities', title: 'Speciality courses', current: 4, target: 5,
+        nextInProgress: true, status: '5th course in progress',
+      },
+    ],
     accent: '#448d87', image: '/images/achievements/scuba.png',
     imageAlt: 'Pixel art of a scuba diver exploring a deep turquoise reef.',
   },

@@ -12,9 +12,35 @@ const complete = Math.floor(completedSegments);
   <article class="achievement-card" aria-labelledby={`${a.id}-title`} style={`--card-accent: ${a.accent}`}>
     <img class="achievement-art" src={a.image} alt={a.imageAlt} width="40" height="60" loading={index < 2 ? 'eager' : 'lazy'} decoding="async" />
     <div class="achievement-content">
+      <div class="achievement-summary">
       <p class="achievement-category"><span aria-hidden="true">{String(index + 1).padStart(2, '0')}</span>{a.category}</p>
       <h2 id={`${a.id}-title`}>{a.title}</h2>
       <p class="achievement-description">{a.description}</p>
+      </div>
+      <div class="achievement-progress-content">
+      {a.tracks && <div class="achievement-tracks">
+        {a.tracks.map((track) => (
+          <div class="achievement-track">
+            <p class="track-heading" id={`${a.id}-${track.id}-title`}>
+              <span>{track.title}</span><strong>{track.current}<span> / {track.target}</span></strong>
+            </p>
+            <div class="track-meter" role="progressbar" aria-labelledby={`${a.id}-${track.id}-title`}
+              aria-valuemin="0" aria-valuemax={track.target} aria-valuenow={track.current}
+              aria-valuetext={track.labels
+                ? track.labels.map((label, i) => `${label}: ${i < track.current ? 'complete' : track.nextInProgress && i === track.current ? 'in progress' : 'not completed'}`).join('; ')
+                : `${track.current} of ${track.target} complete${track.status ? `; ${track.status}` : ''}`}
+              style={`--segments: ${track.target}`}>
+              {Array.from({ length: track.target }, (_, i) => <span class="track-step" aria-hidden="true">
+                <span class:list={['meter-block', { 'is-complete': i < track.current, 'is-next': track.nextInProgress && i === track.current }]}></span>
+                {track.labels && <span class="track-label">{track.labels[i]}</span>}
+              </span>)}
+            </div>
+            {track.status && <p class="achievement-status">
+              {track.nextInProgress && <span class="status-pattern" aria-hidden="true"></span>}{track.status}
+            </p>}
+          </div>
+        ))}
+      </div>}
       <div class="achievement-progress">
         {a.measurement === 'percentage' ? (
           <div class="measurement">
@@ -59,6 +85,7 @@ const complete = Math.floor(completedSegments);
           {a.nextInProgress && <span class="status-pattern" aria-hidden="true"></span>}{a.status}
         </p>
       </div>
+      </div>
     </div>
   </article>
 </li>
@@ -84,6 +111,7 @@ const complete = Math.floor(completedSegments);
     background: color-mix(in oklab, var(--card-accent) 25%, var(--bg));
   }
   .achievement-content { min-width: 0; padding: 4px 12px 4px 0; }
+  .achievement-summary, .achievement-progress-content { min-width: 0; }
   .achievement-category {
     display: flex;
     gap: 12px;
@@ -97,6 +125,14 @@ const complete = Math.floor(completedSegments);
   h2 { margin-top: 4px; font-size: clamp(1.6rem, 3vw, 2rem); line-height: 1.12; }
   .achievement-description { margin-top: 6px; color: var(--body); font-size: .9375rem; line-height: 1.5; }
   .achievement-progress { margin-top: 20px; }
+  .achievement-tracks { display: grid; gap: 18px; margin-top: 20px; }
+  .track-heading { display: flex; align-items: baseline; justify-content: space-between; flex-wrap: wrap; gap: 4px 8px; color: var(--body); font-size: .75rem; }
+  .track-heading strong { font-family: var(--font-serif); font-size: 1.25rem; font-weight: 500; line-height: 1; color: var(--ink); font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .track-heading strong span { color: var(--body); }
+  .track-meter { display: grid; grid-template-columns: repeat(var(--segments), minmax(0, 1fr)); gap: 4px; margin-top: 9px; }
+  .track-step { display: grid; align-content: start; gap: 6px; min-width: 0; }
+  .track-step .meter-block { display: block; height: 12px; }
+  .track-label { color: var(--body); font-size: .75rem; line-height: 1.35; text-align: center; }
   .achievement-count { display: flex; align-items: baseline; gap: 12px; color: var(--body); font-size: .8125rem; }
   .achievement-count strong { color: var(--ink); font-family: var(--font-serif); font-size: 1.5rem; font-weight: 500; line-height: 1; font-variant-numeric: tabular-nums; white-space: nowrap; }
   .achievement-count strong span { color: var(--body); }
@@ -116,6 +152,13 @@ const complete = Math.floor(completedSegments);
   .meter-block.is-next, .status-pattern { background: repeating-linear-gradient(135deg, var(--card-accent) 0 2px, transparent 2px 5px); }
   .achievement-status { display: flex; align-items: center; gap: 7px; margin-top: 8px; color: var(--body); font-size: .75rem; line-height: 1.4; }
   .status-pattern { flex: none; width: 10px; height: 10px; border: 1px solid color-mix(in oklab, var(--card-accent) 65%, var(--ink)); }
+  @media (max-width: 767px) {
+    .achievement-card { row-gap: 16px; }
+    .achievement-content { display: contents; }
+    .achievement-summary { grid-column: 2; }
+    .achievement-progress-content { grid-column: 1 / -1; }
+    .achievement-progress-content > :first-child { margin-top: 0; }
+  }
   @media (max-width: 560px) {
     .achievement-card { grid-template-columns: 80px minmax(0, 1fr); gap: 16px; padding: 10px; }
     .achievement-art { width: 80px; height: 120px; }
@@ -123,6 +166,9 @@ const complete = Math.floor(completedSegments);
     h2 { font-size: 1.5rem; }
     .achievement-description { font-size: .8125rem; }
     .achievement-progress { margin-top: 16px; }
+    .achievement-tracks { margin-top: 16px; gap: 16px; }
+    .track-meter { gap: 3px; }
+    .track-label { font-size: .6875rem; }
     .achievement-count { flex-wrap: wrap; gap: 4px 8px; font-size: .75rem; }
     .achievement-count strong { font-size: 1.375rem; }
     .achievement-meter { gap: 3px; }

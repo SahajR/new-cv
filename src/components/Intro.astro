@@ -50,7 +50,8 @@ const lastName = 'ramachandran';
   // Show the domain before first paint; without JS, the full name stays visible.
   {
     const intro = document.currentScript.previousElementSibling;
-    if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    if (document.documentElement.dataset.headerSeen !== 'true'
+      && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
       intro.dataset.introPhase = 'boot';
       window.setTimeout(() => {
         if (intro.dataset.introPhase === 'boot') intro.dataset.introPhase = 'complete';

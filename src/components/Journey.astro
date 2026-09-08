@@ -58,7 +58,8 @@ const regions = journey.map((region) => ({
 <script is:inline>
   {
     const journey = document.currentScript.previousElementSibling;
-    if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    if (document.documentElement.dataset.headerSeen !== 'true'
+      && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
       journey.dataset.journeyEntrance = 'boot';
       window.setTimeout(() => {
         if (journey.dataset.journeyEntrance === 'boot') journey.dataset.journeyEntrance = 'complete';

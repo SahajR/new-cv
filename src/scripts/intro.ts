@@ -1,5 +1,6 @@
 import { animate, frame, type AnimationSequence, type AnimationPlaybackControlsWithThen } from 'motion';
 import { INTRO_KERNING } from '../data/intro-typography';
+import { rememberHeaderVisit } from './header-visit';
 
 /* INTRO STORYBOARD — milliseconds after the title font is ready.
  *    0 ms  hey.sr holds; subtitle space is reserved but hidden
@@ -89,6 +90,7 @@ if (root && stage && subtitle && iGlyph && baseline && imTail && dot && core && 
     clearStyles();
     frame.postRender(clearStyles);
     root.dataset.introPhase = 'complete';
+    rememberHeaderVisit();
     sizeObserver?.disconnect();
     visibilityObserver?.disconnect();
     reduced.removeEventListener('change', finish);
