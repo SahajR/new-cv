@@ -2,13 +2,15 @@
 import '../styles/global.css';
 import { profile } from '../data/profile';
 import { HEADER_VISIT_KEY } from '../scripts/header-visit';
+import TravelTransitions from '../components/TravelTransitions.astro';
 
 interface Props {
   title?: string;
   description?: string;
+  travelTransitions?: boolean;
 }
 
-const { title = profile.name, description = profile.description } = Astro.props;
+const { title = profile.name, description = profile.description, travelTransitions = false } = Astro.props;
 ---
 
 <!doctype html>
@@ -37,6 +39,7 @@ const { title = profile.name, description = profile.description } = Astro.props;
     <meta property="og:type" content="website" />
     <meta name="generator" content={Astro.generator} />
     <title>{title}</title>
+    {travelTransitions && <TravelTransitions />}
   </head>
   <body>
     <slot />

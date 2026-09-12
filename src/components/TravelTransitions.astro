@@ -1,0 +1,33 @@
+<style is:global>
+  @view-transition { navigation: auto; }
+  .sb-stage { view-transition-name: travel-scrapbook; }
+  ::view-transition-group(travel-scrapbook) {
+    animation-duration: 480ms;
+    animation-timing-function: cubic-bezier(.22, 1, .36, 1);
+  }
+  ::view-transition-old(travel-scrapbook),
+  ::view-transition-new(travel-scrapbook) { height: 100%; object-fit: contain; mix-blend-mode: normal; }
+  ::view-transition-old(root), ::view-transition-new(root) { animation-duration: 180ms; }
+  @media (prefers-reduced-motion: reduce) {
+    ::view-transition-group(*), ::view-transition-old(*), ::view-transition-new(*) { animation: none !important; }
+  }
+</style>
+<script is:inline>
+  // A resized or superseded snapshot can reject ready while navigation still
+  // succeeds. Handle that promise separately from finished on both documents.
+  addEventListener('pageswap', (event) => {
+    event.viewTransition?.ready.catch(() => {});
+  });
+  // Runs before the first render, including when the destination is restored
+  // from bfcache. Page turns start after the shared book snapshot has landed.
+  addEventListener('pagereveal', (event) => {
+    if (!event.viewTransition) return;
+    event.viewTransition.ready.catch(() => {});
+    document.documentElement.dataset.bookRevealing = 'true';
+    const finish = () => {
+      delete document.documentElement.dataset.bookRevealing;
+      dispatchEvent(new Event('book:revealed'));
+    };
+    event.viewTransition.finished.then(finish, finish);
+  });
+</script>

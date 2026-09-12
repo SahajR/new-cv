@@ -1,0 +1,23 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import Footer from '../../components/Footer.astro';
+import TravelScrapbook from '../../components/TravelScrapbook.astro';
+import { travelCountries, type TravelCountry } from '../../data/travel';
+export function getStaticPaths() {
+  return travelCountries.map((country) => ({ params: { country: country.slug }, props: { country } }));
+}
+interface Props { country: TravelCountry }
+const { country } = Astro.props;
+---
+<Layout title={`${country.name} — Sahaj’s travel journal`} description={country.note} travelTransitions>
+  <main id="main" class="travel-main">
+    <a class="travel-home" href="/travel/" data-book-home><span aria-hidden="true">←</span> All countries</a>
+    <TravelScrapbook page={country.page} mode="journal" />
+  </main>
+  <Footer />
+</Layout>
+<style>
+  .travel-main { width: min(100% - 48px, 940px); margin: auto; padding: 28px 0 140px; }
+  .travel-home { display: inline-flex; align-items: center; gap: 10px; min-height: 44px; font: 20px var(--font-serif); text-underline-offset: 5px; }
+  @media(max-width: 560px) { .travel-main { width: calc(100% - 24px); padding-top: 16px; } }
+</style>

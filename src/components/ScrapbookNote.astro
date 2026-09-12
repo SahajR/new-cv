@@ -1,0 +1,14 @@
+---
+import type { TravelCountry } from '../data/travel';
+interface Props { country: TravelCountry; journal?: boolean }
+const { country, journal = false } = Astro.props;
+const Heading = journal ? 'h1' : 'h3';
+---
+<div class="sb-notes">
+  <span class="sb-kicker">A page from the road</span>
+  <Heading class="sb-country-title" data-book-country-title={country.page} tabindex={journal ? 0 : undefined}>{country.name}</Heading>
+  <p class="sb-places">{country.places}</p>
+  <p class="sb-handwriting">{country.note}</p>
+  <span class="sb-stamp" aria-hidden="true"><b>{country.code}</b><span>FIELD NOTES</span></span>
+  <span class="sb-page-number" aria-hidden="true">{String(country.page).padStart(2, '0')}</span>
+</div>

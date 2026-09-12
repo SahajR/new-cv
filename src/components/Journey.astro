@@ -11,7 +11,7 @@ import { journey } from '../data/profile';
 import JourneyPart from './JourneyPart.astro';
 import RegionWindow from './RegionWindow.astro';
 import InterestsWarning from './InterestsWarning.astro';
-import TravelBanner from './TravelBanner.astro';
+import TravelScrapbook from './TravelScrapbook.astro';
 import MusicIntro from './MusicIntro.astro';
 import MusicTransition from './MusicTransition.astro';
 
@@ -41,7 +41,7 @@ const regions = journey.map((region) => ({
       {region.id === 'music' && <MusicTransition />}
       {region.id === 'travel' ? (
         <RegionWindow name={region.name} accent={region.accent}>
-          <TravelBanner />
+          <TravelScrapbook page={2} />
         </RegionWindow>
       ) : region.id === 'music' ? (
         <RegionWindow name={region.name} accent={region.accent}>
@@ -58,6 +58,14 @@ const regions = journey.map((region) => ({
 <script is:inline>
   {
     const journey = document.currentScript.previousElementSibling;
+    // Reserve the expanded windows before the browser positions the Travel
+    // fragment. Otherwise earlier windows push the destination down on return.
+    if (location.hash === '#travel') {
+      for (const region of journey.querySelectorAll('.journey-region')) {
+        region.querySelector('[data-journey-window]')?.classList.add('is-reached');
+        if (region.id === 'travel') break;
+      }
+    }
     if (document.documentElement.dataset.headerSeen !== 'true'
       && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
       journey.dataset.journeyEntrance = 'boot';
@@ -82,6 +90,9 @@ const regions = journey.map((region) => ({
     const parts = Array.from(root.querySelectorAll<HTMLElement>('[data-journey-part]'));
     const dots = parts.map((p) => p.querySelector<HTMLElement>('[data-journey-dot]')!);
     const wins = Array.from(root.querySelectorAll<HTMLElement>('[data-journey-window]'));
+    const fragmentTarget = location.hash === '#travel' ? root.querySelector<HTMLElement>('#travel') : null;
+    const fragmentWindows = new Set(fragmentTarget ? wins.filter((win) => win.classList.contains('is-reached')) : []);
+    let fragmentPending = !!fragmentTarget;
     const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     const READ_LINE = 0.42; // fraction of the viewport height that counts as "read"
     const PAD = 40;         // svg bleed beyond the column so the rail isn't clipped
@@ -211,7 +222,7 @@ const regions = journey.map((region) => ({
         dot.classList.toggle('is-lit', reached);
       });
       wins.forEach((win, i) => {
-        const reached = winTops[i] + 24 <= lineY;
+        const reached = (fragmentPending && fragmentWindows.has(win)) || winTops[i] + 24 <= lineY;
         if (windowStates[i] === reached) return;
         windowStates[i] = reached;
         win.classList.toggle('is-reached', reached);
@@ -263,6 +274,16 @@ const regions = journey.map((region) => ({
     document.fonts?.ready.then(() => frame.read(relayout));
     relayout();
     enterJourney(root, relayout);
+    if (fragmentTarget) {
+      // Keep the reserved windows open until images and fonts have established
+      // the fragment's final position. Scroll restoration can precede both.
+      const loaded = document.readyState === 'complete' ? Promise.resolve() : new Promise<void>((resolve) => window.addEventListener('load', () => resolve(), { once: true }));
+      Promise.all([loaded, document.fonts.ready]).then(() => {
+        fragmentTarget.scrollIntoView({ block: 'start', behavior: 'instant' });
+        fragmentPending = false;
+        relayout();
+      });
+    }
   }
 </script>
 

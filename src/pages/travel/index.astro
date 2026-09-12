@@ -1,0 +1,18 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import Footer from '../../components/Footer.astro';
+import TravelScrapbook from '../../components/TravelScrapbook.astro';
+---
+<Layout title="Travel — Sahaj’s adventure book" description="A scrapbook of places, memories and adventures. Choose a country to turn to its pages." travelTransitions>
+  <main id="main" class="travel-main">
+    <a class="travel-home" href="/#travel" data-book-home><span aria-hidden="true">←</span> Back to the journey</a>
+    <h1 class="sr-only">Sahaj’s travel journal</h1>
+    <TravelScrapbook page={0} mode="index" />
+  </main>
+  <Footer />
+</Layout>
+<style>
+  .travel-main { width: min(100% - 48px, 940px); margin: auto; padding: 28px 0 140px; }
+  .travel-home { display: inline-flex; align-items: center; gap: 10px; min-height: 44px; font: 20px var(--font-serif); text-underline-offset: 5px; }
+  @media(max-width: 560px) { .travel-main { width: calc(100% - 24px); padding-top: 16px; } }
+</style>

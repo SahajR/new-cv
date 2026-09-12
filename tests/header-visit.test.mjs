@@ -25,6 +25,7 @@ function landing(storage, reduced = false) {
   const document = { documentElement: { dataset: {} }, currentScript: {} };
   const context = {
     document, headerVisitKey: HEADER_VISIT_KEY,
+    location: { hash: '' },
     window: { sessionStorage: storage, matchMedia: () => ({ matches: reduced }), setTimeout: (callback) => timers.push(callback) },
   };
   runInNewContext(bootstrap, context);
@@ -81,4 +82,16 @@ test('reduced motion remains settled on the first visit', () => {
   const page = landing(session(), true);
   assert.deepEqual(page.phases(), ['complete', 'complete', 'complete', 'complete']);
   assert.equal(page.timers.length, 0);
+});
+
+test('a Travel fragment reserves preceding window heights before anchoring', () => {
+  const opened = [];
+  const regions = ['work', 'interests', 'travel', 'music'].map((id) => ({
+    id, querySelector: () => ({ classList: { add: () => opened.push(id) } }),
+  }));
+  runInNewContext(entrances.find((entry) => entry.property === 'journeyEntrance').script, {
+    document: { documentElement: { dataset: { headerSeen: 'true' } }, currentScript: { previousElementSibling: { querySelectorAll: () => regions } } },
+    location: { hash: '#travel' },
+  });
+  assert.deepEqual(opened, ['work', 'interests', 'travel']);
 });
