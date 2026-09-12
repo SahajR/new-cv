@@ -28,7 +28,7 @@ const dust = Array.from({ length: 14 }, (_, i) => ({
           {['fore', 'top', 'bottom'].map(side => <div class={`sb-leaf-edge sb-leaf-edge-${side}`} aria-hidden="true"></div>)}
           <div class="sb-face sb-front sb-cover-art" data-face-page="0" aria-hidden={page !== 0 ? 'true' : undefined} inert={page !== 0}>
             <img src="/images/travel/scrapbook-cover.webp" width="1200" height="778" alt="Our Adventure Book — a worn leather scrapbook with a red cloth binding" loading={mode === 'embedded' ? 'lazy' : 'eager'} />
-            {mode !== 'index' && <button type="button" class="sb-open" data-book-open aria-label="Open travel scrapbook"><span>Open the book <span aria-hidden="true">↗</span></span></button>}
+            {mode === 'embedded' && <button type="button" class="sb-open" data-book-open aria-label="Open travel scrapbook"><span>Open the book <span aria-hidden="true">↗</span></span></button>}
           </div>
           <div class="sb-face sb-back" data-face-page="1" aria-hidden={page !== 1 ? 'true' : undefined} inert={page !== 1}>
             <ScrapbookNote country={travelCountries[0]} journal={mode === 'journal'} />
