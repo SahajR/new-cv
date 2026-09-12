@@ -3,6 +3,7 @@ import { spring, type AnimationPlaybackControls } from 'motion';
 import { BookNavigation, clampPage } from './book-navigation';
 import { BookAudio } from './book-audio';
 import { createPageStack, leafPose, stackPose } from './book-stack';
+import { prepareCountryJournal, replaceCountryJournal } from './country-journal';
 import { travelCountries, countryFromPath, countryHref, BOOK_VISIT_KEY, BOOK_HANDOFF_KEY, type TravelCountry } from '../data/travel';
 
 const readBookmark = () => {
@@ -23,16 +24,6 @@ export function setupScrapbook(root: HTMLElement) {
   const status = root.querySelector<HTMLElement>('[data-book-status]')!;
   const coverImage = root.querySelector<HTMLImageElement>('.sb-cover-art > img')!;
   const sound = new BookAudio();
-  const soundButton = root.querySelector<HTMLButtonElement>('[data-book-sound]')!;
-  const soundLabel = soundButton.querySelector<HTMLElement>('[data-book-sound-label]')!;
-  const paintSound = () => {
-    soundButton.hidden = !sound.supported;
-    soundButton.setAttribute('aria-pressed', String(sound.enabled));
-    soundButton.title = sound.enabled ? 'Mute page sounds' : 'Enable page sounds';
-    soundLabel.textContent = sound.enabled ? 'Sound on' : 'Sound off';
-  };
-  paintSound();
-  soundButton.addEventListener('click', () => { sound.setEnabled(!sound.enabled); paintSound(); });
   const unlockSound = (event: Event) => { if (event.isTrusted) sound.unlock(); };
   document.addEventListener('click', unlockSound, { capture: true });
   document.addEventListener('keydown', unlockSound, { capture: true });
@@ -46,6 +37,7 @@ export function setupScrapbook(root: HTMLElement) {
   let controls: AnimationPlaybackControls[] = [];
   let routeTransition: ViewTransition | undefined;
   let navigationVersion = 0;
+  let countryRequest: AbortController | undefined;
   let turns: string[] = [];
   let activeLeaf: HTMLElement | undefined;
   let activeStack: ReturnType<typeof createPageStack> | undefined;
@@ -213,6 +205,20 @@ export function setupScrapbook(root: HTMLElement) {
 
   async function navigateCountry(country: TravelCountry, historyMode: 'push' | 'pop' = 'push') {
     const version = ++navigationVersion;
+    countryRequest?.abort();
+    countryRequest = new AbortController();
+    const request = countryRequest;
+    let journalRegion: HTMLElement | undefined;
+    root.setAttribute('aria-busy','true');
+    try {
+      journalRegion = await prepareCountryJournal(country.slug, request.signal);
+    } catch {
+      if (!request.signal.aborted) location.assign(countryHref(country));
+      return;
+    } finally {
+      if (version === navigationVersion) root.removeAttribute('aria-busy');
+    }
+    if (version !== navigationVersion) return;
     pendingFocus = undefined;
     pendingEntrance = false;
     root.dataset.arrival = 'complete';
@@ -224,10 +230,12 @@ export function setupScrapbook(root: HTMLElement) {
     await navigator.whenStepSettles();
     if (version !== navigationVersion) return;
     const update = () => {
+      if (version !== navigationVersion) return;
       if (historyMode === 'push' && countryFromPath(location.pathname)?.slug !== country.slug) {
         history.pushState({ travelCountry: country.slug }, '', countryHref(country));
       }
       updateCountryContent(country);
+      replaceCountryJournal(journalRegion);
     };
     if (document.startViewTransition && !reduced.matches) {
       const transition = document.startViewTransition(update);
@@ -292,7 +300,7 @@ export function setupScrapbook(root: HTMLElement) {
   root.addEventListener('keydown', (event) => {
     if (index) return;
     if (event.key !== 'ArrowLeft' && event.key !== 'ArrowRight') return;
-    if ((event.target as Element).closest('input, textarea, select')) return;
+    if ((event.target as Element).closest('input, textarea, select, [data-japan-map]')) return;
     event.preventDefault();
     (event.key === 'ArrowRight' ? next : previous).click();
   });
@@ -303,7 +311,7 @@ export function setupScrapbook(root: HTMLElement) {
   });
   window.addEventListener('popstate', () => {
     const country = countryFromPath(location.pathname);
-    if (journal && country) void navigateCountry(country, 'pop');
+    if (journal && country && document.querySelector<HTMLElement>('[data-country-journal]')?.dataset.countryJournal !== country.slug) void navigateCountry(country, 'pop');
   });
   window.addEventListener('pageswap', (event) => {
     const destination = event.activation?.entry?.url;

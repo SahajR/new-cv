@@ -1,10 +1,13 @@
 ---
 import { travelCountries, countryHref, BOOK_VISIT_KEY, BOOK_HANDOFF_KEY } from '../data/travel';
 import ScrapbookNote from './ScrapbookNote.astro';
+import JapanMap from './JapanMap.astro';
+import { getJapanStories } from '../lib/travel-content';
 import '../styles/scrapbook.css';
 interface Props { page?: number; mode?: 'embedded' | 'journal' | 'index' }
 const { page = 1, mode = 'embedded' } = Astro.props;
 const country = travelCountries[page - 1];
+const japanEntries = await getJapanStories();
 // Sparse, asymmetric flecks: paper dust, rather than a confetti burst.
 const dust = Array.from({ length: 14 }, (_, i) => ({
   x: i % 2 ? 75 + (i % 3) * 2 : 25 - (i % 3) * 2,
@@ -38,10 +41,12 @@ const dust = Array.from({ length: 14 }, (_, i) => ({
           <div class="sb-leaf" data-leaf={entry.page} style={`--leaf: ${entry.page}`}>
             {['fore', 'top', 'bottom'].map(side => <div class={`sb-leaf-edge sb-leaf-edge-${side}`} aria-hidden="true"></div>)}
             <div class="sb-face sb-front" data-face-page={entry.page} aria-hidden={page !== entry.page ? 'true' : undefined} inert={page !== entry.page}>
-              <figure class="sb-postcard">
+              {entry.slug === 'japan' ? <div class="sb-map-page" data-book-map-slot>
+                <JapanMap stops={japanEntries.map(entry => entry.stop)} linked={mode !== 'journal'} />
+              </div> : <figure class="sb-postcard">
                 <img src={entry.image} alt={entry.imageAlt} width="40" height="60" loading={mode === 'journal' ? 'eager' : 'lazy'} />
                 <figcaption>{entry.caption}</figcaption>
-              </figure>
+              </figure>}
               <span class="sb-postmark" aria-hidden="true">{entry.code} / {String(entry.page).padStart(2, '0')}</span>
             </div>
             <div class="sb-face sb-back" data-face-page={entry.page + 1} aria-hidden={page !== entry.page + 1 ? 'true' : undefined} inert={page !== entry.page + 1}>
@@ -67,19 +72,11 @@ const dust = Array.from({ length: 14 }, (_, i) => ({
     <button type="button" data-book-next aria-label="Next scrapbook page" disabled={page === travelCountries.length}>→</button>
   </div>
   {mode === 'index' && <h2 class="sb-contents-title" id="book-contents">Contents</h2>}
-  <nav class:list={['sb-destinations', { 'sb-contents': mode === 'index' }]} aria-label="Scrapbook countries">
+  {mode === 'index' && <nav class="sb-destinations sb-contents" aria-label="Scrapbook countries">
     {travelCountries.map((entry) => (
-      <a href={countryHref(entry)} data-book-country={entry.slug} data-page={entry.page} aria-current={entry.page === page ? 'page' : undefined}><span>{String(entry.page).padStart(2, '0')}</span>{entry.name}{mode === 'index' && <span class="sb-contents-arrow" aria-hidden="true">↗</span>}</a>
+      <a href={countryHref(entry)} data-book-country={entry.slug} data-page={entry.page} aria-current={entry.page === page ? 'page' : undefined}><span>{String(entry.page).padStart(2, '0')}</span>{entry.name}<span class="sb-contents-arrow" aria-hidden="true">↗</span></a>
     ))}
-  </nav>
-  <button class="sb-sound" type="button" data-book-sound aria-label="Page sounds" aria-pressed="true" hidden>
-    <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-      <path d="M11 5 6 9H3v6h3l5 4Z" />
-      <path class="sb-sound-waves" d="M15 8a6 6 0 0 1 0 8m3-11a10 10 0 0 1 0 14" />
-      <path class="sb-sound-muted" d="m16 9 6 6m0-6-6 6" />
-    </svg>
-    <span data-book-sound-label>Sound on</span>
-  </button>
+  </nav>}
   {mode === 'embedded' && <a class="sb-read" data-book-read href="/travel/">Explore the travel journal <span aria-hidden="true">↗</span></a>}
 </section>
 <script is:inline define:vars={{ visitKey: BOOK_VISIT_KEY, transferKey: BOOK_HANDOFF_KEY }}>

@@ -1,0 +1,26 @@
+---
+import { getJapanStories } from '../lib/travel-content';
+import { japanPhotos, japanStoryHref, japanCardId, formatVisitDate } from '../data/japan';
+const entries = await getJapanStories();
+---
+<section class="japan-journal" data-japan-journal aria-labelledby="japan-journal-title">
+  <header class="japan-journal-heading">
+    <div><p class="japan-eyebrow">From the camera roll</p><h2 id="japan-journal-title">Japan, stop by stop<span>.</span></h2></div>
+    <p class="japan-trip-date">30 May — 6 June<br/><span>2025</span></p>
+  </header>
+  <div class="japan-map-dock" data-japan-map-dock></div>
+  <nav class="japan-place-index" aria-label="Places in Japan">{entries.map(({ stop },i) => <a href={`#${japanCardId(stop.id)}`} data-place-link={stop.id}><span>{String(i+1).padStart(2,'0')}</span> {stop.name}</a>)}</nav>
+  <div class="japan-stories">
+    {entries.map(({ stop, story },i) => {
+      const photos = japanPhotos[stop.id];
+      const cover = photos[0];
+      return <article class="japan-story" id={japanCardId(stop.id)} data-japan-story={stop.id} data-place-name={stop.name} tabindex="-1">
+        <a class="japan-story-link" href={japanStoryHref(stop.id)}>
+          <div class="japan-story-photo"><img src={cover.thumbnail} width={cover.width} height={cover.height} alt={cover.alt} loading="lazy" decoding="async"/><span class="japan-photo-number" aria-hidden="true">{String(i+1).padStart(2,'0')}</span></div>
+          <div class="japan-story-text"><div class="japan-story-meta"><span>{stop.name}</span><time datetime={story.data.visited}>{story.data.dateLabel ?? formatVisitDate(story.data.visited)}</time></div><h3>{story.data.title}</h3><p>{story.data.caption}</p><span class="japan-story-bottom">{photos.length} {photos.length === 1 ? 'photograph' : 'photographs'}<span class="japan-open">Open the page <span aria-hidden="true">↗</span></span></span></div>
+        </a>
+      </article>;
+    })}
+    <p class="japan-endnote"><span aria-hidden="true">✳</span> A few places, a lot to remember.</p>
+  </div>
+</section>

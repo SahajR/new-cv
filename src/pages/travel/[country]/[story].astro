@@ -1,0 +1,57 @@
+---
+import { render, type CollectionEntry } from 'astro:content';
+import Layout from '../../../layouts/Layout.astro';
+import Footer from '../../../components/Footer.astro';
+import { getJapanStories } from '../../../lib/travel-content';
+import { japanPhotos, japanStoryHref, japanCardId, formatVisitDate, type JapanStopId } from '../../../data/japan';
+
+export async function getStaticPaths() {
+  const entries = await getJapanStories();
+  return entries.map(({ stop, story }, i) => ({ params: { country: 'japan', story: stop.id }, props: { entry: story, place: stop.id, name: stop.name, previous: entries[i-1]?.stop, next: entries[i+1]?.stop } }));
+}
+interface Props {
+  entry: CollectionEntry<'travel'>;
+  place: JapanStopId;
+  name: string;
+  previous?: { id: string; name: string };
+  next?: { id: string; name: string };
+}
+const { entry, place, name, previous, next } = Astro.props;
+const { Content } = await render(entry);
+const photos = japanPhotos[place];
+const [cover, ...gallery] = photos;
+---
+<Layout title={`${entry.data.title} — Sahaj in ${name}`} description={entry.data.caption}>
+  <main class="travel-entry" id="main">
+    <a class="entry-back" href={`/travel/japan/#${japanCardId(place)}`}><span aria-hidden="true">←</span> Back to Japan</a>
+    <header class="entry-heading"><p class="entry-place">Japan <span aria-hidden="true">/</span> {name}</p><h1>{entry.data.title}</h1><p class="entry-caption">{entry.data.caption}</p><time datetime={entry.data.visited}>{entry.data.dateLabel ?? formatVisitDate(entry.data.visited)}</time></header>
+    <figure class="entry-cover"><img src={cover.src} width={cover.width} height={cover.height} alt={cover.alt} fetchpriority="high"/><figcaption>{cover.alt}</figcaption></figure>
+    <div class="entry-prose"><Content /></div>
+    {gallery.length > 0 && <div class="entry-gallery" aria-label={`More photographs from ${name}`}>{gallery.map(photo => <figure><img src={photo.src} width={photo.width} height={photo.height} alt={photo.alt} loading="lazy" decoding="async"/><figcaption>{photo.alt}</figcaption></figure>)}</div>}
+    <nav class="entry-neighbors" aria-label="Continue through Japan"><div>{previous && <a href={japanStoryHref(previous.id)}><span>Previous place</span>← {previous.name}</a>}</div><div>{next && <a href={japanStoryHref(next.id)}><span>Next place</span>{next.name} →</a>}</div></nav>
+  </main>
+  <Footer />
+</Layout>
+<style>
+  .travel-entry { width: min(100% - 40px, 780px); margin: auto; padding: 36px 0 90px; }
+  .entry-back { display: inline-flex; gap: 10px; align-items: center; min-height: 44px; font: 19px var(--font-serif); text-underline-offset: 4px; }
+  .entry-heading { margin: 50px 0 30px; max-width: 670px; }
+  .entry-place { font-size: 11px; text-transform: uppercase; letter-spacing: .12em; color: var(--body); }
+  .entry-place span { margin: 0 10px; color: #bd664b; }
+  h1 { font-size: clamp(40px,7vw,66px); line-height: 1.02; letter-spacing: -.025em; text-wrap: balance; margin: 16px 0; }
+  .entry-caption { font-size: 16px; color: var(--body); max-width: 49ch; }
+  time { display: block; font: 16px var(--font-serif); margin-top: 20px; color: var(--body); }
+  figure { margin: 0; }
+  .entry-cover img { display: block; width: 100%; height: auto; max-height: 660px; object-fit: contain; background: color-mix(in srgb,var(--rule) 35%,transparent); }
+  figcaption { font-size: 11px; color: var(--body); line-height: 1.5; margin-top: 9px; }
+  .entry-prose { width: min(100%,62ch); margin: 40px auto 48px; font-size: 17px; line-height: 1.8; color: var(--body); }
+  .entry-prose :global(p + p) { margin-top: 1.3em; }
+  .entry-prose :global(h2) { margin: 1.6em 0 .5em; line-height: 1.2; color: var(--ink); }
+  .entry-gallery { display: grid; grid-template-columns: 1fr 1fr; gap: 30px 20px; align-items: start; }
+  .entry-gallery img { display: block; width: 100%; height: auto; }
+  .entry-neighbors { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; border-top: 1px solid var(--rule); padding-top: 25px; margin-top: 55px; }
+  .entry-neighbors > div:last-child { text-align: right; }
+  .entry-neighbors a { display: inline-block; font: 23px var(--font-serif); text-decoration: none; padding: 6px 0; }
+  .entry-neighbors span { display: block; font: 10px var(--font-main); color: var(--body); margin-bottom: 8px; }
+  @media(max-width:540px) { .travel-entry { width: calc(100% - 28px); padding-top: 20px; } .entry-heading { margin-top: 30px; } .entry-gallery { grid-template-columns: 1fr; } .entry-prose { font-size: 16px; } }
+</style>

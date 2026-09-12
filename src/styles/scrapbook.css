@@ -138,10 +138,6 @@
 .sb-destinations.sb-contents a { display: flex; gap: 16px; min-height: 52px; padding: 0 4px; border-bottom: 1px dotted #caba9b; font-size: 22px; }
 .sb-contents a > span:first-child { font: 11px var(--font-main); }
 .sb-contents .sb-contents-arrow { margin-left: auto; font: 20px var(--font-serif); }
-.sb-sound { display: flex; align-items: center; justify-content: center; gap: 7px; min-height: 44px; margin: 0 auto; padding: 0 10px; border: 0; background: transparent; color: #68543b; font: 13px var(--font-main); cursor: pointer; }
-.sb-sound[hidden], .sb-sound-muted, .sb-sound[aria-pressed='false'] .sb-sound-waves { display: none; }
-.sb-sound[aria-pressed='false'] .sb-sound-muted { display: block; }
-.sb-sound:hover { color: #8e3924; }
 .sb-read { display: block; width: fit-content; margin: 4px auto 0; min-height: 44px; align-content: center; font: 17px var(--font-serif); text-underline-offset: 4px; }
 .scrapbook :focus-visible { outline-color: #8e3924; }
 .scrapbook:not([data-ready]) .sb-controls { visibility: hidden; }

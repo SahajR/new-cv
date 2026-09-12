@@ -1,0 +1,150 @@
+[
+  {
+    "slug": "osaka",
+    "photos": [
+      {
+        "file": "PXL_20250530_035245944.MP.jpg",
+        "alt": "Osaka Castle beneath a cloudy sky."
+      },
+      {
+        "file": "PXL_20250530_102522152.jpg",
+        "alt": "The Yodo River and Osaka skyline at dusk."
+      },
+      {
+        "file": "PXL_20250531_112836140.MP.jpg",
+        "alt": "Illuminated signs along the Dotonbori canal."
+      },
+      {
+        "file": "PXL_20250601_091237872.jpg",
+        "alt": "The Osaka Expo 2025 mascot beside a pavilion."
+      },
+      {
+        "file": "PXL_20250530_052453011.jpg",
+        "alt": "Pikachu curry and a Gengar drink at the Pokémon Café."
+      }
+    ]
+  },
+  {
+    "slug": "koyasan",
+    "photos": [
+      {
+        "file": "PXL_20250531_031757338.jpg",
+        "alt": "Stone memorials beneath tall cedars in Okunoin."
+      },
+      {
+        "file": "PXL_20250531_034320800.MP.jpg",
+        "alt": "Sahaj sitting beside a mossy stone stairway in Kōyasan."
+      },
+      {
+        "file": "PXL_20250531_051329960.jpg",
+        "alt": "Raked gravel and stones in a temple garden."
+      },
+      {
+        "file": "PXL_20250531_055957623.jpg",
+        "alt": "Railway tracks descending through the forest at Kōyasan."
+      }
+    ]
+  },
+  {
+    "slug": "expo-park",
+    "photos": [
+      {
+        "file": "PXL_20250601_070534049.jpg",
+        "alt": "Sahaj with the Tower of the Sun in Expo ’70 Commemorative Park."
+      },
+      {
+        "file": "PXL_20250601_052816022.jpg",
+        "alt": "A Pokémon-themed display at Expo Park."
+      }
+    ]
+  },
+  {
+    "slug": "hiroshima",
+    "photos": [
+      {
+        "file": "PXL_20250602_014139233.jpg",
+        "alt": "The Atomic Bomb Dome in Hiroshima."
+      },
+      {
+        "file": "PXL_20250602_015129654.MP.jpg",
+        "alt": "The Memorial Cenotaph in Hiroshima Peace Memorial Park."
+      },
+      {
+        "file": "PXL_20250602_020245260.jpg",
+        "alt": "An exhibit inside the Hiroshima Peace Memorial Museum."
+      }
+    ]
+  },
+  {
+    "slug": "miyajima",
+    "photos": [
+      {
+        "file": "PXL_20250602_034200778.MP.jpg",
+        "alt": "The red torii of Itsukushima Shrine standing in the water."
+      },
+      {
+        "file": "PXL_20250602_041350167.jpg",
+        "alt": "Sahaj beside the water with the Itsukushima torii behind him."
+      },
+      {
+        "file": "PXL_20250602_053609185.jpg",
+        "alt": "The island-dotted sea viewed from the mountains of Miyajima."
+      },
+      {
+        "file": "PXL_20250602_062901368.jpg",
+        "alt": "The Itsukushima torii framed by a stone lantern."
+      }
+    ]
+  },
+  {
+    "slug": "kyoto",
+    "photos": [
+      {
+        "file": "PXL_20250603_030538884.jpg",
+        "alt": "Yasaka Pagoda above a street in Higashiyama, Kyoto."
+      },
+      {
+        "file": "PXL_20250603_015623661.jpg",
+        "alt": "A passage lined with red torii gates at Fushimi Inari."
+      },
+      {
+        "file": "PXL_20250603_060632397.MP.jpg",
+        "alt": "Tall bamboo beside the path in Arashiyama."
+      },
+      {
+        "file": "PXL_20250603_061517360.jpg",
+        "alt": "Sahaj overlooking a river valley in Arashiyama."
+      }
+    ]
+  },
+  {
+    "slug": "tokyo",
+    "photos": [
+      {
+        "file": "PXL_20250604_123640915.jpg",
+        "alt": "Tokyo illuminated at night, seen through the Skytree windows."
+      },
+      {
+        "file": "PXL_20250604_023449039.MP.jpg",
+        "alt": "Sahaj looking across Tokyo from the Skytree during the day."
+      },
+      {
+        "file": "PXL_20250605_090911734.jpg",
+        "alt": "Sahaj beside the Hachikō statue in Shibuya."
+      },
+      {
+        "file": "PXL_20250604_032943237.jpg",
+        "alt": "The entrance to Pokémon Center Skytree Town."
+      }
+    ]
+  },
+  {
+    "slug": "kamakura",
+    "photos": [
+      {
+        "file": "PXL_20250606_014541673.jpg",
+        "alt": "Sahaj with the Great Buddha at Kōtoku-in in Kamakura."
+      }
+    ]
+  }
+]

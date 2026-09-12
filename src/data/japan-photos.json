@@ -1,0 +1,215 @@
+{
+  "osaka": [
+    {
+      "src": "/images/travel/japan/osaka-01.webp",
+      "thumbnail": "/images/travel/japan/osaka-01-small.webp",
+      "width": 1084,
+      "height": 1440,
+      "alt": "Osaka Castle beneath a cloudy sky.",
+      "capturedAt": "2025-05-30T03:52:45.000Z"
+    },
+    {
+      "src": "/images/travel/japan/osaka-02.webp",
+      "width": 1440,
+      "height": 1084,
+      "alt": "The Yodo River and Osaka skyline at dusk.",
+      "capturedAt": "2025-05-30T10:25:22.000Z"
+    },
+    {
+      "src": "/images/travel/japan/osaka-03.webp",
+      "width": 1084,
+      "height": 1440,
+      "alt": "Illuminated signs along the Dotonbori canal.",
+      "capturedAt": "2025-05-31T11:28:36.000Z"
+    },
+    {
+      "src": "/images/travel/japan/osaka-04.webp",
+      "width": 1440,
+      "height": 1084,
+      "alt": "The Osaka Expo 2025 mascot beside a pavilion.",
+      "capturedAt": "2025-06-01T09:12:37.000Z"
+    },
+    {
+      "src": "/images/travel/japan/osaka-05.webp",
+      "width": 1084,
+      "height": 1440,
+      "alt": "Pikachu curry and a Gengar drink at the Pokémon Café.",
+      "capturedAt": "2025-05-30T05:24:53.000Z"
+    }
+  ],
+  "koyasan": [
+    {
+      "src": "/images/travel/japan/koyasan-01.webp",
+      "thumbnail": "/images/travel/japan/koyasan-01-small.webp",
+      "width": 1440,
+      "height": 1084,
+      "alt": "Stone memorials beneath tall cedars in Okunoin.",
+      "capturedAt": "2025-05-31T03:17:57.000Z"
+    },
+    {
+      "src": "/images/travel/japan/koyasan-02.webp",
+      "width": 1084,
+      "height": 1440,
+      "alt": "Sahaj sitting beside a mossy stone stairway in Kōyasan.",
+      "capturedAt": "2025-05-31T03:43:20.000Z"
+    },
+    {
+      "src": "/images/travel/japan/koyasan-03.webp",
+      "width": 1440,
+      "height": 1080,
+      "alt": "Raked gravel and stones in a temple garden.",
+      "capturedAt": "2025-05-31T05:13:29.000Z"
+    },
+    {
+      "src": "/images/travel/japan/koyasan-04.webp",
+      "width": 1084,
+      "height": 1440,
+      "alt": "Railway tracks descending through the forest at Kōyasan.",
+      "capturedAt": "2025-05-31T05:59:57.000Z"
+    }
+  ],
+  "expo-park": [
+    {
+      "src": "/images/travel/japan/expo-park-01.webp",
+      "thumbnail": "/images/travel/japan/expo-park-01-small.webp",
+      "width": 1440,
+      "height": 1080,
+      "alt": "Sahaj with the Tower of the Sun in Expo ’70 Commemorative Park.",
+      "capturedAt": "2025-06-01T07:05:34.000Z"
+    },
+    {
+      "src": "/images/travel/japan/expo-park-02.webp",
+      "width": 1084,
+      "height": 1440,
+      "alt": "A Pokémon-themed display at Expo Park.",
+      "capturedAt": "2025-06-01T05:28:16.000Z"
+    }
+  ],
+  "hiroshima": [
+    {
+      "src": "/images/travel/japan/hiroshima-01.webp",
+      "thumbnail": "/images/travel/japan/hiroshima-01-small.webp",
+      "width": 1440,
+      "height": 1084,
+      "alt": "The Atomic Bomb Dome in Hiroshima.",
+      "capturedAt": "2025-06-02T01:41:39.000Z"
+    },
+    {
+      "src": "/images/travel/japan/hiroshima-02.webp",
+      "width": 1084,
+      "height": 1440,
+      "alt": "The Memorial Cenotaph in Hiroshima Peace Memorial Park.",
+      "capturedAt": "2025-06-02T01:51:29.000Z"
+    },
+    {
+      "src": "/images/travel/japan/hiroshima-03.webp",
+      "width": 1084,
+      "height": 1440,
+      "alt": "An exhibit inside the Hiroshima Peace Memorial Museum.",
+      "capturedAt": "2025-06-02T02:02:45.000Z"
+    }
+  ],
+  "miyajima": [
+    {
+      "src": "/images/travel/japan/miyajima-01.webp",
+      "thumbnail": "/images/travel/japan/miyajima-01-small.webp",
+      "width": 1084,
+      "height": 1440,
+      "alt": "The red torii of Itsukushima Shrine standing in the water.",
+      "capturedAt": "2025-06-02T03:42:00.000Z"
+    },
+    {
+      "src": "/images/travel/japan/miyajima-02.webp",
+      "width": 1440,
+      "height": 1084,
+      "alt": "Sahaj beside the water with the Itsukushima torii behind him.",
+      "capturedAt": "2025-06-02T04:13:50.000Z"
+    },
+    {
+      "src": "/images/travel/japan/miyajima-03.webp",
+      "width": 1440,
+      "height": 1084,
+      "alt": "The island-dotted sea viewed from the mountains of Miyajima.",
+      "capturedAt": "2025-06-02T05:36:09.000Z"
+    },
+    {
+      "src": "/images/travel/japan/miyajima-04.webp",
+      "width": 1084,
+      "height": 1440,
+      "alt": "The Itsukushima torii framed by a stone lantern.",
+      "capturedAt": "2025-06-02T06:29:01.000Z"
+    }
+  ],
+  "kyoto": [
+    {
+      "src": "/images/travel/japan/kyoto-01.webp",
+      "thumbnail": "/images/travel/japan/kyoto-01-small.webp",
+      "width": 1084,
+      "height": 1440,
+      "alt": "Yasaka Pagoda above a street in Higashiyama, Kyoto.",
+      "capturedAt": "2025-06-03T03:05:38.000Z"
+    },
+    {
+      "src": "/images/travel/japan/kyoto-02.webp",
+      "width": 1084,
+      "height": 1440,
+      "alt": "A passage lined with red torii gates at Fushimi Inari.",
+      "capturedAt": "2025-06-03T01:56:23.000Z"
+    },
+    {
+      "src": "/images/travel/japan/kyoto-03.webp",
+      "width": 1440,
+      "height": 1084,
+      "alt": "Tall bamboo beside the path in Arashiyama.",
+      "capturedAt": "2025-06-03T06:06:32.000Z"
+    },
+    {
+      "src": "/images/travel/japan/kyoto-04.webp",
+      "width": 1440,
+      "height": 1084,
+      "alt": "Sahaj overlooking a river valley in Arashiyama.",
+      "capturedAt": "2025-06-03T06:15:17.000Z"
+    }
+  ],
+  "tokyo": [
+    {
+      "src": "/images/travel/japan/tokyo-01.webp",
+      "thumbnail": "/images/travel/japan/tokyo-01-small.webp",
+      "width": 1440,
+      "height": 1084,
+      "alt": "Tokyo illuminated at night, seen through the Skytree windows.",
+      "capturedAt": "2025-06-04T12:36:40.000Z"
+    },
+    {
+      "src": "/images/travel/japan/tokyo-02.webp",
+      "width": 1084,
+      "height": 1440,
+      "alt": "Sahaj looking across Tokyo from the Skytree during the day.",
+      "capturedAt": "2025-06-04T02:34:49.000Z"
+    },
+    {
+      "src": "/images/travel/japan/tokyo-03.webp",
+      "width": 1084,
+      "height": 1440,
+      "alt": "Sahaj beside the Hachikō statue in Shibuya.",
+      "capturedAt": "2025-06-05T09:09:11.000Z"
+    },
+    {
+      "src": "/images/travel/japan/tokyo-04.webp",
+      "width": 1440,
+      "height": 1084,
+      "alt": "The entrance to Pokémon Center Skytree Town.",
+      "capturedAt": "2025-06-04T03:29:43.000Z"
+    }
+  ],
+  "kamakura": [
+    {
+      "src": "/images/travel/japan/kamakura-01.webp",
+      "thumbnail": "/images/travel/japan/kamakura-01-small.webp",
+      "width": 1440,
+      "height": 1080,
+      "alt": "Sahaj with the Great Buddha at Kōtoku-in in Kamakura.",
+      "capturedAt": "2025-06-06T01:45:41.000Z"
+    }
+  ]
+}
