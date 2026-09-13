@@ -38,7 +38,7 @@ Official naming references: [Tower of the Sun](https://www.expo70-park.jp/cause/
 - Explicit map/index jumps set a card fragment and focus that card; passive scroll leaves focus and history alone.
 - MDX pages return to their card. Published filtering is shared by map destinations, cards, article routes, and neighbor links. Missing/duplicate landmark references fail validation.
 - Country changes fetch the destination's static journal region and replace it while retaining the book. Latest-request checks prevent stale content; fetch failure falls back to document navigation. Article pages use ordinary navigation.
-- A small observer/controller is mounted when the Japan journal is inserted and disposed when it is removed. Its styles are loaded by every country route, including when arriving from a country with no map.
+- A shared observer/controller in `travel-scroll.ts` is mounted when a supported country journal is inserted and disposed when it is removed. It selects the current country's map explicitly. Styles are loaded by every country route, including when arriving from a country with no map. See the [Jordan import](jordan-import.md) for the shared components and current validation results.
 
 The broader plan still covers future country artwork, more granular/repeated stories, additional photo figures, and richer authored prose. This implementation adds the first real photo-backed country journal.
 

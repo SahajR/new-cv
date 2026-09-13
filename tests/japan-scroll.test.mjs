@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { selectActiveStory, mapLiftProgress } from '../src/scripts/japan-scroll.ts';
+import { selectActiveStory, mapLiftProgress } from '../src/scripts/travel-scroll.ts';
 
 test('the map stays in the book until the stage reaches the viewport top', () => {
   assert.equal(mapLiftProgress(80, 780), 0);

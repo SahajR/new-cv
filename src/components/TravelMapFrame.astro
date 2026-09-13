@@ -1,0 +1,32 @@
+---
+import { travelJournals, cardId, type JournalCountry, type TravelStop } from '../data/travel-journals';
+import '../styles/travel-journal.css';
+interface Props { country: JournalCountry; prefix: string; stops: readonly TravelStop[]; linked?: boolean }
+const { country, prefix, stops, linked = false } = Astro.props;
+const journal = travelJournals[country];
+const href = (id: string) => `${linked ? `/travel/${country}/` : ''}#${cardId(id)}`;
+---
+<div class="travel-map" data-travel-map={country} data-map-name={journal.name} data-map-placement="book">
+  <svg class="travel-map-canvas" data-map-canvas data-country-view={journal.countryView} data-journey-view={journal.journeyView} viewBox={journal.countryView} role="group" aria-labelledby={`${country}-map-title ${country}-map-description`}>
+    <title id={`${country}-map-title`}>{journal.name}: a map of the journey</title>
+    <desc id={`${country}-map-description`}>{journal.description} Choose one of {stops.length} landmarks to jump to its photographs. Illustrations are spaced out for readability, with lines to their locations.</desc>
+    <slot />
+    {stops.map((stop, i) => <a href={href(stop.id)} class="map-landmark" data-map-stop={stop.id} aria-label={`${stop.name}: jump to photographs`}>
+      <path class="map-leader" d={`M${stop.anchor[0]} ${stop.anchor[1]}L${stop.marker[0]} ${stop.marker[1]}`} />
+      <circle class="map-anchor" cx={stop.anchor[0]} cy={stop.anchor[1]} r="3" />
+      <g transform={`translate(${stop.marker[0]} ${stop.marker[1]})`}>
+        <rect class="map-hit-area" x="-62" y="-92" width="124" height="132" rx="4" />
+        <ellipse class="map-ground" rx="38" ry="9" transform="scale(.6)" />
+        <ellipse class="map-active-ring" rx="42" ry="12" />
+        <g class="map-sprite"><use href={`#${prefix}-${stop.symbol}`} transform="scale(.6)" /></g>
+        <g class="map-label"><rect x="-60" y="12" width="120" height="27" rx="3"/><text x="5" y="32" text-anchor="middle">{stop.mapLabel ?? stop.name}</text><circle cx="-54" cy="25" r="11"/><text class="map-number" x="-54" y="29" text-anchor="middle">{i+1}</text></g>
+      </g>
+    </a>)}
+  </svg>
+  <div class="travel-map-footer">
+    <a class="map-book-caption" href={stops[0] ? href(stops[0].id) : `#${country}-journal-title`} data-place-link={stops[0]?.id}>Explore the map <span aria-hidden="true">↓</span></a>
+    <span class="map-current"><span class="map-current-dot" aria-hidden="true"></span><span data-map-current>Choose a place, or follow the photographs</span></span>
+    <button type="button" class="map-view-toggle" data-map-view hidden>Whole {journal.name} <span aria-hidden="true">↗</span></button>
+    <span class="map-follow-hint">Scroll to explore <span aria-hidden="true">↓</span></span>
+  </div>
+</div>

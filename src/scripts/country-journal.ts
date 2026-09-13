@@ -1,10 +1,10 @@
-import { setupJapanScroll } from './japan-scroll';
+import { setupTravelScroll } from './travel-scroll';
 
 let cleanup: (() => void) | undefined;
 export function mountCountryJournal() {
   cleanup?.();
-  const japan = document.querySelector<HTMLElement>('[data-japan-journal]');
-  cleanup = japan ? setupJapanScroll(japan) : undefined;
+  const journal = document.querySelector<HTMLElement>('[data-travel-journal]');
+  cleanup = journal ? setupTravelScroll(journal) : undefined;
 }
 
 export async function prepareCountryJournal(country: string, signal: AbortSignal) {

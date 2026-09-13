@@ -1,15 +1,12 @@
 ---
 import { japanCoastline } from '../data/japan-coastline';
-import { japanCardId, type japanStops } from '../data/japan';
-import '../styles/japan.css';
-interface Props { stops: readonly (typeof japanStops)[number][]; linked?: boolean }
+import TravelMapFrame from './TravelMapFrame.astro';
+import type { TravelStop } from '../data/travel-journals';
+interface Props { stops: readonly TravelStop[]; linked?: boolean }
 const { stops, linked = false } = Astro.props;
 const trees = [[502,289],[528,286],[545,272],[572,250],[609,212],[627,199],[650,177],[673,147],[704,108],[754,93],[782,81],[803,73],[842,82],[307,356],[281,384],[389,348]];
 ---
-<div class="japan-map" data-japan-map data-map-placement="book">
-  <svg class="japan-map-canvas" data-map-canvas viewBox="0 0 900 330" role="group" aria-labelledby="japan-map-title japan-map-description">
-    <title id="japan-map-title">Japan: a map of the journey</title>
-    <desc id="japan-map-description">An illustrated map with {stops.length} places photographed between 30 May and 6 June 2025. Choose a landmark to jump to its photographs. Landmark illustrations are spread out for readability.</desc>
+<TravelMapFrame country="japan" prefix="jp" stops={stops} linked={linked}>
     <defs>
       <path id="jp-land" d={japanCoastline} />
       <clipPath id="jp-land-clip"><use href="#jp-land" /></clipPath>
@@ -79,22 +76,4 @@ const trees = [[502,289],[528,286],[545,272],[572,250],[609,212],[627,199],[650,
       <g class="map-island-names" fill="#547664"><text x="820" y="43">HOKKAIDO</text><text x="632" y="224" transform="rotate(-32 632 224)">HONSHU</text><text x="390" y="369">SHIKOKU</text><text x="264" y="419">KYUSHU</text></g>
       <g transform="translate(912 346)" class="map-compass"><path d="M0-22L-7 0H7Z" fill="#4c786e"/><path d="M0 22L-7 0H7Z" fill="#d3e3d7"/><text y="-31" text-anchor="middle">N</text></g>
     </g>
-    {stops.map((stop, i) => <a href={`${linked ? '/travel/japan/' : ''}#${japanCardId(stop.id)}`} class="map-landmark" data-map-stop={stop.id} aria-label={`${stop.name}: jump to photographs`}>
-      <path class="map-leader" d={`M${stop.anchor[0]} ${stop.anchor[1]}L${stop.marker[0]} ${stop.marker[1]}`} />
-      <circle class="map-anchor" cx={stop.anchor[0]} cy={stop.anchor[1]} r="3" />
-      <g transform={`translate(${stop.marker[0]} ${stop.marker[1]})`}>
-        <rect class="map-hit-area" x="-62" y="-92" width="124" height="132" rx="4" />
-        <ellipse class="map-ground" rx="38" ry="9" transform="scale(.6)" />
-        <ellipse class="map-active-ring" rx="42" ry="12" />
-        <g class="map-sprite"><use href={`#jp-${stop.symbol}`} transform="scale(.6)" /></g>
-        <g class="map-label"><rect x="-60" y="12" width="120" height="27" rx="3"/><text x="5" y="32" text-anchor="middle">{stop.name}</text><circle cx="-54" cy="25" r="11"/><text class="map-number" x="-54" y="29" text-anchor="middle">{i+1}</text></g>
-      </g>
-    </a>)}
-  </svg>
-  <div class="japan-map-footer">
-    <a class="map-book-caption" href={`${linked ? '/travel/japan/' : ''}#${stops[0] ? japanCardId(stops[0].id) : 'japan-journal-title'}`} data-place-link={stops[0]?.id}>Explore the map <span aria-hidden="true">↓</span></a>
-    <span class="map-current"><span class="map-current-dot" aria-hidden="true"></span><span data-map-current>Choose a place, or follow the photographs</span></span>
-    <button type="button" class="map-view-toggle" data-map-view hidden>Whole Japan <span aria-hidden="true">↗</span></button>
-    <span class="map-follow-hint">Scroll to explore <span aria-hidden="true">↓</span></span>
-  </div>
-</div>
+</TravelMapFrame>

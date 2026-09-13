@@ -1,0 +1,47 @@
+[
+  { "slug": "karnak", "photos": [
+    { "file": "egypt/PXL_20260529_055240967.jpg", "alt": "Sahaj standing among the enormous carved columns of Karnak’s Great Hypostyle Hall." },
+    { "file": "egypt/PXL_20260529_054726588.jpg", "alt": "A stone sphinx facing a colonnade at Karnak." },
+    { "file": "egypt/PXL_20260529_054320170.jpg", "alt": "Figures and hieroglyphs carved into a tall stone surface at Karnak." },
+    { "file": "egypt/PXL_20260529_060839558.jpg", "alt": "A monumental gateway flanked by seated statues in the Karnak temple complex." }
+  ]},
+  { "slug": "luxor-temple", "photos": [
+    { "file": "egypt/PXL_20260529_064238718.jpg", "alt": "Sahaj beneath the statues and columns of Luxor Temple." },
+    { "file": "egypt/PXL_20260529_070020925.jpg", "alt": "Sahaj beside a stone sphinx and palm trees at Luxor Temple." }
+  ]},
+  { "slug": "tutankhamun-tomb", "photos": [
+    { "file": "egypt/PXL_20260529_081614279.jpg", "alt": "Sahaj beside the glass case containing Tutankhamun’s mummy in his tomb in the Valley of the Kings." }
+  ]},
+  { "slug": "hatshepsut-temple", "photos": [
+    { "file": "egypt/PXL_20260529_084434123.jpg", "alt": "Sahaj in front of Hatshepsut’s terraced temple beneath the cliffs at Deir el-Bahari." },
+    { "file": "egypt/PXL_20260529_084702614.jpg", "alt": "A long colonnade at Hatshepsut’s temple against the pale desert cliffs." },
+    { "file": "egypt/PXL_20260529_084952145.jpg", "alt": "Painted figures and hieroglyphs preserved on a wall at Hatshepsut’s temple." },
+    { "file": "egypt/PXL_20260529_085401879.jpg", "alt": "Sahaj standing between tall statues at Hatshepsut’s temple." }
+  ]},
+  { "slug": "giza-plateau", "photos": [
+    { "file": "egypt/PXL_20260530_044832954.PORTRAIT.jpg", "alt": "Sahaj sitting on a low wall with the pyramids of Giza behind him in the morning light." },
+    { "file": "egypt/PXL_20260530_030846730.MP.jpg", "alt": "Sahaj on a resting camel, pointing toward a foreground rock in a playful perspective photograph with the pyramids behind him." },
+    { "file": "egypt/PXL_20260530_031211676.jpg", "alt": "Sahaj jumping above the desert ground with the Giza pyramids on the horizon." },
+    { "file": "egypt/PXL_20260530_050131757.MP.jpg", "alt": "Sahaj sitting beside the huge stone blocks at the base of a Giza pyramid." }
+  ]},
+  { "slug": "great-pyramid", "photos": [
+    { "file": "egypt/PXL_20260530_052014517.MP.jpg", "alt": "Sahaj inside a tall stone chamber in the Great Pyramid." },
+    { "file": "egypt/PXL_20260530_051849621.jpg", "alt": "A lit passage leading between the stone walls inside the Great Pyramid." }
+  ]},
+  { "slug": "great-sphinx", "photos": [
+    { "file": "egypt/PXL_20260530_055206202.jpg", "alt": "Sahaj sitting in front of the Great Sphinx, with a pyramid behind it." },
+    { "file": "egypt/PXL_20260530_060855511.jpg", "alt": "Sahaj looking toward the Great Sphinx across the viewing area." }
+  ]},
+  { "slug": "coptic-cairo", "photos": [
+    { "file": "egypt/PXL_20260530_105338508.MP.jpg", "alt": "Sahaj on the approach to the Hanging Church in Coptic Cairo." },
+    { "file": "egypt/PXL_20260530_110313750.jpg", "alt": "A glass-covered well inside the Church of Saints Sergius and Bacchus in Old Cairo." },
+    { "file": "egypt/PXL_20260530_110618799.jpg", "alt": "An illustrated map of the Holy Family’s journey through Egypt displayed in Old Cairo." },
+    { "file": "egypt/PXL_20260530_110800329.jpg", "alt": "A carved stone doorway at the Church of Saints Sergius and Bacchus in Old Cairo." }
+  ]},
+  { "slug": "grand-egyptian-museum", "photos": [
+    { "file": "egypt/PXL_20260530_143800953.jpg", "alt": "The Giza pyramids seen beyond the terrace of the Grand Egyptian Museum." },
+    { "file": "egypt/PXL_20260530_165327359.jpg", "alt": "A dark jackal figure resting on a shrine in a glass display case at the Grand Egyptian Museum." },
+    { "file": "egypt/PXL_20260530_170508528.jpg", "alt": "An ornate animal-shaped ceremonial bed displayed at the Grand Egyptian Museum." },
+    { "file": "egypt/PXL_20260530_170744955.MP.jpg", "alt": "A painted royal figure displayed in a glass case at the Grand Egyptian Museum." }
+  ]}
+]

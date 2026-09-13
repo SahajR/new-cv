@@ -1,13 +1,14 @@
 ---
 import { travelCountries, countryHref, BOOK_VISIT_KEY, BOOK_HANDOFF_KEY } from '../data/travel';
 import ScrapbookNote from './ScrapbookNote.astro';
-import JapanMap from './JapanMap.astro';
-import { getJapanStories } from '../lib/travel-content';
+import CountryMap from './CountryMap.astro';
+import { getCountryStories } from '../lib/travel-content';
+import { journalCountries, isJournalCountry } from '../data/travel-journals';
 import '../styles/scrapbook.css';
 interface Props { page?: number; mode?: 'embedded' | 'journal' | 'index' }
 const { page = 1, mode = 'embedded' } = Astro.props;
 const country = travelCountries[page - 1];
-const japanEntries = await getJapanStories();
+const journalEntries = Object.fromEntries(await Promise.all(journalCountries.map(async country => [country, await getCountryStories(country)] as const)));
 // Sparse, asymmetric flecks: paper dust, rather than a confetti burst.
 const dust = Array.from({ length: 14 }, (_, i) => ({
   x: i % 2 ? 75 + (i % 3) * 2 : 25 - (i % 3) * 2,
@@ -41,8 +42,8 @@ const dust = Array.from({ length: 14 }, (_, i) => ({
           <div class="sb-leaf" data-leaf={entry.page} style={`--leaf: ${entry.page}`}>
             {['fore', 'top', 'bottom'].map(side => <div class={`sb-leaf-edge sb-leaf-edge-${side}`} aria-hidden="true"></div>)}
             <div class="sb-face sb-front" data-face-page={entry.page} aria-hidden={page !== entry.page ? 'true' : undefined} inert={page !== entry.page}>
-              {entry.slug === 'japan' ? <div class="sb-map-page" data-book-map-slot>
-                <JapanMap stops={japanEntries.map(entry => entry.stop)} linked={mode !== 'journal'} />
+              {isJournalCountry(entry.slug) ? <div class="sb-map-page" data-book-map-slot>
+                <CountryMap country={entry.slug} stops={journalEntries[entry.slug].map(entry => entry.stop)} linked />
               </div> : <figure class="sb-postcard">
                 <img src={entry.image} alt={entry.imageAlt} width="40" height="60" loading={mode === 'journal' ? 'eager' : 'lazy'} />
                 <figcaption>{entry.caption}</figcaption>

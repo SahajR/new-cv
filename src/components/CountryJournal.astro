@@ -1,0 +1,33 @@
+---
+import { getCountryStories } from '../lib/travel-content';
+import { travelJournals, storyHref, cardId, formatVisitDate, type JournalCountry } from '../data/travel-journals';
+interface Props { country: JournalCountry }
+const { country } = Astro.props;
+const journal = travelJournals[country];
+const entries = await getCountryStories(country);
+---
+<section class="travel-journal" data-travel-journal={country} aria-labelledby={`${country}-journal-title`}>
+  <header class="travel-journal-heading">
+    <div><p class="travel-eyebrow">From the camera roll</p><h2 id={`${country}-journal-title`}>{journal.name}, stop by stop<span>.</span></h2></div>
+    <p class="travel-trip-date">{journal.dates}<br/><span>{journal.year}</span></p>
+  </header>
+  <div class="travel-map-dock" data-travel-map-dock></div>
+  <nav class="travel-place-index" aria-label={`Places in ${journal.name}`}>{entries.map(({ stop },i) => <a href={`#${cardId(stop.id)}`} data-place-link={stop.id}><span>{String(i+1).padStart(2,'0')}</span> {stop.name}</a>)}</nav>
+  <div class="travel-stories">
+    {entries.map(({ stop, story },i) => {
+      const photos = journal.photos[stop.id];
+      const cover = photos[0];
+      const startsRegion = stop.region && stop.region !== entries[i-1]?.stop.region;
+      const StoryHeading = stop.region ? 'h4' : 'h3';
+      return <>
+      {startsRegion && <h3 class="travel-region-heading">{stop.region}<span>{entries.filter(entry => entry.stop.region === stop.region).length} places</span></h3>}
+      <article class="travel-story" id={cardId(stop.id)} data-travel-story={stop.id} data-place-name={stop.name} tabindex="-1">
+        <a class="travel-story-link" href={storyHref(country, stop.id)}>
+          <div class="travel-story-photo"><img src={cover.thumbnail} width={cover.width} height={cover.height} alt={cover.alt} loading="lazy" decoding="async"/><span class="travel-photo-number" aria-hidden="true">{String(i+1).padStart(2,'0')}</span></div>
+          <div class="travel-story-text"><div class="travel-story-meta"><span>{stop.name}</span><time datetime={story.data.visited}>{story.data.dateLabel ?? formatVisitDate(story.data.visited)}</time></div><StoryHeading class="travel-story-title">{story.data.title}</StoryHeading><p>{story.data.caption}</p><span class="travel-story-bottom">{photos.length} {photos.length === 1 ? 'photograph' : 'photographs'}<span class="travel-open">Open the page <span aria-hidden="true">↗</span></span></span></div>
+        </a>
+      </article></>;
+    })}
+    <p class="travel-endnote"><span aria-hidden="true">✳</span> A few places, a lot to remember.</p>
+  </div>
+</section>

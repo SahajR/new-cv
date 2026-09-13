@@ -1,0 +1,185 @@
+{
+  "amman": [
+    {
+      "src": "/images/travel/jordan/amman-01.webp",
+      "thumbnail": "/images/travel/jordan/amman-01-small.webp",
+      "width": 1440,
+      "height": 960,
+      "alt": "Sahaj sitting on the stone walls of Amman’s Citadel, with the city behind him.",
+      "capturedAt": "2023-02-19T13:28:41.000Z"
+    },
+    {
+      "src": "/images/travel/jordan/amman-02.webp",
+      "width": 1084,
+      "height": 1440,
+      "alt": "Amman’s pale buildings and hills beneath a cloudy morning sky.",
+      "capturedAt": "2023-02-12T04:25:52.000Z"
+    },
+    {
+      "src": "/images/travel/jordan/amman-03.webp",
+      "width": 1440,
+      "height": 1084,
+      "alt": "The blue dome and two minarets of King Abdullah I Mosque in Amman.",
+      "capturedAt": "2023-02-12T08:18:33.000Z"
+    },
+    {
+      "src": "/images/travel/jordan/amman-04.webp",
+      "width": 1440,
+      "height": 1084,
+      "alt": "The domed entrance hall of the Umayyad Palace at Amman’s Citadel.",
+      "capturedAt": "2023-02-19T12:16:03.000Z"
+    },
+    {
+      "src": "/images/travel/jordan/amman-05.webp",
+      "width": 1084,
+      "height": 1440,
+      "alt": "The columns of the Temple of Hercules above Amman.",
+      "capturedAt": "2023-02-19T13:02:55.000Z"
+    },
+    {
+      "src": "/images/travel/jordan/amman-06.webp",
+      "width": 1084,
+      "height": 1440,
+      "alt": "Flatbread, small dishes, and a meal shared around a table in Amman.",
+      "capturedAt": "2023-02-22T20:02:17.000Z"
+    },
+    {
+      "src": "/images/travel/jordan/amman-07.webp",
+      "width": 1440,
+      "height": 1084,
+      "alt": "Meat and rice served with flatbread and a bowl of sauce in Amman.",
+      "capturedAt": "2023-03-02T11:25:09.000Z"
+    },
+    {
+      "src": "/images/travel/jordan/amman-08.webp",
+      "width": 1084,
+      "height": 1440,
+      "alt": "A pistachio-covered sweet on a small plate in Amman.",
+      "capturedAt": "2023-03-05T17:16:34.000Z"
+    }
+  ],
+  "petra": [
+    {
+      "src": "/images/travel/jordan/petra-01.webp",
+      "thumbnail": "/images/travel/jordan/petra-01-small.webp",
+      "width": 1084,
+      "height": 1440,
+      "alt": "Visitors beneath the tall rose-coloured façade of Petra’s Treasury.",
+      "capturedAt": "2023-02-26T10:49:21.000Z"
+    },
+    {
+      "src": "/images/travel/jordan/petra-02.webp",
+      "width": 1084,
+      "height": 1440,
+      "alt": "The carved sandstone façade of the Monastery at Petra.",
+      "capturedAt": "2023-02-26T07:23:06.000Z"
+    },
+    {
+      "src": "/images/travel/jordan/petra-03.webp",
+      "width": 1440,
+      "height": 1220,
+      "alt": "Sahaj in a red-and-white headscarf with Petra’s Treasury behind him.",
+      "capturedAt": "2023-02-26T10:23:27.000Z"
+    }
+  ],
+  "wadi-rum": [
+    {
+      "src": "/images/travel/jordan/wadi-rum-01.webp",
+      "thumbnail": "/images/travel/jordan/wadi-rum-01-small.webp",
+      "width": 1440,
+      "height": 1084,
+      "alt": "A desert camp among the red sands and sandstone mountains of Wadi Rum at dusk.",
+      "capturedAt": "2023-03-09T15:54:43.000Z"
+    },
+    {
+      "src": "/images/travel/jordan/wadi-rum-02.webp",
+      "width": 1440,
+      "height": 1084,
+      "alt": "A vehicle crossing red sand below the rock walls of Wadi Rum.",
+      "capturedAt": "2023-03-10T05:37:05.000Z"
+    },
+    {
+      "src": "/images/travel/jordan/wadi-rum-03.webp",
+      "width": 1440,
+      "height": 1084,
+      "alt": "Pale dome tents scattered across a Wadi Rum desert camp.",
+      "capturedAt": "2023-03-10T06:29:07.000Z"
+    },
+    {
+      "src": "/images/travel/jordan/wadi-rum-04.webp",
+      "width": 1440,
+      "height": 777,
+      "alt": "Sahaj using a laptop beside a resting camel in Wadi Rum.",
+      "capturedAt": "2023-03-10T06:36:05.000Z"
+    },
+    {
+      "src": "/images/travel/jordan/wadi-rum-05.webp",
+      "width": 1440,
+      "height": 1084,
+      "alt": "Red upholstered chairs facing the desert through the windows of a camp lounge.",
+      "capturedAt": "2023-03-10T07:18:43.000Z"
+    }
+  ],
+  "aqaba": [
+    {
+      "src": "/images/travel/jordan/aqaba-01.webp",
+      "thumbnail": "/images/travel/jordan/aqaba-01-small.webp",
+      "width": 1440,
+      "height": 1084,
+      "alt": "Palm trees and the waterfront in Aqaba, with mountains across the water.",
+      "capturedAt": "2023-03-09T12:19:20.000Z"
+    },
+    {
+      "src": "/images/travel/jordan/aqaba-02.webp",
+      "width": 1440,
+      "height": 1084,
+      "alt": "A café table in Aqaba with a green cup and a plate of food.",
+      "capturedAt": "2023-03-10T09:24:42.000Z"
+    },
+    {
+      "src": "/images/travel/jordan/aqaba-03.webp",
+      "width": 1440,
+      "height": 1084,
+      "alt": "A bowl of food and a basket of flatbread at a café in Aqaba.",
+      "capturedAt": "2023-03-10T10:03:25.000Z"
+    },
+    {
+      "src": "/images/travel/jordan/aqaba-04.webp",
+      "width": 1440,
+      "height": 1084,
+      "alt": "A sunny street lined with cafés and buildings in Aqaba.",
+      "capturedAt": "2023-03-10T10:31:09.000Z"
+    }
+  ],
+  "dead-sea": [
+    {
+      "src": "/images/travel/jordan/dead-sea-01.webp",
+      "thumbnail": "/images/travel/jordan/dead-sea-01-small.webp",
+      "width": 1440,
+      "height": 1084,
+      "alt": "The setting sun reflected across the Dead Sea beyond palm trees and a terrace.",
+      "capturedAt": "2023-03-11T15:30:37.000Z"
+    },
+    {
+      "src": "/images/travel/jordan/dead-sea-02.webp",
+      "width": 1440,
+      "height": 1084,
+      "alt": "A mud-covered hand held up against the calm blue water of the Dead Sea.",
+      "capturedAt": "2023-03-12T08:27:12.000Z"
+    },
+    {
+      "src": "/images/travel/jordan/dead-sea-03.webp",
+      "width": 1084,
+      "height": 1440,
+      "alt": "A bowl of dark mud beside the Dead Sea shore.",
+      "capturedAt": "2023-03-12T08:49:10.000Z"
+    },
+    {
+      "src": "/images/travel/jordan/dead-sea-04.webp",
+      "width": 1440,
+      "height": 1084,
+      "alt": "Sunshades along the sandy edge of the Dead Sea under a clear sky.",
+      "capturedAt": "2023-03-12T08:51:56.000Z"
+    }
+  ]
+}

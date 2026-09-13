@@ -300,7 +300,7 @@ export function setupScrapbook(root: HTMLElement) {
   root.addEventListener('keydown', (event) => {
     if (index) return;
     if (event.key !== 'ArrowLeft' && event.key !== 'ArrowRight') return;
-    if ((event.target as Element).closest('input, textarea, select, [data-japan-map]')) return;
+    if ((event.target as Element).closest('input, textarea, select, [data-travel-map]')) return;
     event.preventDefault();
     (event.key === 'ArrowRight' ? next : previous).click();
   });

@@ -11,10 +11,4 @@ export const japanStops = [
   { id: 'kamakura', name: 'Kamakura', symbol: 'buddha', marker: [657, 280], anchor: [576, 219] },
 ] as const;
 
-export type JapanStopId = typeof japanStops[number]['id'];
 export const japanPhotos = photographs;
-export const japanStoryHref = (id: string) => `/travel/japan/${id}/`;
-export const japanCardId = (id: string) => `place-${id}`;
-export function formatVisitDate(date: string) {
-  return new Intl.DateTimeFormat('en-GB', { day: 'numeric', month: 'short', year: 'numeric', timeZone: 'Asia/Tokyo' }).format(new Date(`${date}T12:00:00+09:00`));
-}

@@ -1,0 +1,218 @@
+{
+  "karnak": [
+    {
+      "src": "/images/travel/egypt/karnak-01.webp",
+      "thumbnail": "/images/travel/egypt/karnak-01-small.webp",
+      "width": 1080,
+      "height": 1440,
+      "alt": "Sahaj standing among the enormous carved columns of Karnak’s Great Hypostyle Hall.",
+      "capturedAt": "2026-05-29T05:52:40.000Z"
+    },
+    {
+      "src": "/images/travel/egypt/karnak-02.webp",
+      "width": 1080,
+      "height": 1440,
+      "alt": "A stone sphinx facing a colonnade at Karnak.",
+      "capturedAt": "2026-05-29T05:47:26.000Z"
+    },
+    {
+      "src": "/images/travel/egypt/karnak-03.webp",
+      "width": 1080,
+      "height": 1440,
+      "alt": "Figures and hieroglyphs carved into a tall stone surface at Karnak.",
+      "capturedAt": "2026-05-29T05:43:20.000Z"
+    },
+    {
+      "src": "/images/travel/egypt/karnak-04.webp",
+      "width": 1080,
+      "height": 1440,
+      "alt": "A monumental gateway flanked by seated statues in the Karnak temple complex.",
+      "capturedAt": "2026-05-29T06:08:39.000Z"
+    }
+  ],
+  "luxor-temple": [
+    {
+      "src": "/images/travel/egypt/luxor-temple-01.webp",
+      "thumbnail": "/images/travel/egypt/luxor-temple-01-small.webp",
+      "width": 1080,
+      "height": 1440,
+      "alt": "Sahaj beneath the statues and columns of Luxor Temple.",
+      "capturedAt": "2026-05-29T06:42:38.000Z"
+    },
+    {
+      "src": "/images/travel/egypt/luxor-temple-02.webp",
+      "width": 1080,
+      "height": 1440,
+      "alt": "Sahaj beside a stone sphinx and palm trees at Luxor Temple.",
+      "capturedAt": "2026-05-29T07:00:20.000Z"
+    }
+  ],
+  "tutankhamun-tomb": [
+    {
+      "src": "/images/travel/egypt/tutankhamun-tomb-01.webp",
+      "thumbnail": "/images/travel/egypt/tutankhamun-tomb-01-small.webp",
+      "width": 1440,
+      "height": 1080,
+      "alt": "Sahaj beside the glass case containing Tutankhamun’s mummy in his tomb in the Valley of the Kings.",
+      "capturedAt": "2026-05-29T08:16:14.000Z"
+    }
+  ],
+  "hatshepsut-temple": [
+    {
+      "src": "/images/travel/egypt/hatshepsut-temple-01.webp",
+      "thumbnail": "/images/travel/egypt/hatshepsut-temple-01-small.webp",
+      "width": 1080,
+      "height": 1440,
+      "alt": "Sahaj in front of Hatshepsut’s terraced temple beneath the cliffs at Deir el-Bahari.",
+      "capturedAt": "2026-05-29T08:44:34.000Z"
+    },
+    {
+      "src": "/images/travel/egypt/hatshepsut-temple-02.webp",
+      "width": 1080,
+      "height": 1440,
+      "alt": "A long colonnade at Hatshepsut’s temple against the pale desert cliffs.",
+      "capturedAt": "2026-05-29T08:47:02.000Z"
+    },
+    {
+      "src": "/images/travel/egypt/hatshepsut-temple-03.webp",
+      "width": 1080,
+      "height": 1440,
+      "alt": "Painted figures and hieroglyphs preserved on a wall at Hatshepsut’s temple.",
+      "capturedAt": "2026-05-29T08:49:52.000Z"
+    },
+    {
+      "src": "/images/travel/egypt/hatshepsut-temple-04.webp",
+      "width": 1080,
+      "height": 1440,
+      "alt": "Sahaj standing between tall statues at Hatshepsut’s temple.",
+      "capturedAt": "2026-05-29T08:54:01.000Z"
+    }
+  ],
+  "giza-plateau": [
+    {
+      "src": "/images/travel/egypt/giza-plateau-01.webp",
+      "thumbnail": "/images/travel/egypt/giza-plateau-01-small.webp",
+      "width": 1080,
+      "height": 1440,
+      "alt": "Sahaj sitting on a low wall with the pyramids of Giza behind him in the morning light.",
+      "capturedAt": "2026-05-30T04:48:32.000Z"
+    },
+    {
+      "src": "/images/travel/egypt/giza-plateau-02.webp",
+      "width": 1080,
+      "height": 1440,
+      "alt": "Sahaj on a resting camel, pointing toward a foreground rock in a playful perspective photograph with the pyramids behind him.",
+      "capturedAt": "2026-05-30T03:08:46.000Z"
+    },
+    {
+      "src": "/images/travel/egypt/giza-plateau-03.webp",
+      "width": 1080,
+      "height": 1440,
+      "alt": "Sahaj jumping above the desert ground with the Giza pyramids on the horizon.",
+      "capturedAt": "2026-05-30T03:12:11.000Z"
+    },
+    {
+      "src": "/images/travel/egypt/giza-plateau-04.webp",
+      "width": 1080,
+      "height": 1440,
+      "alt": "Sahaj sitting beside the huge stone blocks at the base of a Giza pyramid.",
+      "capturedAt": "2026-05-30T05:01:31.000Z"
+    }
+  ],
+  "great-pyramid": [
+    {
+      "src": "/images/travel/egypt/great-pyramid-01.webp",
+      "thumbnail": "/images/travel/egypt/great-pyramid-01-small.webp",
+      "width": 1080,
+      "height": 1440,
+      "alt": "Sahaj inside a tall stone chamber in the Great Pyramid.",
+      "capturedAt": "2026-05-30T05:20:14.000Z"
+    },
+    {
+      "src": "/images/travel/egypt/great-pyramid-02.webp",
+      "width": 1080,
+      "height": 1440,
+      "alt": "A lit passage leading between the stone walls inside the Great Pyramid.",
+      "capturedAt": "2026-05-30T05:18:49.000Z"
+    }
+  ],
+  "great-sphinx": [
+    {
+      "src": "/images/travel/egypt/great-sphinx-01.webp",
+      "thumbnail": "/images/travel/egypt/great-sphinx-01-small.webp",
+      "width": 1080,
+      "height": 1440,
+      "alt": "Sahaj sitting in front of the Great Sphinx, with a pyramid behind it.",
+      "capturedAt": "2026-05-30T05:52:06.000Z"
+    },
+    {
+      "src": "/images/travel/egypt/great-sphinx-02.webp",
+      "width": 1440,
+      "height": 1080,
+      "alt": "Sahaj looking toward the Great Sphinx across the viewing area.",
+      "capturedAt": "2026-05-30T06:08:55.000Z"
+    }
+  ],
+  "coptic-cairo": [
+    {
+      "src": "/images/travel/egypt/coptic-cairo-01.webp",
+      "thumbnail": "/images/travel/egypt/coptic-cairo-01-small.webp",
+      "width": 1080,
+      "height": 1440,
+      "alt": "Sahaj on the approach to the Hanging Church in Coptic Cairo.",
+      "capturedAt": "2026-05-30T10:53:38.000Z"
+    },
+    {
+      "src": "/images/travel/egypt/coptic-cairo-02.webp",
+      "width": 1440,
+      "height": 1080,
+      "alt": "A glass-covered well inside the Church of Saints Sergius and Bacchus in Old Cairo.",
+      "capturedAt": "2026-05-30T11:03:13.000Z"
+    },
+    {
+      "src": "/images/travel/egypt/coptic-cairo-03.webp",
+      "width": 1080,
+      "height": 1440,
+      "alt": "An illustrated map of the Holy Family’s journey through Egypt displayed in Old Cairo.",
+      "capturedAt": "2026-05-30T11:06:18.000Z"
+    },
+    {
+      "src": "/images/travel/egypt/coptic-cairo-04.webp",
+      "width": 1080,
+      "height": 1440,
+      "alt": "A carved stone doorway at the Church of Saints Sergius and Bacchus in Old Cairo.",
+      "capturedAt": "2026-05-30T11:08:00.000Z"
+    }
+  ],
+  "grand-egyptian-museum": [
+    {
+      "src": "/images/travel/egypt/grand-egyptian-museum-01.webp",
+      "thumbnail": "/images/travel/egypt/grand-egyptian-museum-01-small.webp",
+      "width": 1440,
+      "height": 1080,
+      "alt": "The Giza pyramids seen beyond the terrace of the Grand Egyptian Museum.",
+      "capturedAt": "2026-05-30T14:38:00.000Z"
+    },
+    {
+      "src": "/images/travel/egypt/grand-egyptian-museum-02.webp",
+      "width": 1080,
+      "height": 1440,
+      "alt": "A dark jackal figure resting on a shrine in a glass display case at the Grand Egyptian Museum.",
+      "capturedAt": "2026-05-30T16:53:27.000Z"
+    },
+    {
+      "src": "/images/travel/egypt/grand-egyptian-museum-03.webp",
+      "width": 1440,
+      "height": 1080,
+      "alt": "An ornate animal-shaped ceremonial bed displayed at the Grand Egyptian Museum.",
+      "capturedAt": "2026-05-30T17:05:08.000Z"
+    },
+    {
+      "src": "/images/travel/egypt/grand-egyptian-museum-04.webp",
+      "width": 1080,
+      "height": 1440,
+      "alt": "A painted royal figure displayed in a glass case at the Grand Egyptian Museum.",
+      "capturedAt": "2026-05-30T17:07:44.000Z"
+    }
+  ]
+}

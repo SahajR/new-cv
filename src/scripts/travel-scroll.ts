@@ -19,7 +19,7 @@ function setupMapHandoff(root: HTMLElement, map: HTMLElement, schedule: () => vo
   const book = home.closest<HTMLElement>('[data-scrapbook]')!;
   const face = home.closest<HTMLElement>('[data-face-page]')!;
   const stage = book.querySelector<HTMLElement>('[data-book-stage]')!;
-  const dock = root.querySelector<HTMLElement>('[data-japan-map-dock]')!;
+  const dock = root.querySelector<HTMLElement>('[data-travel-map-dock]')!;
   const reduced = matchMedia('(prefers-reduced-motion:reduce)');
   root.dataset.mapReady = 'true';
 
@@ -69,14 +69,15 @@ function setupMapHandoff(root: HTMLElement, map: HTMLElement, schedule: () => vo
   };
 }
 
-export function setupJapanScroll(root: HTMLElement) {
+export function setupTravelScroll(root: HTMLElement) {
   const abort = new AbortController();
   const { signal } = abort;
-  const map = root.closest('main')!.querySelector<HTMLElement>('[data-japan-map]')!;
+  const country = root.dataset.travelJournal!;
+  const map = root.closest('main')!.querySelector<HTMLElement>(`[data-travel-map="${country}"]`)!;
   const canvas = map.querySelector<SVGSVGElement>('[data-map-canvas]')!;
   const toggle = map.querySelector<HTMLButtonElement>('[data-map-view]')!;
   const current = map.querySelector<HTMLElement>('[data-map-current]')!;
-  const cards = [...root.querySelectorAll<HTMLElement>('[data-japan-story]')];
+  const cards = [...root.querySelectorAll<HTMLElement>('[data-travel-story]')];
   const markers = [...map.querySelectorAll<SVGAElement>('[data-map-stop]')];
   const links = [...root.querySelectorAll<HTMLAnchorElement>('[data-place-link]')];
   const small = matchMedia('(max-width:600px)');
@@ -92,9 +93,9 @@ export function setupJapanScroll(root: HTMLElement) {
   function paint(id: string) {
     if (id === active) return;
     active = id;
-    const card = cards.find(card => card.dataset.japanStory === id);
+    const card = cards.find(card => card.dataset.travelStory === id);
     current.textContent = card?.dataset.placeName ?? 'Choose a place, or follow the photographs';
-    cards.forEach(card => card.classList.toggle('is-active', card.dataset.japanStory === id));
+    cards.forEach(card => card.classList.toggle('is-active', card.dataset.travelStory === id));
     [...markers, ...links].forEach(link => {
       if ((link.dataset.mapStop ?? link.dataset.placeLink) === id) link.setAttribute('aria-current','location');
       else link.removeAttribute('aria-current');
@@ -105,7 +106,7 @@ export function setupJapanScroll(root: HTMLElement) {
     handoff.update();
     if (!visible || locked) return;
     const mapRect = map.getBoundingClientRect();
-    const positions = cards.map(card => { const rect = card.getBoundingClientRect(); return { id: card.dataset.japanStory!, top: rect.top, bottom: rect.bottom }; });
+    const positions = cards.map(card => { const rect = card.getBoundingClientRect(); return { id: card.dataset.travelStory!, top: rect.top, bottom: rect.bottom }; });
     const selected = selectActiveStory(positions, Math.max(0,mapRect.bottom), innerHeight);
     if (selected) paint(selected);
     else if (positions[0]?.top >= innerHeight) paint('');
@@ -113,18 +114,18 @@ export function setupJapanScroll(root: HTMLElement) {
   function schedule() { if (!frame) frame = requestAnimationFrame(measure); }
   function resize() {
     canvas.dataset.mapMode = small.matches && !fullMap ? 'detail' : 'country';
-    canvas.setAttribute('viewBox', small.matches && !fullMap ? '85 0 670 330' : '0 0 900 330');
+    canvas.setAttribute('viewBox', small.matches && !fullMap ? canvas.dataset.journeyView! : canvas.dataset.countryView!);
     toggle.hidden = !small.matches;
-    toggle.textContent = fullMap ? 'The journey ↙' : 'Whole Japan ↗';
-    toggle.setAttribute('aria-label', fullMap ? 'Show the journey in detail' : 'Show the whole map of Japan');
-    root.style.setProperty('--japan-map-offset', `${handoff.dock.getBoundingClientRect().height+24}px`);
+    toggle.textContent = fullMap ? 'The journey ↙' : `Whole ${map.dataset.mapName} ↗`;
+    toggle.setAttribute('aria-label', fullMap ? 'Show the journey in detail' : `Show the whole map of ${map.dataset.mapName}`);
+    root.style.setProperty('--travel-map-offset', `${handoff.dock.getBoundingClientRect().height+24}px`);
     schedule();
   }
   function unlock() { locked = false; clearTimeout(settle); schedule(); }
   function jump(card: HTMLElement, smooth: boolean) {
     clearTimeout(settle);
     locked = true;
-    paint(card.dataset.japanStory!);
+    paint(card.dataset.travelStory!);
     card.scrollIntoView({ block: 'start', behavior: smooth && !reduced.matches ? 'smooth' : 'instant' });
     card.focus({ preventScroll: true });
     settle = setTimeout(unlock, smooth && !reduced.matches ? 1100 : 50);
@@ -133,7 +134,7 @@ export function setupJapanScroll(root: HTMLElement) {
     const anchor = (event.target as Element).closest<HTMLAnchorElement | SVGAElement>('[data-map-stop], [data-place-link]');
     if (!anchor || event.defaultPrevented || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey || event.button !== 0) return;
     const id = anchor.dataset.mapStop ?? anchor.dataset.placeLink;
-    const card = cards.find(card => card.dataset.japanStory === id);
+    const card = cards.find(card => card.dataset.travelStory === id);
     if (!card) return;
     event.preventDefault();
     history.replaceState(history.state, '', `#${card.id}`);

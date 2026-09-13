@@ -1,0 +1,280 @@
+{
+  "forbidden-city": [
+    {
+      "src": "/images/travel/china/forbidden-city-01.webp",
+      "thumbnail": "/images/travel/china/forbidden-city-01-small.webp",
+      "width": 1440,
+      "height": 1084,
+      "alt": "The roofs and courtyards of the Forbidden City seen from Jingshan Park.",
+      "capturedAt": "2023-09-24T09:28:12.000Z"
+    },
+    {
+      "src": "/images/travel/china/forbidden-city-02.webp",
+      "width": 1440,
+      "height": 1084,
+      "alt": "A bronze guardian lion in front of a red-walled hall in the Forbidden City.",
+      "capturedAt": "2023-09-24T06:45:02.000Z"
+    },
+    {
+      "src": "/images/travel/china/forbidden-city-03.webp",
+      "width": 1084,
+      "height": 1440,
+      "alt": "A bronze tortoise on a stone pedestal among the palace courtyards.",
+      "capturedAt": "2023-09-24T07:06:24.000Z"
+    },
+    {
+      "src": "/images/travel/china/forbidden-city-04.webp",
+      "width": 1440,
+      "height": 1084,
+      "alt": "Layered palace roofs and red walls beneath a cloudy sky in the Forbidden City.",
+      "capturedAt": "2023-09-24T07:11:22.000Z"
+    },
+    {
+      "src": "/images/travel/china/forbidden-city-05.webp",
+      "width": 1084,
+      "height": 1440,
+      "alt": "A gilded guardian figure beside a decorated gateway in the Forbidden City.",
+      "capturedAt": "2023-09-24T08:13:06.000Z"
+    },
+    {
+      "src": "/images/travel/china/forbidden-city-06.webp",
+      "width": 1084,
+      "height": 1440,
+      "alt": "Sahaj beside the moat, with an illuminated corner tower of the Forbidden City reflected in the water.",
+      "capturedAt": "2023-09-23T13:21:45.000Z"
+    }
+  ],
+  "mutianyu-great-wall": [
+    {
+      "src": "/images/travel/china/mutianyu-great-wall-01.webp",
+      "thumbnail": "/images/travel/china/mutianyu-great-wall-01-small.webp",
+      "width": 1236,
+      "height": 1440,
+      "alt": "Sahaj looking along the Great Wall as it winds over green mountain ridges at Mutianyu.",
+      "capturedAt": "2023-09-25T03:22:22.000Z"
+    },
+    {
+      "src": "/images/travel/china/mutianyu-great-wall-02.webp",
+      "width": 1084,
+      "height": 1440,
+      "alt": "The Great Wall climbing a wooded hillside between watchtowers at Mutianyu.",
+      "capturedAt": "2023-09-25T04:05:58.000Z"
+    },
+    {
+      "src": "/images/travel/china/mutianyu-great-wall-03.webp",
+      "width": 1084,
+      "height": 1440,
+      "alt": "A steep stone staircase leading up to a watchtower on the Great Wall.",
+      "capturedAt": "2023-09-25T04:08:37.000Z"
+    },
+    {
+      "src": "/images/travel/china/mutianyu-great-wall-04.webp",
+      "width": 1084,
+      "height": 1440,
+      "alt": "The wall and distant mountain ridges framed by stone battlements and branches.",
+      "capturedAt": "2023-09-25T04:59:33.000Z"
+    },
+    {
+      "src": "/images/travel/china/mutianyu-great-wall-05.webp",
+      "width": 1080,
+      "height": 1440,
+      "alt": "Sahaj looking out from a cable car over the hills at Mutianyu.",
+      "capturedAt": "2023-09-25T05:04:34.000Z"
+    }
+  ],
+  "birds-nest": [
+    {
+      "src": "/images/travel/china/birds-nest-01.webp",
+      "thumbnail": "/images/travel/china/birds-nest-01-small.webp",
+      "width": 1440,
+      "height": 1084,
+      "alt": "Sahaj in front of Beijing’s Bird’s Nest stadium, its steel lattice glowing orange and red at night.",
+      "capturedAt": "2023-09-25T13:29:33.000Z"
+    }
+  ],
+  "hangzhou-olympic-sports-centre": [
+    {
+      "src": "/images/travel/china/hangzhou-olympic-sports-centre-01.webp",
+      "thumbnail": "/images/travel/china/hangzhou-olympic-sports-centre-01-small.webp",
+      "width": 1440,
+      "height": 1084,
+      "alt": "The petal-shaped exterior of the Hangzhou Olympic Sports Centre Tennis Centre.",
+      "capturedAt": "2023-09-26T09:14:02.000Z"
+    },
+    {
+      "src": "/images/travel/china/hangzhou-olympic-sports-centre-02.webp",
+      "width": 1440,
+      "height": 1084,
+      "alt": "Asian Games mascots beside the lotus-shaped venue and gardens in Hangzhou.",
+      "capturedAt": "2023-09-26T08:56:53.000Z"
+    },
+    {
+      "src": "/images/travel/china/hangzhou-olympic-sports-centre-03.webp",
+      "width": 1440,
+      "height": 1084,
+      "alt": "Illuminated Asian Games decorations and mascots in the Hangzhou Olympic Sports Centre area at night.",
+      "capturedAt": "2023-09-26T11:55:23.000Z"
+    }
+  ],
+  "west-lake": [
+    {
+      "src": "/images/travel/china/west-lake-01.webp",
+      "thumbnail": "/images/travel/china/west-lake-01-small.webp",
+      "width": 1080,
+      "height": 1440,
+      "alt": "Sahaj standing beside a lakeside pavilion at West Lake in Hangzhou.",
+      "capturedAt": "2023-09-26T09:52:36.000Z"
+    },
+    {
+      "src": "/images/travel/china/west-lake-02.webp",
+      "width": 1440,
+      "height": 1084,
+      "alt": "A pavilion beside West Lake, framed by willow branches and broad lotus leaves.",
+      "capturedAt": "2023-09-26T09:43:08.000Z"
+    }
+  ],
+  "shanghai-waterfront": [
+    {
+      "src": "/images/travel/china/shanghai-waterfront-01.webp",
+      "thumbnail": "/images/travel/china/shanghai-waterfront-01-small.webp",
+      "width": 1440,
+      "height": 1084,
+      "alt": "The illuminated Pudong skyline seen from the Bund, with the Oriental Pearl Tower across the river.",
+      "capturedAt": "2023-09-27T13:47:51.000Z"
+    },
+    {
+      "src": "/images/travel/china/shanghai-waterfront-02.webp",
+      "width": 1084,
+      "height": 1440,
+      "alt": "An ornate building facade on the Bund lit in warm colours at night.",
+      "capturedAt": "2023-09-27T13:46:40.000Z"
+    },
+    {
+      "src": "/images/travel/china/shanghai-waterfront-03.webp",
+      "width": 1440,
+      "height": 1084,
+      "alt": "Looking up at the illuminated Jin Mao Tower and the Shanghai World Financial Center at night.",
+      "capturedAt": "2023-09-28T11:49:11.000Z"
+    },
+    {
+      "src": "/images/travel/china/shanghai-waterfront-04.webp",
+      "width": 1080,
+      "height": 1440,
+      "alt": "The Oriental Pearl Tower glowing pink and orange against the night sky in Lujiazui.",
+      "capturedAt": "2023-09-28T12:25:27.000Z"
+    }
+  ],
+  "shanghai-zoo": [
+    {
+      "src": "/images/travel/china/shanghai-zoo-01.webp",
+      "thumbnail": "/images/travel/china/shanghai-zoo-01-small.webp",
+      "width": 1440,
+      "height": 1084,
+      "alt": "Large tortoises resting together in an enclosure at Shanghai Zoo.",
+      "capturedAt": "2023-09-28T05:10:57.000Z"
+    },
+    {
+      "src": "/images/travel/china/shanghai-zoo-02.webp",
+      "width": 1440,
+      "height": 1084,
+      "alt": "A rock-shaped entrance decorated with red lanterns inside Shanghai Zoo.",
+      "capturedAt": "2023-09-28T04:20:41.000Z"
+    },
+    {
+      "src": "/images/travel/china/shanghai-zoo-03.webp",
+      "width": 1440,
+      "height": 1084,
+      "alt": "A shaded waterside path beneath willow trees in Shanghai Zoo.",
+      "capturedAt": "2023-09-28T04:26:54.000Z"
+    },
+    {
+      "src": "/images/travel/china/shanghai-zoo-04.webp",
+      "width": 1084,
+      "height": 1440,
+      "alt": "Silver fish swimming through a blue-lit aquarium at Shanghai Zoo.",
+      "capturedAt": "2023-09-28T05:00:12.000Z"
+    }
+  ],
+  "yuyuan": [
+    {
+      "src": "/images/travel/china/yuyuan-01.webp",
+      "thumbnail": "/images/travel/china/yuyuan-01-small.webp",
+      "width": 1084,
+      "height": 1440,
+      "alt": "Traditional rooflines glowing with golden lights in the Yuyuan Bazaar area at night.",
+      "capturedAt": "2023-09-29T13:11:27.000Z"
+    },
+    {
+      "src": "/images/travel/china/yuyuan-02.webp",
+      "width": 1080,
+      "height": 1440,
+      "alt": "A traditional pavilion and covered walkway over a koi pond in Yuyuan Garden.",
+      "capturedAt": "2023-09-29T05:59:11.000Z"
+    },
+    {
+      "src": "/images/travel/china/yuyuan-03.webp",
+      "width": 1084,
+      "height": 1440,
+      "alt": "A tall traditional-style building with illuminated signs near Yuyuan Bazaar late at night.",
+      "capturedAt": "2023-09-28T15:04:49.000Z"
+    }
+  ],
+  "shanghai-disneyland": [
+    {
+      "src": "/images/travel/china/shanghai-disneyland-01.webp",
+      "thumbnail": "/images/travel/china/shanghai-disneyland-01-small.webp",
+      "width": 1084,
+      "height": 1440,
+      "alt": "The Enchanted Storybook Castle at Shanghai Disneyland beneath a cloudy sky.",
+      "capturedAt": "2023-09-29T05:56:16.000Z"
+    },
+    {
+      "src": "/images/travel/china/shanghai-disneyland-02.webp",
+      "width": 1440,
+      "height": 1084,
+      "alt": "Sahaj posing with an Ant-Man character in front of a large Avengers emblem at Shanghai Disneyland.",
+      "capturedAt": "2023-09-29T05:48:15.000Z"
+    },
+    {
+      "src": "/images/travel/china/shanghai-disneyland-03.webp",
+      "width": 1084,
+      "height": 1440,
+      "alt": "A view over the Alice in Wonderland Maze and its oversized Red Queen face at Shanghai Disneyland.",
+      "capturedAt": "2023-09-29T05:55:49.000Z"
+    },
+    {
+      "src": "/images/travel/china/shanghai-disneyland-04.webp",
+      "width": 1084,
+      "height": 1440,
+      "alt": "A chocolate-covered Mickey-shaped ice cream held above its wrapper.",
+      "capturedAt": "2023-09-29T06:05:16.000Z"
+    },
+    {
+      "src": "/images/travel/china/shanghai-disneyland-05.webp",
+      "width": 1084,
+      "height": 1440,
+      "alt": "A giant Mickey-shaped pumpkin display at Shanghai Disneyland.",
+      "capturedAt": "2023-09-29T07:22:32.000Z"
+    }
+  ],
+  "shanghai-maglev": [
+    {
+      "src": "/images/travel/china/shanghai-maglev-01.webp",
+      "thumbnail": "/images/travel/china/shanghai-maglev-01-small.webp",
+      "width": 1000,
+      "height": 1440,
+      "alt": "A Shanghai Maglev train waiting beside the platform at Longyang Road station.",
+      "capturedAt": "2023-09-30T04:49:31.000Z"
+    }
+  ],
+  "zhujiajiao": [
+    {
+      "src": "/images/travel/china/zhujiajiao-01.webp",
+      "thumbnail": "/images/travel/china/zhujiajiao-01-small.webp",
+      "width": 1080,
+      "height": 1440,
+      "alt": "Wooden boats on a canal in Zhujiajiao, between stone paths, waterside shops, and leafy trees.",
+      "capturedAt": "2023-09-30T08:17:19.000Z"
+    }
+  ]
+}

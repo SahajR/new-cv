@@ -2,8 +2,9 @@
 import Layout from '../../layouts/Layout.astro';
 import Footer from '../../components/Footer.astro';
 import TravelScrapbook from '../../components/TravelScrapbook.astro';
-import JapanJournal from '../../components/JapanJournal.astro';
-import '../../styles/japan.css';
+import CountryJournal from '../../components/CountryJournal.astro';
+import '../../styles/travel-journal.css';
+import { isJournalCountry } from '../../data/travel-journals';
 import { travelCountries, type TravelCountry } from '../../data/travel';
 export function getStaticPaths() {
   return travelCountries.map((country) => ({ params: { country: country.slug }, props: { country } }));
@@ -16,7 +17,7 @@ const { country } = Astro.props;
     <a class="travel-home" href="/travel/" data-book-home><span aria-hidden="true">←</span> All countries</a>
     <TravelScrapbook page={country.page} mode="journal" />
     <div data-country-journal={country.slug}>
-      {country.slug === 'japan' && <JapanJournal />}
+      {isJournalCountry(country.slug) && <CountryJournal country={country.slug} />}
     </div>
   </main>
   <Footer />

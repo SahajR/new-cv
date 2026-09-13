@@ -1,0 +1,36 @@
+[
+  { "slug": "amman", "photos": [
+    { "file": "amman/DSC08156.jpg", "alt": "Sahaj sitting on the stone walls of Amman’s Citadel, with the city behind him." },
+    { "file": "amman/PXL_20230212_042552085.jpg", "alt": "Amman’s pale buildings and hills beneath a cloudy morning sky." },
+    { "file": "amman/PXL_20230212_081833248.jpg", "alt": "The blue dome and two minarets of King Abdullah I Mosque in Amman." },
+    { "file": "amman/PXL_20230219_121603179.jpg", "alt": "The domed entrance hall of the Umayyad Palace at Amman’s Citadel." },
+    { "file": "amman/PXL_20230219_130255033.jpg", "alt": "The columns of the Temple of Hercules above Amman." },
+    { "file": "amman/PXL_20230222_200217703.jpg", "alt": "Flatbread, small dishes, and a meal shared around a table in Amman." },
+    { "file": "amman/PXL_20230302_112509210.jpg", "alt": "Meat and rice served with flatbread and a bowl of sauce in Amman." },
+    { "file": "amman/PXL_20230305_171634066.jpg", "alt": "A pistachio-covered sweet on a small plate in Amman." }
+  ]},
+  { "slug": "petra", "photos": [
+    { "file": "jordan/PXL_20230226_104921310.jpg", "alt": "Visitors beneath the tall rose-coloured façade of Petra’s Treasury." },
+    { "file": "jordan/PXL_20230226_072306519.jpg", "alt": "The carved sandstone façade of the Monastery at Petra." },
+    { "file": "jordan/PXL_20230226_102327966~2.jpg", "alt": "Sahaj in a red-and-white headscarf with Petra’s Treasury behind him." }
+  ]},
+  { "slug": "wadi-rum", "photos": [
+    { "file": "wadi_rum/PXL_20230309_155443155.jpg", "alt": "A desert camp among the red sands and sandstone mountains of Wadi Rum at dusk." },
+    { "file": "wadi_rum/PXL_20230310_053705528.jpg", "alt": "A vehicle crossing red sand below the rock walls of Wadi Rum." },
+    { "file": "wadi_rum/PXL_20230310_062907998.jpg", "alt": "Pale dome tents scattered across a Wadi Rum desert camp." },
+    { "file": "wadi_rum/PXL_20230310_063605316~2.jpg", "alt": "Sahaj using a laptop beside a resting camel in Wadi Rum." },
+    { "file": "wadi_rum/PXL_20230310_071843928.jpg", "alt": "Red upholstered chairs facing the desert through the windows of a camp lounge." }
+  ]},
+  { "slug": "aqaba", "photos": [
+    { "file": "aqaba/PXL_20230309_121920536.jpg", "alt": "Palm trees and the waterfront in Aqaba, with mountains across the water." },
+    { "file": "aqaba/PXL_20230310_092442952.jpg", "alt": "A café table in Aqaba with a green cup and a plate of food." },
+    { "file": "aqaba/PXL_20230310_100325586.jpg", "alt": "A bowl of food and a basket of flatbread at a café in Aqaba." },
+    { "file": "aqaba/PXL_20230310_103109476.jpg", "alt": "A sunny street lined with cafés and buildings in Aqaba." }
+  ]},
+  { "slug": "dead-sea", "photos": [
+    { "file": "dead_sea/PXL_20230311_153037481.jpg", "alt": "The setting sun reflected across the Dead Sea beyond palm trees and a terrace." },
+    { "file": "dead_sea/PXL_20230312_082712407.jpg", "alt": "A mud-covered hand held up against the calm blue water of the Dead Sea." },
+    { "file": "dead_sea/PXL_20230312_084910864.jpg", "alt": "A bowl of dark mud beside the Dead Sea shore." },
+    { "file": "dead_sea/PXL_20230312_085156515.jpg", "alt": "Sunshades along the sandy edge of the Dead Sea under a clear sky." }
+  ]}
+]

@@ -2,33 +2,38 @@
 import { render, type CollectionEntry } from 'astro:content';
 import Layout from '../../../layouts/Layout.astro';
 import Footer from '../../../components/Footer.astro';
-import { getJapanStories } from '../../../lib/travel-content';
-import { japanPhotos, japanStoryHref, japanCardId, formatVisitDate, type JapanStopId } from '../../../data/japan';
+import { getCountryStories } from '../../../lib/travel-content';
+import { travelJournals, journalCountries, storyHref, cardId, formatVisitDate, type JournalCountry } from '../../../data/travel-journals';
 
 export async function getStaticPaths() {
-  const entries = await getJapanStories();
-  return entries.map(({ stop, story }, i) => ({ params: { country: 'japan', story: stop.id }, props: { entry: story, place: stop.id, name: stop.name, previous: entries[i-1]?.stop, next: entries[i+1]?.stop } }));
+  const pages = await Promise.all(journalCountries.map(async country => {
+    const entries = await getCountryStories(country);
+    return entries.map(({ stop, story }, i) => ({ params: { country, story: stop.id }, props: { country, entry: story, place: stop.id, name: stop.name, previous: entries[i-1]?.stop, next: entries[i+1]?.stop } }));
+  }));
+  return pages.flat();
 }
 interface Props {
   entry: CollectionEntry<'travel'>;
-  place: JapanStopId;
+  country: JournalCountry;
+  place: string;
   name: string;
   previous?: { id: string; name: string };
   next?: { id: string; name: string };
 }
-const { entry, place, name, previous, next } = Astro.props;
+const { country, entry, place, name, previous, next } = Astro.props;
 const { Content } = await render(entry);
-const photos = japanPhotos[place];
+const journal = travelJournals[country];
+const photos = journal.photos[place];
 const [cover, ...gallery] = photos;
 ---
 <Layout title={`${entry.data.title} — Sahaj in ${name}`} description={entry.data.caption}>
   <main class="travel-entry" id="main">
-    <a class="entry-back" href={`/travel/japan/#${japanCardId(place)}`}><span aria-hidden="true">←</span> Back to Japan</a>
-    <header class="entry-heading"><p class="entry-place">Japan <span aria-hidden="true">/</span> {name}</p><h1>{entry.data.title}</h1><p class="entry-caption">{entry.data.caption}</p><time datetime={entry.data.visited}>{entry.data.dateLabel ?? formatVisitDate(entry.data.visited)}</time></header>
+    <a class="entry-back" href={`/travel/${country}/#${cardId(place)}`}><span aria-hidden="true">←</span> Back to {journal.name}</a>
+    <header class="entry-heading"><p class="entry-place">{journal.name} <span aria-hidden="true">/</span> {name}</p><h1>{entry.data.title}</h1><p class="entry-caption">{entry.data.caption}</p><time datetime={entry.data.visited}>{entry.data.dateLabel ?? formatVisitDate(entry.data.visited)}</time></header>
     <figure class="entry-cover"><img src={cover.src} width={cover.width} height={cover.height} alt={cover.alt} fetchpriority="high"/><figcaption>{cover.alt}</figcaption></figure>
     <div class="entry-prose"><Content /></div>
     {gallery.length > 0 && <div class="entry-gallery" aria-label={`More photographs from ${name}`}>{gallery.map(photo => <figure><img src={photo.src} width={photo.width} height={photo.height} alt={photo.alt} loading="lazy" decoding="async"/><figcaption>{photo.alt}</figcaption></figure>)}</div>}
-    <nav class="entry-neighbors" aria-label="Continue through Japan"><div>{previous && <a href={japanStoryHref(previous.id)}><span>Previous place</span>← {previous.name}</a>}</div><div>{next && <a href={japanStoryHref(next.id)}><span>Next place</span>{next.name} →</a>}</div></nav>
+    <nav class="entry-neighbors" aria-label={`Continue through ${journal.name}`}><div>{previous && <a href={storyHref(country, previous.id)}><span>Previous place</span>← {previous.name}</a>}</div><div>{next && <a href={storyHref(country, next.id)}><span>Next place</span>{next.name} →</a>}</div></nav>
   </main>
   <Footer />
 </Layout>
