@@ -44,3 +44,4 @@ The map lives on the book's right page, lifts into the shared sticky dock, highl
 - Production build generates 51 pages, including both India articles. All generated travel links, image targets, and fragments resolve; no duplicate IDs.
 - All seven India WebP derivatives are free of EXIF/GPS. They total approximately 935 KiB, including 69 KiB for the two card thumbnails.
 - Desktop map jumps select the correct landmark and leave the Taj Mahal card 24px below the map. Both card covers load, with three photographs on the Taj Mahal page and two for Agra Fort.
+- Browser verification at 390px and 320px confirms no horizontal overflow, both selectable map labels, whole-country/detail toggling, and article return links. Scrolling upward returns the map to the book. India → Egypt → India restores both cards and exactly one India map.
