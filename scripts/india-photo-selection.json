@@ -1,0 +1,11 @@
+[
+  { "slug": "taj-mahal", "photos": [
+    { "file": "Agra/PXL_20230917_103452326.jpg", "alt": "The Taj Mahal's marble dome, arched façade, and minarets beneath a cloudy sky." },
+    { "file": "Agra/PXL_20230917_104346476-EFFECTS.jpg", "offset": "+05:30", "alt": "An upward view of the Taj Mahal's carved marble arches and inlaid borders against blue sky." },
+    { "file": "Agra/PXL_20230917_111616510.jpg", "alt": "The Taj Mahal at the end of its garden paths, with visitors, clipped trees, and clouds above." }
+  ]},
+  { "slug": "agra-fort", "photos": [
+    { "file": "Agra/PXL_20230917_061522669.jpg", "alt": "Agra Fort's red sandstone façade and projecting towers beneath dark clouds, with palms below." },
+    { "file": "Agra/PXL_20230917_072458636.MP.jpg", "alt": "A golden equestrian statue near Agra Fort, with a raised sword against the cloudy sky." }
+  ]}
+]

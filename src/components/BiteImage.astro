@@ -1,0 +1,26 @@
+---
+import { Image } from 'astro:assets';
+import type { TravelBite } from '../lib/travel-bites';
+interface Props { bite: TravelBite; hero?: boolean }
+const { bite, hero = false } = Astro.props;
+const { cover, imageAlt, coverPosition } = bite.entry.data;
+// Landscape images fill a square by height, so request enough source pixels
+// for the wider image before CSS crops its sides.
+const cropScale = Math.max(1, cover.width / cover.height);
+const sizes = hero
+  ? `(max-width: 588px) calc((100vw - 28px) * ${cropScale}), (max-width: 760px) ${560 * cropScale}px, ${460 * cropScale}px`
+  : `(max-width: 600px) calc((100vw - 60px) * ${cropScale / 2}), ${334 * cropScale}px`;
+---
+<Image
+  class="bite-image"
+  src={cover}
+  alt={imageAlt}
+  widths={[360, 640, cover.width]}
+  sizes={sizes}
+  format="webp"
+  quality={82}
+  loading={hero ? 'eager' : 'lazy'}
+  decoding={hero ? 'sync' : 'async'}
+  fetchpriority={hero ? 'high' : 'auto'}
+  style={`view-transition-name: ${bite.transitionName}; object-position: ${coverPosition}`}
+/>

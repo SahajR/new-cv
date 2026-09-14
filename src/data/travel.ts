@@ -42,9 +42,9 @@ export const travelCountries: TravelCountry[] = [
     slug: 'india', name: 'India', code: 'IN', page: 4,
     image: '/images/travel/taj-mahal.png',
     imageAlt: 'Pixel art of the Taj Mahal reflected in its garden pool.',
-    caption: 'State by state', places: '8 of 28 states',
-    note: 'A growing collection of places, with plenty more still to see.',
-    memories: ['Visited 8 of India’s 28 states. More photographs and notes to come.'],
+    caption: 'State by state', places: 'Agra · Taj Mahal · Agra Fort',
+    note: 'Marble domes, red sandstone, and a growing collection of places.',
+    memories: ['Visited 8 of India’s 28 states.', 'A day in Agra: the Taj Mahal and Agra Fort.'],
   },
   {
     slug: 'china', name: 'China', code: 'CN', page: 5,

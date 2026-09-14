@@ -1,0 +1,43 @@
+{
+  "taj-mahal": [
+    {
+      "src": "/images/travel/india/taj-mahal-01.webp",
+      "thumbnail": "/images/travel/india/taj-mahal-01-small.webp",
+      "width": 1440,
+      "height": 1084,
+      "alt": "The Taj Mahal's marble dome, arched façade, and minarets beneath a cloudy sky.",
+      "capturedAt": "2023-09-17T10:34:52.000Z"
+    },
+    {
+      "src": "/images/travel/india/taj-mahal-02.webp",
+      "width": 1084,
+      "height": 1440,
+      "alt": "An upward view of the Taj Mahal's carved marble arches and inlaid borders against blue sky.",
+      "capturedAt": "2023-09-17T10:43:46.000Z"
+    },
+    {
+      "src": "/images/travel/india/taj-mahal-03.webp",
+      "width": 1440,
+      "height": 1084,
+      "alt": "The Taj Mahal at the end of its garden paths, with visitors, clipped trees, and clouds above.",
+      "capturedAt": "2023-09-17T11:16:16.000Z"
+    }
+  ],
+  "agra-fort": [
+    {
+      "src": "/images/travel/india/agra-fort-01.webp",
+      "thumbnail": "/images/travel/india/agra-fort-01-small.webp",
+      "width": 1440,
+      "height": 1084,
+      "alt": "Agra Fort's red sandstone façade and projecting towers beneath dark clouds, with palms below.",
+      "capturedAt": "2023-09-17T06:15:22.000Z"
+    },
+    {
+      "src": "/images/travel/india/agra-fort-02.webp",
+      "width": 1084,
+      "height": 1440,
+      "alt": "A golden equestrian statue near Agra Fort, with a raised sword against the cloudy sky.",
+      "capturedAt": "2023-09-17T07:24:58.000Z"
+    }
+  ]
+}

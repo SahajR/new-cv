@@ -68,6 +68,10 @@
 [data-travel-map='china'] .map-label > text { font-size: 18px; }
 [data-travel-map='china'] .map-label > .map-number { font-size: 12px; }
 [data-travel-map='china'] .map-landmark:is(:hover, :focus-visible, [aria-current]) .map-label > rect { fill: #b74e38; stroke: #b74e38; }
+[data-travel-map='india'] { --map-water: #e3ead6; border-color: #b2bf99; }
+[data-travel-map='india'] .map-label > rect { fill: #f5eace; stroke: #b8b48c; }
+[data-travel-map='india'] .map-label > circle { fill: #8b9671; stroke: #f0e7cf; }
+[data-travel-map='india'] .map-landmark:is(:hover, :focus-visible, [aria-current]) .map-label > rect { fill: #b74e38; stroke: #b74e38; }
 .map-current { display: flex; align-items: center; gap: 8px; }
 .map-current-dot { width: 6px; height: 6px; background: var(--map-red); transform: rotate(45deg); }
 .map-follow-hint { color: #516d5e; white-space: nowrap; }

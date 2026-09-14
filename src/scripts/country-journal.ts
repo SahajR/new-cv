@@ -5,6 +5,14 @@ export function mountCountryJournal() {
   cleanup?.();
   const journal = document.querySelector<HTMLElement>('[data-travel-journal]');
   cleanup = journal ? setupTravelScroll(journal) : undefined;
+  // The map reserves its dock after hydration. Resolve Bite fragments once
+  // that space exists, including on countries which do not have a map yet.
+  requestAnimationFrame(() => {
+    const target = document.getElementById(location.hash.slice(1));
+    if (!target?.matches('.country-bites, .bite-card')) return;
+    target.scrollIntoView({ block: 'start', behavior: 'instant' });
+    target.focus({ preventScroll: true });
+  });
 }
 
 export async function prepareCountryJournal(country: string, signal: AbortSignal) {

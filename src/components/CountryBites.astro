@@ -1,0 +1,18 @@
+---
+import BiteImage from './BiteImage.astro';
+import { getPublishedBites } from '../lib/travel-bites';
+interface Props { country: string }
+const { country } = Astro.props;
+const bites = (await getPublishedBites()).filter(bite => bite.country.slug === country);
+---
+{bites.length > 0 && <section class="country-bites" id="bites" data-country-bites={country} aria-labelledby={`${country}-bites-title`} tabindex="-1">
+  <h2 id={`${country}-bites-title`}>Bites<span aria-hidden="true">.</span></h2>
+  <div class="bite-grid">
+    {bites.map(bite => <article class="bite-card" id={bite.cardId} tabindex="-1">
+      <a class="bite-card-link" href={bite.href} aria-labelledby={`${bite.cardId}-title`}>
+        <div class="bite-photo"><BiteImage bite={bite} /></div>
+        <h3 id={`${bite.cardId}-title`}>{bite.entry.data.title}</h3>
+      </a>
+    </article>)}
+  </div>
+</section>}

@@ -3,8 +3,9 @@ import JapanMap from './JapanMap.astro';
 import JordanMap from './JordanMap.astro';
 import EgyptMap from './EgyptMap.astro';
 import ChinaMap from './ChinaMap.astro';
+import IndiaMap from './IndiaMap.astro';
 import type { JournalCountry, TravelStop } from '../data/travel-journals';
 interface Props { country: JournalCountry; stops: readonly TravelStop[]; linked?: boolean }
 const { country, stops, linked = false } = Astro.props;
 ---
-{country === 'china' ? <ChinaMap stops={stops} linked={linked} /> : country === 'egypt' ? <EgyptMap stops={stops} linked={linked} /> : country === 'jordan' ? <JordanMap stops={stops} linked={linked} /> : <JapanMap stops={stops} linked={linked} />}
+{country === 'india' ? <IndiaMap stops={stops} linked={linked} /> : country === 'china' ? <ChinaMap stops={stops} linked={linked} /> : country === 'egypt' ? <EgyptMap stops={stops} linked={linked} /> : country === 'jordan' ? <JordanMap stops={stops} linked={linked} /> : <JapanMap stops={stops} linked={linked} />}

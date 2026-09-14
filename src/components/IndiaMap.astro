@@ -1,0 +1,82 @@
+---
+import TravelMapFrame from './TravelMapFrame.astro';
+import { indiaOutline } from '../data/india-outline';
+import type { TravelStop } from '../data/travel-journals';
+interface Props { stops: readonly TravelStop[]; linked?: boolean }
+const { stops, linked = false } = Astro.props;
+---
+<TravelMapFrame country="india" prefix="in" stops={stops} linked={linked}>
+  <defs>
+    <path id="in-land" d={indiaOutline}/>
+    <clipPath id="in-land-clip"><use href="#in-land"/></clipPath>
+    <g id="in-tree"><path d="M0 3V-18" stroke="#8d8157" stroke-width="3"/><path d="M-10-12V-24H-5V-32H7V-27H12V-13H5V-8H-5V-12Z" fill="#8ca270"/><path d="M5-27H12V-13H5V-8H0V-27Z" fill="#718959"/></g>
+    <g id="in-mountain"><path d="M-21 2L-6-24H1L20 2Z" fill="#b6b493"/><path d="M1-24L20 2H1Z" fill="#929879"/><path d="M-6-24H1L7-14H-12Z" fill="#f1ebd5"/></g>
+    <g id="in-minaret">
+      <path d="M-5 0L-4-63H4L5 0Z" fill="#eee5cc" stroke="#b1ae91" stroke-width="1"/>
+      <path d="M-7-22H7M-6-43H6M-6-63H6" stroke="#bbb397" stroke-width="3"/>
+      <path d="M-4-66V-75H4V-66Z" fill="#d3ccb1"/><path d="M-7-75Q-7-84 0-86Q7-84 7-75Z" fill="#f6efd9"/>
+      <path d="M0-86V-93" stroke="#a69364" stroke-width="2"/>
+    </g>
+    <g id="in-chhatri">
+      <path d="M-7 0V-11M7 0V-11" stroke="#dbd1b2" stroke-width="3"/>
+      <path d="M-10-11Q-10-23 0-26Q10-23 10-11Z" fill="#efe7cd" stroke="#b4b097" stroke-width="1"/>
+      <path d="M0-26V-33" stroke="#b29a6b" stroke-width="2"/>
+    </g>
+    <g id="in-taj">
+      <path d="M-66 6H66V13H-66Z" fill="#d7cbb0"/><path d="M-58-2H58V6H-58Z" fill="#f2e9d0"/>
+      <use href="#in-minaret" transform="translate(-54 -2)"/><use href="#in-minaret" transform="translate(54 -2)"/>
+      <use href="#in-minaret" transform="translate(-40 -4) scale(.76)"/><use href="#in-minaret" transform="translate(40 -4) scale(.76)"/>
+      <path d="M-37-3V-43H37V-3Z" fill="#ede4cb" stroke="#b6af96" stroke-width="1.5"/>
+      <path d="M-21-3V-58H21V-3Z" fill="#f5eed7"/>
+      <path d="M-25-58C-36-73-18-87-7-91L0-98L7-91C18-87 36-73 25-58Z" fill="#f3ecd3" stroke="#b4af96" stroke-width="1.5"/>
+      <path d="M0-95C12-86 20-72 16-59H25C36-73 18-87 7-91L0-98Z" fill="#d9d2b8"/>
+      <path d="M0-98V-111M-4-105H4" stroke="#b19860" stroke-width="2"/>
+      <use href="#in-chhatri" transform="translate(-29 -44) scale(.7)"/><use href="#in-chhatri" transform="translate(29 -44) scale(.7)"/>
+      <path d="M-12-3V-30Q-12-39 0-46Q12-39 12-30V-3Z" fill="#9b9e8b"/>
+      <path d="M-9-3V-27Q-9-35 0-40Q9-35 9-27V-3Z" fill="#788b80"/>
+      <path d="M-30-9V-25Q-26-33-22-25V-9Z M22-9V-25Q26-33 30-25V-9Z" fill="#b8b8a0"/>
+      <path d="M-20-54H20M-36-38H-21M21-38H36" stroke="#c9c1a5" stroke-width="2"/>
+      <path d="M-13 13L-19 29H19L13 13Z" fill="#8eb2ac"/>
+      <path d="M-34 16H-23V25H-40Z M23 16H34L40 25H23Z" fill="#91a577"/>
+    </g>
+    <g id="in-fort-tower">
+      <path d="M-14 0V-65L-9-72H9L14-65V0Z" fill="#bb7350"/><path d="M5-72H9L14-65V0H5Z" fill="#955538"/>
+      <path d="M-16-65H16V-72H-16Z M-16-33H16V-28H-16Z M-15-8H15V-3H-15Z" fill="#d4956b"/>
+      <path d="M-16-72V-80H-11V-76H-5V-81H5V-76H11V-80H16V-72Z" fill="#aa6545"/>
+      <path d="M-7-43V-54Q0-64 7-54V-43Z M-7-11V-20Q0-30 7-20V-11Z" fill="#704d3c"/>
+      <path d="M-12-39H12M-11-17H-8M8-17H11" stroke="#dfac7c" stroke-width="2"/>
+    </g>
+    <g id="in-fort">
+      <path d="M-56 4H56V12H-56Z" fill="#a47150"/><path d="M-46 3V-43H46V3Z" fill="#c7845a"/>
+      <path d="M-40-43V-56H-32V-50H-24V-57H-16V-51H-8V-58H0V-51H8V-58H16V-51H24V-57H32V-50H40V-43Z" fill="#a96343"/>
+      <use href="#in-fort-tower" transform="translate(-39 3)"/><use href="#in-fort-tower" transform="translate(39 3)"/>
+      <path d="M-17 3V-20Q-17-31 0-38Q17-31 17-20V3Z" fill="#e1a176"/>
+      <path d="M-11 3V-18Q-11-26 0-31Q11-26 11-18V3Z" fill="#674a3b"/>
+      <path d="M-20-8H-28V-21H-20Z M20-8H28V-21H20Z" fill="#91583e"/>
+      <path d="M-13 12L-22 25H22L13 12Z" fill="#ccb78c"/>
+    </g>
+  </defs>
+  <g aria-hidden="true">
+    <use href="#in-land" transform="translate(0 6)" fill="#98a77c" stroke="#98a77c" stroke-width="5"/>
+    <use href="#in-land" fill="#c5d1a6" stroke="#e8e6c9" stroke-width="9"/>
+    <use href="#in-land" fill="#c5d1a6" stroke="#a7b58b" stroke-width="1.5"/>
+    <g clip-path="url(#in-land-clip)">
+      <path d="M340 83L413 55L447 103L419 168L350 191L324 147Z" fill="#d8c49a"/>
+      <path d="M418 164L484 145L530 176L487 267L450 321L414 238Z" fill="#b5c491"/>
+      <path d="M414 47L453 52L481 73L501 95L557 125L593 111L624 90" fill="none" stroke="#d9d8b6" stroke-width="24"/>
+      <path d="M429 94L436 105L440 116L451 127L470 137L500 140L526 150L544 171" fill="none" stroke="#94b7ac" stroke-width="3"/>
+      <use href="#in-mountain" transform="translate(417 60) scale(.62)"/><use href="#in-mountain" transform="translate(444 69) scale(.65)"/>
+      <use href="#in-mountain" transform="translate(473 85) scale(.55)"/><use href="#in-mountain" transform="translate(502 105) scale(.48)"/>
+      <use href="#in-mountain" transform="translate(613 108) scale(.6)"/>
+      <use href="#in-tree" transform="translate(459 174) scale(.6)"/><use href="#in-tree" transform="translate(491 163) scale(.5)"/>
+      <use href="#in-tree" transform="translate(459 257) scale(.55)"/><use href="#in-tree" transform="translate(440 281) scale(.6)"/>
+      <use href="#in-tree" transform="translate(606 145) scale(.5)"/>
+      <path d="M371 130h15m-8 7h17M369 159h18m-10 7h19M437 221h14m-7 7h16" stroke="#b9ad7d" stroke-width="2"/>
+    </g>
+    <g fill="none" stroke="#bbd0bd" stroke-width="2">
+      <path d="M283 244q6 6 12 0q6 6 12 0q6 6 12 0M309 271q6 6 12 0q6 6 12 0M341 292q6 6 12 0q6 6 12 0"/>
+      <path d="M575 243q6 6 12 0q6 6 12 0q6 6 12 0M598 267q6 6 12 0q6 6 12 0M522 310q6 6 12 0q6 6 12 0"/>
+    </g>
+    <g transform="translate(724 269)" class="map-compass"><path d="M0-20L-7 0H7Z" fill="#819779"/><path d="M0 20L-7 0H7Z" fill="#c5d1b4"/><text y="-29" text-anchor="middle">N</text></g>
+  </g>
+</TravelMapFrame>

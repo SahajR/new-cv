@@ -15,4 +15,17 @@ const travel = defineCollection({
     draft: z.boolean().default(true),
   }).refine(entry => travelJournals[entry.country].stops.some(stop => stop.id === entry.place), { message: 'Unknown landmark for this country', path: ['place'] }),
 });
-export const collections = { travel };
+// Bites belong to a country through their folder, independently of map stops.
+const bites = defineCollection({
+  loader: glob({ pattern: '**/*.{md,mdx}', base: './src/content/bites' }),
+  schema: ({ image }) => z.object({
+    title: z.string().min(1),
+    description: z.string().min(1),
+    cover: image(),
+    imageAlt: z.string().min(1),
+    coverPosition: z.string().regex(/^(?:100|\d{1,2})% (?:100|\d{1,2})%$/).default('50% 50%'),
+    order: z.number().int().nonnegative().default(0),
+    draft: z.boolean().default(true),
+  }),
+});
+export const collections = { travel, bites };

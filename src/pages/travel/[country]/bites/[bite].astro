@@ -1,0 +1,35 @@
+---
+import { render } from 'astro:content';
+import Layout from '../../../../layouts/Layout.astro';
+import Footer from '../../../../components/Footer.astro';
+import BiteImage from '../../../../components/BiteImage.astro';
+import { getPublishedBites, type TravelBite } from '../../../../lib/travel-bites';
+import '../../../../styles/travel-bites.css';
+
+export async function getStaticPaths() {
+  return (await getPublishedBites()).map(bite => ({
+    params: { country: bite.country.slug, bite: bite.slug }, props: { bite },
+  }));
+}
+interface Props { bite: TravelBite }
+const { bite } = Astro.props;
+const { Content } = await render(bite.entry);
+const { title, description } = bite.entry.data;
+---
+<Layout title={`${title} — Bites from ${bite.country.name}`} description={description} travelTransitions>
+  <main class="bite-entry" id="main">
+    <a class="bite-back" href={`/travel/${bite.country.slug}/#${bite.cardId}`}><span aria-hidden="true">←</span> Bites from {bite.country.name}</a>
+    <article class="bite-entry-layout">
+      <div class="bite-entry-photo"><BiteImage bite={bite} hero /></div>
+      <div class="bite-entry-copy">
+        <header>
+          <p class="bite-entry-place">{bite.country.name} <span aria-hidden="true">/</span> Bites</p>
+          <h1>{title}</h1>
+          <p class="bite-description">{description}</p>
+        </header>
+        <div class="bite-prose"><Content /></div>
+      </div>
+    </article>
+  </main>
+  <Footer />
+</Layout>
