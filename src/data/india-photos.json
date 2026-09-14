@@ -39,5 +39,36 @@
       "alt": "A golden equestrian statue near Agra Fort, with a raised sword against the cloudy sky.",
       "capturedAt": "2023-09-17T07:24:58.000Z"
     }
+  ],
+  "rajgad-fort": [
+    {
+      "src": "/images/travel/india/rajgad-fort-01.webp",
+      "thumbnail": "/images/travel/india/rajgad-fort-01-small.webp",
+      "width": 1440,
+      "height": 1084,
+      "alt": "A stone gateway at Rajgad Fort above rough steps and golden grass, overlooking a valley and hazy hills.",
+      "capturedAt": "2023-10-28T08:33:31.000Z"
+    },
+    {
+      "src": "/images/travel/india/rajgad-fort-02.webp",
+      "width": 1440,
+      "height": 1084,
+      "alt": "Rajgad Fort's long fortified ridge, with pale grass along the crest and green slopes falling away on either side.",
+      "capturedAt": "2023-10-28T09:58:14.000Z"
+    },
+    {
+      "src": "/images/travel/india/rajgad-fort-03.webp",
+      "width": 1440,
+      "height": 1084,
+      "alt": "Stone steps and ramparts at Rajgad Fort curve along a sunlit hillside, with mountains fading into the distance.",
+      "capturedAt": "2023-10-28T10:09:13.000Z"
+    },
+    {
+      "src": "/images/travel/india/rajgad-fort-04.webp",
+      "width": 1084,
+      "height": 1440,
+      "alt": "A walker follows a grassy ridge path toward Rajgad Fort's steep rocky summit beneath a blue sky.",
+      "capturedAt": "2023-10-28T11:02:54.000Z"
+    }
   ]
 }

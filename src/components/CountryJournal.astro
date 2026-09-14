@@ -18,9 +18,10 @@ const entries = await getCountryStories(country);
       const photos = journal.photos[stop.id];
       const cover = photos[0];
       const startsRegion = stop.region && stop.region !== entries[i-1]?.stop.region;
+      const regionCount = entries.filter(entry => entry.stop.region === stop.region).length;
       const StoryHeading = stop.region ? 'h4' : 'h3';
       return <>
-      {startsRegion && <h3 class="travel-region-heading">{stop.region}<span>{entries.filter(entry => entry.stop.region === stop.region).length} places</span></h3>}
+      {startsRegion && <h3 class="travel-region-heading">{stop.region}<span>{regionCount} {regionCount === 1 ? 'place' : 'places'}</span></h3>}
       <article class="travel-story" id={cardId(stop.id)} data-travel-story={stop.id} data-place-name={stop.name} tabindex="-1">
         <a class="travel-story-link" href={storyHref(country, stop.id)}>
           <div class="travel-story-photo"><img src={cover.thumbnail} width={cover.width} height={cover.height} alt={cover.alt} loading="lazy" decoding="async"/><span class="travel-photo-number" aria-hidden="true">{String(i+1).padStart(2,'0')}</span></div>

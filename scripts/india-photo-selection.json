@@ -7,5 +7,11 @@
   { "slug": "agra-fort", "photos": [
     { "file": "Agra/PXL_20230917_061522669.jpg", "alt": "Agra Fort's red sandstone façade and projecting towers beneath dark clouds, with palms below." },
     { "file": "Agra/PXL_20230917_072458636.MP.jpg", "alt": "A golden equestrian statue near Agra Fort, with a raised sword against the cloudy sky." }
+  ]},
+  { "slug": "rajgad-fort", "photos": [
+    { "file": "RajgadFort/PXL_20231028_083331454.jpg", "alt": "A stone gateway at Rajgad Fort above rough steps and golden grass, overlooking a valley and hazy hills." },
+    { "file": "RajgadFort/PXL_20231028_095814468.jpg", "alt": "Rajgad Fort's long fortified ridge, with pale grass along the crest and green slopes falling away on either side." },
+    { "file": "RajgadFort/PXL_20231028_100913866.jpg", "alt": "Stone steps and ramparts at Rajgad Fort curve along a sunlit hillside, with mountains fading into the distance." },
+    { "file": "RajgadFort/PXL_20231028_110254737.jpg", "alt": "A walker follows a grassy ridge path toward Rajgad Fort's steep rocky summit beneath a blue sky." }
   ]}
 ]

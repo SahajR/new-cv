@@ -31,7 +31,7 @@ export const travelJournals: Record<JournalCountry, TravelJournal> = {
   jordan: { name: 'Jordan', stops: jordanStops, photos: jordanPhotos, dates: '12 February — 12 March', year: '2023', description: 'Places photographed between 12 February and 12 March 2023.', countryView: '170 0 580 340', journeyView: '185 0 510 330' },
   egypt: { name: 'Egypt', stops: egyptStops, photos: egyptPhotos, dates: '29 — 30 May', year: '2026', description: 'Four sights around Luxor and five around Cairo and Giza, photographed on 29 and 30 May 2026.', countryView: '95 -45 730 395', journeyView: '115 -35 685 370' },
   china: { name: 'China', stops: chinaStops, photos: chinaPhotos, dates: '23 — 30 September', year: '2023', description: 'Places in Beijing, Hangzhou, and Shanghai, photographed between 23 and 30 September 2023.', countryView: '65 -20 880 410', journeyView: '120 -10 810 405' },
-  india: { name: 'India', stops: indiaStops, photos: indiaPhotos, dates: '17 September', year: '2023', description: 'The Taj Mahal and Agra Fort in Agra, photographed on 17 September 2023.', countryView: '180 -10 610 365', journeyView: '185 20 585 280' },
+  india: { name: 'India', stops: indiaStops, photos: indiaPhotos, dates: 'September — October', year: '2023', description: 'The Taj Mahal and Agra Fort photographed on 17 September, and Rajgad Fort in Maharashtra on 28 October 2023.', countryView: '180 -10 610 365', journeyView: '185 15 585 330' },
 };
 export const isJournalCountry = (country: string): country is JournalCountry => journalCountries.some(id => id === country);
 export const storyHref = (country: JournalCountry, place: string) => `/travel/${country}/${place}/`;
