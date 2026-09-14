@@ -210,6 +210,150 @@
       "height": 1080,
       "alt": "Sahaj with the Great Buddha at Kōtoku-in in Kamakura.",
       "capturedAt": "2025-06-06T01:45:41.000Z"
+    },
+    {
+      "src": "/images/travel/japan/kamakura-02.webp",
+      "width": 1084,
+      "height": 1440,
+      "alt": "A small round dessert served in a paper cup at a café in Kamakura.",
+      "capturedAt": "2025-06-06T04:06:18.000Z"
+    }
+  ],
+  "kamakurakokomae": [
+    {
+      "src": "/images/travel/japan/kamakurakokomae-01.webp",
+      "thumbnail": "/images/travel/japan/kamakurakokomae-01-small.webp",
+      "width": 1440,
+      "height": 1084,
+      "alt": "The platform and tracks at Kamakurakōkōmae station, with the road and sea immediately alongside.",
+      "capturedAt": "2025-06-06T05:37:43.000Z"
+    },
+    {
+      "src": "/images/travel/japan/kamakurakokomae-02.webp",
+      "width": 1440,
+      "height": 1084,
+      "alt": "The yellow-and-black railway crossing beside Kamakurakōkōmae station, with the sea beyond the road.",
+      "capturedAt": "2025-06-06T05:35:20.000Z"
+    }
+  ],
+  "enoshima": [
+    {
+      "src": "/images/travel/japan/enoshima-01.webp",
+      "thumbnail": "/images/travel/japan/enoshima-01-small.webp",
+      "width": 1440,
+      "height": 1084,
+      "alt": "Sahaj beside rows of red, white, and blue tied paper fortunes at Enoshima Shrine.",
+      "capturedAt": "2025-06-06T06:32:36.000Z"
+    },
+    {
+      "src": "/images/travel/japan/enoshima-02.webp",
+      "width": 1440,
+      "height": 1084,
+      "alt": "A stone devotional figure beneath a carved dragon on Enoshima.",
+      "capturedAt": "2025-06-06T06:30:26.000Z"
+    },
+    {
+      "src": "/images/travel/japan/enoshima-03.webp",
+      "width": 1440,
+      "height": 1084,
+      "alt": "A stone torii and sacred rope beneath the trees on Enoshima.",
+      "capturedAt": "2025-06-06T06:42:48.000Z"
+    },
+    {
+      "src": "/images/travel/japan/enoshima-04.webp",
+      "width": 1084,
+      "height": 1440,
+      "alt": "A skewer of pink, white, and green dango held above a shopping street on Enoshima.",
+      "capturedAt": "2025-06-06T06:48:22.000Z"
+    },
+    {
+      "src": "/images/travel/japan/enoshima-05.webp",
+      "width": 1440,
+      "height": 1084,
+      "alt": "Squid and shellfish cooking on a street-side grill on Enoshima.",
+      "capturedAt": "2025-06-06T06:56:08.000Z"
+    },
+    {
+      "src": "/images/travel/japan/enoshima-06.webp",
+      "width": 1084,
+      "height": 1440,
+      "alt": "A grilled clam served in its shell with chopsticks.",
+      "capturedAt": "2025-06-06T07:02:26.000Z"
+    },
+    {
+      "src": "/images/travel/japan/enoshima-07.webp",
+      "width": 1084,
+      "height": 1440,
+      "alt": "A green-and-cream soft-serve cone on an Enoshima shopping street.",
+      "capturedAt": "2025-06-06T07:08:46.000Z"
+    }
+  ],
+  "lake-kawaguchiko": [
+    {
+      "src": "/images/travel/japan/lake-kawaguchiko-01.webp",
+      "thumbnail": "/images/travel/japan/lake-kawaguchiko-01-small.webp",
+      "width": 1084,
+      "height": 1440,
+      "alt": "Sahaj beside the Lake Kawaguchiko sign at Oishi Park, with Mount Fuji across the water.",
+      "capturedAt": "2025-06-07T03:36:03.000Z"
+    },
+    {
+      "src": "/images/travel/japan/lake-kawaguchiko-02.webp",
+      "width": 1440,
+      "height": 1084,
+      "alt": "Blue flowers beside Lake Kawaguchiko, with Mount Fuji rising beyond the lake.",
+      "capturedAt": "2025-06-07T03:37:47.000Z"
+    },
+    {
+      "src": "/images/travel/japan/lake-kawaguchiko-03.webp",
+      "width": 1084,
+      "height": 1440,
+      "alt": "A pale soft-serve cone held in front of the gardens and distant Mount Fuji at Oishi Park.",
+      "capturedAt": "2025-06-07T04:04:31.000Z"
+    }
+  ],
+  "fuji-lawson": [
+    {
+      "src": "/images/travel/japan/fuji-lawson-01.webp",
+      "thumbnail": "/images/travel/japan/fuji-lawson-01-small.webp",
+      "width": 788,
+      "height": 1440,
+      "alt": "Sahaj in front of the blue-and-white Lawson storefront near Fujikawaguchiko Town Hall, with Mount Fuji behind the roof.",
+      "capturedAt": "2025-06-07T04:39:42.000Z"
+    }
+  ],
+  "oshino-hakkai": [
+    {
+      "src": "/images/travel/japan/oshino-hakkai-01.webp",
+      "thumbnail": "/images/travel/japan/oshino-hakkai-01-small.webp",
+      "width": 1084,
+      "height": 1440,
+      "alt": "A pond in the Oshino Hakkai area, with a thatched roof, pine branches, and flowering shrubs along the far bank.",
+      "capturedAt": "2025-06-07T06:28:40.000Z"
+    }
+  ],
+  "chureito-pagoda": [
+    {
+      "src": "/images/travel/japan/chureito-pagoda-01.webp",
+      "thumbnail": "/images/travel/japan/chureito-pagoda-01-small.webp",
+      "width": 1440,
+      "height": 1084,
+      "alt": "Mount Fuji above the town and trees, framed beside Chureito Pagoda.",
+      "capturedAt": "2025-06-07T07:36:17.000Z"
+    },
+    {
+      "src": "/images/travel/japan/chureito-pagoda-02.webp",
+      "width": 1084,
+      "height": 1440,
+      "alt": "Sahaj looking toward Chureito Pagoda and Mount Fuji from the viewing area.",
+      "capturedAt": "2025-06-07T07:35:18.000Z"
+    },
+    {
+      "src": "/images/travel/japan/chureito-pagoda-03.webp",
+      "width": 1440,
+      "height": 1369,
+      "alt": "Mount Fuji framed through a red torii at Arakura Fuji Sengen Shrine.",
+      "capturedAt": "2025-06-07T07:40:47.000Z"
     }
   ]
 }

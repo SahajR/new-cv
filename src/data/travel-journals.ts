@@ -26,7 +26,7 @@ export interface TravelJournal {
   journeyView: string;
 }
 export const travelJournals: Record<JournalCountry, TravelJournal> = {
-  japan: { name: 'Japan', stops: japanStops, photos: japanPhotos, dates: '30 May — 6 June', year: '2025', description: 'Places photographed between 30 May and 6 June 2025.', countryView: '0 0 900 330', journeyView: '85 0 670 330' },
+  japan: { name: 'Japan', stops: japanStops, photos: japanPhotos, dates: '30 May — 7 June', year: '2025', description: 'Places photographed between 30 May and 7 June 2025, including the Kamakura coast and sights around Mount Fuji.', countryView: '40 -10 890 425', journeyView: '75 -5 820 405' },
   jordan: { name: 'Jordan', stops: jordanStops, photos: jordanPhotos, dates: '12 February — 12 March', year: '2023', description: 'Places photographed between 12 February and 12 March 2023.', countryView: '170 0 580 340', journeyView: '185 0 510 330' },
   egypt: { name: 'Egypt', stops: egyptStops, photos: egyptPhotos, dates: '29 — 30 May', year: '2026', description: 'Four sights around Luxor and five around Cairo and Giza, photographed on 29 and 30 May 2026.', countryView: '95 -45 730 395', journeyView: '115 -35 685 370' },
   china: { name: 'China', stops: chinaStops, photos: chinaPhotos, dates: '23 — 30 September', year: '2023', description: 'Places in Beijing, Hangzhou, and Shanghai, photographed between 23 and 30 September 2023.', countryView: '65 -20 880 410', journeyView: '120 -10 810 405' },
