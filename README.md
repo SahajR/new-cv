@@ -38,6 +38,10 @@ All commands are run from the root of the project, from a terminal:
 | `npm run astro ...`       | Run CLI commands like `astro add`, `astro check` |
 | `npm run astro -- --help` | Get help using the Astro CLI                     |
 
+## Cloudflare Workers
+
+See [the deployment guide](docs/cloudflare-workers.md) for Workers Builds settings, local preview, and dry-run validation. This site deploys the generated `dist/` files using the root `wrangler.jsonc`.
+
 ## 👀 Want to learn more?
 
 Feel free to check [our documentation](https://docs.astro.build) or jump into our [Discord server](https://astro.build/chat).

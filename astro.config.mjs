@@ -7,6 +7,8 @@ import { satteri } from '@astrojs/markdown-satteri';
 
 // https://astro.build/config
 export default defineConfig({
+  // Workers serves the generated files through wrangler.jsonc.
+  output: 'static',
   integrations: [react(), mdx({ processor: satteri() })],
   vite: {
     server: {
