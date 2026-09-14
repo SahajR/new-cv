@@ -24,7 +24,7 @@ const href = (id: string) => `${linked ? `/travel/${country}/` : ''}#${cardId(id
     </a>)}
   </svg>
   <div class="travel-map-footer">
-    <a class="map-book-caption" href={stops[0] ? href(stops[0].id) : `#${country}-journal-title`} data-place-link={stops[0]?.id}>Explore the map <span aria-hidden="true">↓</span></a>
+    <a class="map-book-caption" href={stops[0] ? href(stops[0].id) : `${linked ? `/travel/${country}/` : ''}#${country}-journal`} data-place-link={stops[0]?.id}>Explore the map <span aria-hidden="true">↓</span></a>
     <span class="map-current"><span class="map-current-dot" aria-hidden="true"></span><span data-map-current>Choose a place, or follow the photographs</span></span>
     <button type="button" class="map-view-toggle" data-map-view hidden>Whole {journal.name} <span aria-hidden="true">↗</span></button>
     <span class="map-follow-hint">Scroll to explore <span aria-hidden="true">↓</span></span>

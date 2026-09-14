@@ -20,9 +20,24 @@ function setupMapHandoff(root: HTMLElement, map: HTMLElement, schedule: () => vo
   const face = home.closest<HTMLElement>('[data-face-page]')!;
   const stage = book.querySelector<HTMLElement>('[data-book-stage]')!;
   const dock = root.querySelector<HTMLElement>('[data-travel-map-dock]')!;
+  const stories = root.querySelector<HTMLElement>('.travel-stories')!;
+  const firstCard = stories.querySelector<HTMLElement>('[data-travel-story]');
+  const small = matchMedia('(max-width:600px)');
   const reduced = matchMedia('(prefers-reduced-motion:reduce)');
   root.dataset.mapReady = 'true';
 
+  function reveal(progress: number) {
+    root.style.setProperty('--travel-dock-progress', String(progress));
+    root.dataset.dockExpanded = String(progress === 1);
+  }
+  function resize() {
+    if (!small.matches || !firstCard) return;
+    // Recover the full spacing from the current overlap. The dock itself keeps
+    // its geometry, so collapsing the cards cannot change the lift threshold.
+    const overlap = parseFloat(getComputedStyle(stories).marginTop) || 0;
+    const height = firstCard.getBoundingClientRect().top - root.getBoundingClientRect().top - overlap;
+    root.style.setProperty('--travel-dock-space', `${height}px`);
+  }
   function place(parent: HTMLElement, placement: string) {
     if (map.parentElement !== parent) {
       const focused = map.contains(document.activeElement) ? document.activeElement as HTMLElement | SVGElement : null;
@@ -34,7 +49,7 @@ function setupMapHandoff(root: HTMLElement, map: HTMLElement, schedule: () => vo
       map.removeAttribute('style');
     }
   }
-  function update() {
+  function update(keepExpanded = false) {
     const stageRect = stage.getBoundingClientRect();
     const target = dock.getBoundingClientRect();
     const progress = mapLiftProgress(stageRect.top, target.top, reduced.matches);
@@ -53,18 +68,24 @@ function setupMapHandoff(root: HTMLElement, map: HTMLElement, schedule: () => vo
       map.style.width = `${lerp(source.width, target.width)}px`;
       map.style.height = `${lerp(source.height, target.height)}px`;
     }
+    reveal(keepExpanded ? 1 : map.dataset.mapPlacement === 'book' ? 0 : progress);
   }
   const changes = new MutationObserver(schedule);
   changes.observe(book, { attributes: true, attributeFilter: ['data-position', 'data-turning', 'data-arrival'] });
   reduced.addEventListener('change', schedule);
   return {
     update,
+    resize,
+    reveal: () => reveal(1),
     dock,
     cleanup() {
       changes.disconnect();
       reduced.removeEventListener('change', schedule);
       place(home, 'book');
       delete root.dataset.mapReady;
+      delete root.dataset.dockExpanded;
+      root.style.removeProperty('--travel-dock-progress');
+      root.style.removeProperty('--travel-dock-space');
     },
   };
 }
@@ -79,7 +100,6 @@ export function setupTravelScroll(root: HTMLElement) {
   const current = map.querySelector<HTMLElement>('[data-map-current]')!;
   const cards = [...root.querySelectorAll<HTMLElement>('[data-travel-story]')];
   const markers = [...map.querySelectorAll<SVGAElement>('[data-map-stop]')];
-  const links = [...root.querySelectorAll<HTMLAnchorElement>('[data-place-link]')];
   const small = matchMedia('(max-width:600px)');
   const reduced = matchMedia('(prefers-reduced-motion:reduce)');
   let active = '';
@@ -96,14 +116,14 @@ export function setupTravelScroll(root: HTMLElement) {
     const card = cards.find(card => card.dataset.travelStory === id);
     current.textContent = card?.dataset.placeName ?? 'Choose a place, or follow the photographs';
     cards.forEach(card => card.classList.toggle('is-active', card.dataset.travelStory === id));
-    [...markers, ...links].forEach(link => {
-      if ((link.dataset.mapStop ?? link.dataset.placeLink) === id) link.setAttribute('aria-current','location');
+    markers.forEach(link => {
+      if (link.dataset.mapStop === id) link.setAttribute('aria-current','location');
       else link.removeAttribute('aria-current');
     });
   }
   function measure() {
     frame = 0;
-    handoff.update();
+    handoff.update(locked);
     if (!visible || locked) return;
     const mapRect = map.getBoundingClientRect();
     const positions = cards.map(card => { const rect = card.getBoundingClientRect(); return { id: card.dataset.travelStory!, top: rect.top, bottom: rect.bottom }; });
@@ -119,6 +139,7 @@ export function setupTravelScroll(root: HTMLElement) {
     toggle.textContent = fullMap ? 'The journey ↙' : `Whole ${map.dataset.mapName} ↗`;
     toggle.setAttribute('aria-label', fullMap ? 'Show the journey in detail' : `Show the whole map of ${map.dataset.mapName}`);
     root.style.setProperty('--travel-map-offset', `${handoff.dock.getBoundingClientRect().height+24}px`);
+    handoff.resize();
     schedule();
   }
   function unlock() { locked = false; clearTimeout(settle); schedule(); }
@@ -126,6 +147,9 @@ export function setupTravelScroll(root: HTMLElement) {
     clearTimeout(settle);
     locked = true;
     paint(card.dataset.travelStory!);
+    // Resolve the destination against the expanded layout, including when a
+    // map link is followed directly from the compact book view.
+    handoff.reveal();
     card.scrollIntoView({ block: 'start', behavior: smooth && !reduced.matches ? 'smooth' : 'instant' });
     card.focus({ preventScroll: true });
     settle = setTimeout(unlock, smooth && !reduced.matches ? 1100 : 50);
@@ -140,7 +164,6 @@ export function setupTravelScroll(root: HTMLElement) {
     history.replaceState(history.state, '', `#${card.id}`);
     jump(card,true);
   };
-  root.addEventListener('click', clickPlace, { signal });
   map.addEventListener('click', clickPlace, { signal });
   toggle.addEventListener('click', () => { fullMap = !fullMap; resize(); }, { signal });
   window.addEventListener('scroll',schedule,{ passive:true, signal });
@@ -153,12 +176,24 @@ export function setupTravelScroll(root: HTMLElement) {
   const restoreHash = () => {
     const card = cards.find(card => `#${card.id}` === location.hash);
     if (card) jump(card,false);
+    else {
+      const target = document.getElementById(location.hash.slice(1));
+      if (!target?.matches('.country-bites, .bite-card')) return;
+      clearTimeout(settle);
+      locked = true;
+      handoff.reveal();
+      target.scrollIntoView({ block: 'start', behavior: 'instant' });
+      target.focus({ preventScroll: true });
+      settle = setTimeout(unlock, 50);
+    }
   };
   window.addEventListener('hashchange',restoreHash,{ signal });
   const observer = new IntersectionObserver(([entry]) => { visible = entry.isIntersecting; if (visible) schedule(); });
   observer.observe(root);
   const sizing = new ResizeObserver(resize);
   sizing.observe(handoff.dock);
+  const firstRegion = root.querySelector('.travel-stories > .travel-region-heading:first-child');
+  if (firstRegion) sizing.observe(firstRegion);
   resize();
   // Reserve all image dimensions; wait one frame for the initial sticky offset.
   const restoreFrame = requestAnimationFrame(restoreHash);

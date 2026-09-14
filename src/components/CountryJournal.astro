@@ -6,22 +6,17 @@ const { country } = Astro.props;
 const journal = travelJournals[country];
 const entries = await getCountryStories(country);
 ---
-<section class="travel-journal" data-travel-journal={country} aria-labelledby={`${country}-journal-title`}>
-  <header class="travel-journal-heading">
-    <div><p class="travel-eyebrow">From the camera roll</p><h2 id={`${country}-journal-title`}>{journal.name}, stop by stop<span>.</span></h2></div>
-    <p class="travel-trip-date">{journal.dates}<br/><span>{journal.year}</span></p>
-  </header>
+<section class="travel-journal" id={`${country}-journal`} data-travel-journal={country} aria-label={`${journal.name} travel stories`}>
   <div class="travel-map-dock" data-travel-map-dock></div>
-  <nav class="travel-place-index" aria-label={`Places in ${journal.name}`}>{entries.map(({ stop },i) => <a href={`#${cardId(stop.id)}`} data-place-link={stop.id}><span>{String(i+1).padStart(2,'0')}</span> {stop.name}</a>)}</nav>
   <div class="travel-stories">
     {entries.map(({ stop, story },i) => {
       const photos = journal.photos[stop.id];
       const cover = photos[0];
       const startsRegion = stop.region && stop.region !== entries[i-1]?.stop.region;
       const regionCount = entries.filter(entry => entry.stop.region === stop.region).length;
-      const StoryHeading = stop.region ? 'h4' : 'h3';
+      const StoryHeading = stop.region ? 'h3' : 'h2';
       return <>
-      {startsRegion && <h3 class="travel-region-heading">{stop.region}<span>{regionCount} {regionCount === 1 ? 'place' : 'places'}</span></h3>}
+      {startsRegion && <h2 class="travel-region-heading">{stop.region}<span>{regionCount} {regionCount === 1 ? 'place' : 'places'}</span></h2>}
       <article class="travel-story" id={cardId(stop.id)} data-travel-story={stop.id} data-place-name={stop.name} tabindex="-1">
         <a class="travel-story-link" href={storyHref(country, stop.id)}>
           <div class="travel-story-photo"><img src={cover.thumbnail} width={cover.width} height={cover.height} alt={cover.alt} loading="lazy" decoding="async"/><span class="travel-photo-number" aria-hidden="true">{String(i+1).padStart(2,'0')}</span></div>

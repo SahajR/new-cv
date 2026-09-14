@@ -6,12 +6,6 @@
   --travel-footer-height: 39px;
   margin-top: 80px;
 }
-.travel-journal-heading { display: flex; justify-content: space-between; gap: 20px; align-items: end; margin-bottom: 28px; }
-.travel-eyebrow { font-size: 10px; letter-spacing: .16em; text-transform: uppercase; color: var(--body); margin-bottom: 10px; }
-.travel-journal-heading h2 { font: clamp(30px,5vw,48px)/1.1 var(--font-serif); letter-spacing: -.025em; }
-.travel-journal-heading h2 > span { color: var(--map-red); }
-.travel-trip-date { font: 17px/1.3 var(--font-serif); text-align: right; white-space: nowrap; }
-.travel-trip-date > span { color: var(--body); font-size: 14px; }
 .sb-map-page { position: absolute; inset: 10% 7% 12% 10%; }
 .travel-map-dock { position: sticky; top: 0; z-index: 5; height: calc(var(--travel-canvas-height) + var(--travel-footer-height) + 2px); }
 .travel-journal:not([data-map-ready]) .travel-map-dock { display: none; }
@@ -78,11 +72,7 @@
 .map-follow-hint > span { margin-left: 10px; }
 .map-view-toggle { border: 0; padding: 0; min-height: 30px; background: none; color: #3f6557; font: inherit; cursor: pointer; white-space: nowrap; text-decoration: underline; text-underline-offset: 3px; }
 .map-view-toggle[hidden] { display: none; }
-.travel-place-index { display: flex; flex-wrap: wrap; gap: 4px 20px; justify-content: center; padding: 20px 8px 30px; }
-.travel-place-index a { font: 14px var(--font-serif); text-decoration: none; padding: 8px 0; }
-.travel-place-index a > span { font: 9px var(--font-main); color: var(--body); margin-right: 3px; }
-.travel-place-index a:hover, .travel-place-index a[aria-current] { color: var(--map-red); text-decoration: underline; text-underline-offset: 4px; }
-.travel-stories { width: min(100%,720px); margin: auto; }
+.travel-stories { display: flow-root; width: min(100%,720px); margin: 24px auto 0; }
 .travel-region-heading { display: flex; align-items: baseline; justify-content: space-between; gap: 16px; margin: 12px 0 20px; font: 32px/1.1 var(--font-serif); }
 .travel-region-heading:not(:first-child) { margin-top: 40px; }
 .travel-region-heading > span { font: 11px var(--font-main); color: var(--body); }
@@ -110,13 +100,16 @@
 :root[data-theme='dark'] .travel-journal { --map-red: #df9678; --map-paper: #d8ccaf; }
 @media (max-width:600px) {
   .travel-journal { margin-top: 52px; --travel-canvas-height: max(175px, min(24svh, 205px)); --travel-footer-height: 44px; }
-  .travel-journal-heading { align-items: start; margin-bottom: 20px; }
-  .travel-journal-heading h2 { max-width: 10ch; font-size: 34px; }
-  .travel-trip-date { font-size: 14px; padding-top: 25px; max-width: 15ch; white-space: normal; flex-shrink: 0; }
+  /* The first stop borrows the empty dock until the map
+     arrives. Keep the dock's box stable so the scroll handoff can reverse. */
+  .travel-journal[data-map-ready] { display: flex; flex-direction: column; margin-top: 24px; overflow-anchor: none; }
+  .travel-journal[data-map-ready] > .travel-map-dock { flex-shrink: 0; }
+  .travel-journal[data-map-ready] > .travel-stories { position: relative; margin-top: calc(-1 * var(--travel-dock-space, 0px) * (1 - var(--travel-dock-progress, 0))); }
+  .travel-journal[data-map-ready] .travel-region-heading:first-child { opacity: 0; visibility: hidden; transition: opacity 160ms ease-out; }
+  .travel-journal[data-dock-expanded='true'] .travel-region-heading:first-child { opacity: 1; visibility: visible; }
+  .travel-journal[data-dock-expanded='false'] > .travel-map-dock { pointer-events: none; }
   .travel-map[data-map-placement='dock'] .travel-map-footer { padding: 6px 10px; font-size: 12px; }
   .map-follow-hint { display: none; }
-  .travel-place-index { gap: 0 15px; padding: 14px 0 20px; }
-  .travel-place-index a { min-height: 40px; display: inline-flex; align-items: center; gap: 4px; }
   .travel-story-link { grid-template-columns: 112px 1fr; gap: 18px; padding: 23px 3px; }
   .travel-story-photo { aspect-ratio: 3/4; }
   .travel-story-meta { font-size: 10px; }
@@ -137,4 +130,5 @@
 }
 @media (prefers-reduced-motion:reduce) {
   .map-sprite, .travel-story-photo, .travel-open > span { transition: none; }
+  .travel-journal[data-map-ready] .travel-region-heading:first-child { transition: none; }
 }

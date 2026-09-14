@@ -5,8 +5,9 @@ export function mountCountryJournal() {
   cleanup?.();
   const journal = document.querySelector<HTMLElement>('[data-travel-journal]');
   cleanup = journal ? setupTravelScroll(journal) : undefined;
-  // The map reserves its dock after hydration. Resolve Bite fragments once
-  // that space exists, including on countries which do not have a map yet.
+  // Journals restore both stop and Bite links after reserving their mobile
+  // map dock. Keep a fallback for countries without a journal.
+  if (journal) return;
   requestAnimationFrame(() => {
     const target = document.getElementById(location.hash.slice(1));
     if (!target?.matches('.country-bites, .bite-card')) return;
