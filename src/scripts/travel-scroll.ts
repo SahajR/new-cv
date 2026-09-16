@@ -1,8 +1,14 @@
+import { createMapCamera, focusMapTransform, MAP_CAMERA_HOME } from './travel-map-camera.ts';
+
 export interface StoryPosition { id: string; top: number; bottom: number }
 
 export function selectActiveStory(stories: StoryPosition[], mapBottom: number, viewportHeight: number): string | undefined {
   const visible = stories.filter(story => story.bottom > mapBottom && story.top < viewportHeight);
   const line = mapBottom + Math.max(0, viewportHeight - mapBottom) * .2;
+  // A short card aligned below the map should retain its highlight after a jump,
+  // even when the following card's top is closer to the reading line.
+  const reading = visible.find(story => story.top >= mapBottom && story.top <= line && story.bottom > line);
+  if (reading) return reading.id;
   return visible.reduce<StoryPosition | undefined>((best, story) => !best || Math.abs(story.top-line) < Math.abs(best.top-line) ? story : best, undefined)?.id;
 }
 
@@ -96,6 +102,8 @@ export function setupTravelScroll(root: HTMLElement) {
   const country = root.dataset.travelJournal!;
   const map = root.closest('main')!.querySelector<HTMLElement>(`[data-travel-map="${country}"]`)!;
   const canvas = map.querySelector<SVGSVGElement>('[data-map-canvas]')!;
+  const camera = createMapCamera(canvas.querySelector<SVGGElement>('[data-map-camera]')!);
+  const followsMarker = map.hasAttribute('data-markers-only');
   const toggle = map.querySelector<HTMLButtonElement>('[data-map-view]')!;
   const current = map.querySelector<HTMLElement>('[data-map-current]')!;
   const cards = [...root.querySelectorAll<HTMLElement>('[data-travel-story]')];
@@ -110,6 +118,23 @@ export function setupTravelScroll(root: HTMLElement) {
   let fullMap = false;
   const handoff = setupMapHandoff(root, map, schedule);
 
+  function focusMap(animate = true) {
+    const marker = markers.find(link => link.dataset.mapStop === active);
+    const follow = followsMarker && small.matches && map.dataset.mapPlacement === 'dock' && marker;
+    canvas.dataset.mapMode = follow ? 'follow' : small.matches && !fullMap ? 'detail' : 'country';
+    if (follow) {
+      // getBBox excludes the camera's ancestor transform, so panning never
+      // changes the next destination. Include the whole marker's hit area.
+      const box = marker.getBBox();
+      camera.move(focusMapTransform(canvas.viewBox.baseVal, {
+        x: box.x + box.width / 2,
+        y: box.y + box.height / 2,
+      }), animate && !reduced.matches);
+    } else {
+      camera.move(MAP_CAMERA_HOME, animate && small.matches && map.dataset.mapPlacement === 'flight' && !reduced.matches);
+    }
+  }
+
   function paint(id: string) {
     if (id === active) return;
     active = id;
@@ -120,16 +145,19 @@ export function setupTravelScroll(root: HTMLElement) {
       if (link.dataset.mapStop === id) link.setAttribute('aria-current','location');
       else link.removeAttribute('aria-current');
     });
+    focusMap();
   }
   function measure() {
     frame = 0;
     handoff.update(locked);
-    if (!visible || locked) return;
-    const mapRect = map.getBoundingClientRect();
-    const positions = cards.map(card => { const rect = card.getBoundingClientRect(); return { id: card.dataset.travelStory!, top: rect.top, bottom: rect.bottom }; });
-    const selected = selectActiveStory(positions, Math.max(0,mapRect.bottom), innerHeight);
-    if (selected) paint(selected);
-    else if (positions[0]?.top >= innerHeight) paint('');
+    if (visible && !locked) {
+      const mapRect = map.getBoundingClientRect();
+      const positions = cards.map(card => { const rect = card.getBoundingClientRect(); return { id: card.dataset.travelStory!, top: rect.top, bottom: rect.bottom }; });
+      const selected = selectActiveStory(positions, Math.max(0,mapRect.bottom), innerHeight);
+      if (selected) paint(selected);
+      else if (positions[0]?.top >= innerHeight) paint('');
+    }
+    focusMap();
   }
   function schedule() { if (!frame) frame = requestAnimationFrame(measure); }
   function resize() {
@@ -140,6 +168,7 @@ export function setupTravelScroll(root: HTMLElement) {
     toggle.setAttribute('aria-label', fullMap ? 'Show the journey in detail' : `Show the whole map of ${map.dataset.mapName}`);
     root.style.setProperty('--travel-map-offset', `${handoff.dock.getBoundingClientRect().height+24}px`);
     handoff.resize();
+    focusMap(false);
     schedule();
   }
   function unlock() { locked = false; clearTimeout(settle); schedule(); }
@@ -169,6 +198,7 @@ export function setupTravelScroll(root: HTMLElement) {
   window.addEventListener('scroll',schedule,{ passive:true, signal });
   window.addEventListener('scrollend',unlock,{ signal });
   window.addEventListener('resize',resize,{ signal });
+  reduced.addEventListener('change', () => focusMap(false), { signal });
   window.addEventListener('wheel',unlock,{ passive:true, signal });
   window.addEventListener('touchstart',unlock,{ passive:true, signal });
   window.addEventListener('keydown',event => { if (['ArrowDown','ArrowUp','PageDown','PageUp','Home','End',' '].includes(event.key)) unlock(); },{ signal });
@@ -197,5 +227,5 @@ export function setupTravelScroll(root: HTMLElement) {
   resize();
   // Reserve all image dimensions; wait one frame for the initial sticky offset.
   const restoreFrame = requestAnimationFrame(restoreHash);
-  return () => { abort.abort(); observer.disconnect(); sizing.disconnect(); paint(''); handoff.cleanup(); cancelAnimationFrame(frame); cancelAnimationFrame(restoreFrame); clearTimeout(settle); };
+  return () => { abort.abort(); observer.disconnect(); sizing.disconnect(); paint(''); handoff.cleanup(); camera.cleanup(); cancelAnimationFrame(frame); cancelAnimationFrame(restoreFrame); clearTimeout(settle); };
 }

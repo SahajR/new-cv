@@ -51,3 +51,10 @@ test('before the list or between widely spaced cards the controller can retain i
 test('the last visible card remains eligible at the bottom of the journal', () => {
   assert.equal(selectActiveStory([{id:'kamakura',top:140,bottom:370}],300,800),'kamakura');
 });
+
+test('a short story aligned below a map without a footer keeps its selected highlight', () => {
+  assert.equal(selectActiveStory([
+    {id:'fuji-lawson',top:228.5,bottom:424.9},
+    {id:'oshino-hakkai',top:424.9,bottom:621.2},
+  ],204.5,844),'fuji-lawson');
+});

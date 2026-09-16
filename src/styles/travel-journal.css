@@ -41,6 +41,17 @@
 .travel-map:not([data-map-placement='dock']) .map-book-caption { display: flex; align-items: center; justify-content: space-between; width: 100%; min-height: 24px; }
 .travel-map[data-map-placement='flight'] .map-follow-hint { display: none; }
 .travel-map[data-map-placement='book'] .travel-map-footer { padding-block: 0; }
+/* Japan's painted cutouts sit directly on the book paper. The floating sheet
+   gains its own paper backing so scrolling photographs cannot show through. */
+[data-travel-map='japan'] { --map-ink: #374e43; --map-red: #a94f3c; background: transparent; border-color: transparent; box-shadow: none; }
+[data-travel-map='japan'][data-map-placement='book'] { box-shadow: none; }
+[data-travel-map='japan']:not([data-map-placement='book']) { background: #f3e6c9 url('/images/travel/scrapbook-paper.webp') center / cover; box-shadow: 0 3px 8px #44332216; }
+[data-travel-map='japan'] .japan-painted-coastline { pointer-events: none; }
+[data-markers-only] .travel-map-canvas { overflow: hidden; }
+[data-travel-map='japan'] .map-landmark:is(:hover, :focus-visible, [aria-current]) .map-sprite { filter: url('#jp-marker-outline'); transform: none; }
+[data-travel-map='japan'] .map-landmark:focus-visible .map-hit-area { stroke: #b7392d; stroke-width: 1.5; }
+[data-travel-map='japan'] .travel-map-footer { display: none; }
+.travel-journal[data-travel-journal='japan'] { --travel-footer-height: 0px; }
 [data-travel-map='jordan'] { --map-water: #eee5ce; --map-ink: #6a513c; --map-red: #a65e3f; border-color: #c7b18a; box-shadow: 0 5px 0 -1px #b6a27b44; }
 [data-travel-map='jordan'] .map-label > rect { fill: #f5e8c9; stroke: #c5ad84; }
 [data-travel-map='jordan'] .map-label > text { fill: #684e38; }
