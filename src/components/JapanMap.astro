@@ -1,26 +1,8 @@
 ---
-import TravelMapFrame from './TravelMapFrame.astro';
+import PaintedTravelMap from './PaintedTravelMap.astro';
 import paintedBounds from '../data/japan-map-art.json';
 import type { TravelStop } from '../data/travel-journals';
 interface Props { stops: readonly TravelStop[]; linked?: boolean }
 const { stops, linked = false } = Astro.props;
-const symbols = [...new Set(stops.map(stop => stop.symbol))];
-// Frame each cutout's painted area without baking labels or hit targets into it.
-const bounds: Record<string, string> = paintedBounds;
 ---
-<TravelMapFrame country="japan" prefix="jp" stops={stops} linked={linked} markersOnly>
-  <defs>
-    <filter id="jp-marker-outline" x="-35%" y="-35%" width="170%" height="170%" color-interpolation-filters="sRGB">
-      <feMorphology in="SourceAlpha" operator="dilate" radius="2.5" result="border" />
-      <feFlood flood-color="#b7392d" />
-      <feComposite in2="border" operator="in" />
-      <feMerge><feMergeNode /><feMergeNode in="SourceGraphic" /></feMerge>
-    </filter>
-    {symbols.map(symbol => <g id={`jp-${symbol}`}>
-      <svg x="-55" y="-90" width="110" height="95" viewBox={bounds[symbol]} preserveAspectRatio="xMidYMax meet" aria-hidden="true">
-        <image href={`/images/travel/japan-map/${symbol}.webp`} width="256" height="256" />
-      </svg>
-    </g>)}
-  </defs>
-  <image class="japan-painted-coastline" href="/images/travel/japan-map/base.webp" x="40" y="-10" width="890" height="425" preserveAspectRatio="none" aria-hidden="true" />
-</TravelMapFrame>
+<PaintedTravelMap country="japan" prefix="jp" stops={stops} linked={linked} bounds={paintedBounds} base={[40, -10, 890, 425]} />

@@ -5,7 +5,7 @@ Implemented with the built-in image-generation tool (one base and fourteen separ
 ## Implementation
 
 - The coastline is independent of the interactive landmarks. It contains no baked-in buildings or labels.
-- `JapanMap.astro` supplies painted images to `TravelMapFrame` with `markersOnly` enabled. Japan uses a 0.32 marker scale (about half the previous 0.6 scale) and keeps keyboard targets, accessible place names, current-stop state and the book-to-sticky handoff.
+- `JapanMap.astro` uses `PaintedTravelMap.astro`, shared with Egypt, to supply painted images to `TravelMapFrame` with `markersOnly` enabled. Japan uses a 0.32 marker scale (about half the previous 0.6 scale) and keeps keyboard targets, accessible place names, current-stop state and the book-to-sticky handoff.
 - Japan has no visible labels, numbers, connector lines, anchor dots or map footer. Small markers sit near their illustrated locations with modest offsets around crowded regions. Hovered, keyboard-focused and current markers receive a red silhouette outline from an SVG filter. Other countries retain the labelled frame.
 - `src/data/japan-map-art.json` records each sprite's painted bounds as an SVG viewBox. This normalizes transparent padding without altering the generated artwork.
 - Book placement has no background or border; floating/sticky placement uses the existing scrapbook paper for legibility above scrolling content.

@@ -1,0 +1,32 @@
+---
+import TravelMapFrame from './TravelMapFrame.astro';
+import type { JournalCountry, TravelStop } from '../data/travel-journals';
+interface Props {
+  country: JournalCountry;
+  prefix: string;
+  stops: readonly TravelStop[];
+  linked?: boolean;
+  bounds: Record<string, string>;
+  base: readonly [number, number, number, number];
+  markerScale?: number;
+}
+const { country, prefix, stops, linked = false, bounds, base, markerScale = .32 } = Astro.props;
+const symbols = [...new Set(stops.map(stop => stop.symbol))];
+const assetRoot = `/images/travel/${country}-map`;
+---
+<TravelMapFrame country={country} prefix={prefix} stops={stops} linked={linked} markerScale={markerScale} markersOnly followOnMobile>
+  <defs>
+    <filter id={`${prefix}-marker-outline`} x="-35%" y="-35%" width="170%" height="170%" color-interpolation-filters="sRGB">
+      <feMorphology in="SourceAlpha" operator="dilate" radius="2.5" result="border" />
+      <feFlood flood-color="#b7392d" />
+      <feComposite in2="border" operator="in" />
+      <feMerge><feMergeNode /><feMergeNode in="SourceGraphic" /></feMerge>
+    </filter>
+    {symbols.map(symbol => <g id={`${prefix}-${symbol}`}>
+      <svg x="-55" y="-90" width="110" height="95" viewBox={bounds[symbol]} preserveAspectRatio="xMidYMax meet" aria-hidden="true">
+        <image href={`${assetRoot}/${symbol}.webp`} width="256" height="256" />
+      </svg>
+    </g>)}
+  </defs>
+  <image class="painted-map-base" href={`${assetRoot}/base.webp`} x={base[0]} y={base[1]} width={base[2]} height={base[3]} preserveAspectRatio="none" aria-hidden="true" />
+</TravelMapFrame>

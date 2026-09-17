@@ -103,7 +103,7 @@ export function setupTravelScroll(root: HTMLElement) {
   const map = root.closest('main')!.querySelector<HTMLElement>(`[data-travel-map="${country}"]`)!;
   const canvas = map.querySelector<SVGSVGElement>('[data-map-canvas]')!;
   const camera = createMapCamera(canvas.querySelector<SVGGElement>('[data-map-camera]')!);
-  const followsMarker = map.hasAttribute('data-markers-only');
+  const followsMarker = map.hasAttribute('data-map-follow');
   const toggle = map.querySelector<HTMLButtonElement>('[data-map-view]')!;
   const current = map.querySelector<HTMLElement>('[data-map-current]')!;
   const cards = [...root.querySelectorAll<HTMLElement>('[data-travel-story]')];
@@ -120,12 +120,13 @@ export function setupTravelScroll(root: HTMLElement) {
 
   function focusMap(animate = true) {
     const marker = markers.find(link => link.dataset.mapStop === active);
-    const follow = followsMarker && small.matches && map.dataset.mapPlacement === 'dock' && marker;
+    const follow = followsMarker && small.matches && !fullMap && map.dataset.mapPlacement === 'dock' && marker;
     canvas.dataset.mapMode = follow ? 'follow' : small.matches && !fullMap ? 'detail' : 'country';
     if (follow) {
       // getBBox excludes the camera's ancestor transform, so panning never
-      // changes the next destination. Include the whole marker's hit area.
-      const box = marker.getBBox();
+      // changes the next destination. Frame the marker and label, excluding
+      // leader lines that may extend far away to the geographic anchor.
+      const box = marker.querySelector<SVGGElement>('[data-map-focus]')!.getBBox();
       camera.move(focusMapTransform(canvas.viewBox.baseVal, {
         x: box.x + box.width / 2,
         y: box.y + box.height / 2,
