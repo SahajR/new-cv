@@ -1,6 +1,6 @@
 ---
 import TravelMapFrame from './TravelMapFrame.astro';
-import type { JournalCountry, TravelStop } from '../data/travel-journals';
+import type { JournalCountry, TravelStop, TravelMapCluster } from '../data/travel-journals';
 interface Props {
   country: JournalCountry;
   prefix: string;
@@ -9,13 +9,20 @@ interface Props {
   bounds: Record<string, string>;
   base: readonly [number, number, number, number];
   markerScale?: number;
+  clusters?: readonly TravelMapCluster[];
 }
-const { country, prefix, stops, linked = false, bounds, base, markerScale = .32 } = Astro.props;
-const symbols = [...new Set(stops.map(stop => stop.symbol))];
+const { country, prefix, stops, linked = false, bounds, base, markerScale = .32, clusters = [] } = Astro.props;
+const symbols = [...new Set([...stops.map(stop => stop.symbol), ...clusters.map(cluster => cluster.symbol)])];
 const assetRoot = `/images/travel/${country}-map`;
 ---
-<TravelMapFrame country={country} prefix={prefix} stops={stops} linked={linked} markerScale={markerScale} markersOnly followOnMobile>
+<TravelMapFrame country={country} prefix={prefix} stops={stops} linked={linked} markerScale={markerScale} clusters={clusters} markersOnly followOnMobile>
   <defs>
+    {clusters.length > 0 && <filter id={`${prefix}-cluster-outline`} x="-20%" y="-20%" width="140%" height="140%" color-interpolation-filters="sRGB">
+      <feMorphology in="SourceAlpha" operator="dilate" radius=".7" result="border" />
+      <feFlood flood-color="#b7392d" />
+      <feComposite in2="border" operator="in" />
+      <feMerge><feMergeNode /><feMergeNode in="SourceGraphic" /></feMerge>
+    </filter>}
     <filter id={`${prefix}-marker-outline`} x="-35%" y="-35%" width="170%" height="170%" color-interpolation-filters="sRGB">
       <feMorphology in="SourceAlpha" operator="dilate" radius="2.5" result="border" />
       <feFlood flood-color="#b7392d" />
@@ -29,4 +36,5 @@ const assetRoot = `/images/travel/${country}-map`;
     </g>)}
   </defs>
   <image class="painted-map-base" href={`${assetRoot}/base.webp`} x={base[0]} y={base[1]} width={base[2]} height={base[3]} preserveAspectRatio="none" aria-hidden="true" />
+  {clusters.map(cluster => <image class="map-city-geography" data-map-detail={cluster.id} data-detail-src={cluster.detail.src} x={cluster.detail.bounds[0]} y={cluster.detail.bounds[1]} width={cluster.detail.bounds[2]} height={cluster.detail.bounds[3]} preserveAspectRatio="none" aria-hidden="true" />)}
 </TravelMapFrame>

@@ -1,25 +1,38 @@
 ---
-import { travelJournals, cardId, type JournalCountry, type TravelStop } from '../data/travel-journals';
+import { travelJournals, cardId, type JournalCountry, type TravelStop, type TravelMapCluster } from '../data/travel-journals';
 import '../styles/travel-journal.css';
-interface Props { country: JournalCountry; prefix: string; stops: readonly TravelStop[]; linked?: boolean; markersOnly?: boolean; followOnMobile?: boolean; markerScale?: number }
-const { country, prefix, stops, linked = false, markersOnly = false, followOnMobile = false, markerScale = markersOnly ? .32 : .6 } = Astro.props;
+interface Props { country: JournalCountry; prefix: string; stops: readonly TravelStop[]; linked?: boolean; markersOnly?: boolean; followOnMobile?: boolean; markerScale?: number; clusters?: readonly TravelMapCluster[] }
+const { country, prefix, stops, linked = false, markersOnly = false, followOnMobile = false, markerScale = markersOnly ? .32 : .6, clusters = [] } = Astro.props;
 const hitScale = markersOnly ? markerScale / .32 : 1;
 const journal = travelJournals[country];
 const href = (id: string) => `${linked ? `/travel/${country}/` : ''}#${cardId(id)}`;
 ---
-<div class="travel-map" data-travel-map={country} data-map-name={journal.name} data-map-placement="book" data-markers-only={markersOnly || undefined} data-map-follow={followOnMobile || undefined}>
-  <svg class="travel-map-canvas" data-map-canvas data-country-view={journal.countryView} data-journey-view={journal.journeyView} viewBox={journal.countryView} role="group" aria-labelledby={`${country}-map-title ${country}-map-description`}>
+<div class="travel-map" data-travel-map={country} data-map-name={journal.name} data-map-placement="book" data-markers-only={markersOnly || undefined} data-map-follow={followOnMobile || undefined} data-map-clusters={clusters.length ? '' : undefined} data-map-marker-width={clusters.length ? 110 * markerScale : undefined}>
+  <svg class="travel-map-canvas" data-map-canvas data-country-view={journal.countryView} data-journey-view={journal.journeyView} viewBox={journal.countryView} role="group" tabindex={clusters.length ? '-1' : undefined} aria-labelledby={`${country}-map-title ${country}-map-description`}>
     <title id={`${country}-map-title`}>{journal.name}: a map of the journey</title>
-    <desc id={`${country}-map-description`}>{journal.description} Choose one of {stops.length} landmarks to jump to its photographs. {markersOnly ? 'Illustrations sit near their locations, with small offsets to separate nearby sights.' : 'Illustrations are spaced out for readability, with lines to their locations.'}</desc>
+    <desc id={`${country}-map-description`}>{journal.description} Choose a landmark to jump to its photographs. {clusters.length ? 'City icons collect nearby sights. Enter a city to reveal its landmarks at their geographic locations.' : markersOnly ? 'Illustrations sit near their locations, with small offsets to separate nearby sights.' : 'Illustrations are spaced out for readability, with lines to their locations.'}</desc>
     <g data-map-camera>
       <slot />
-      {stops.map((stop, i) => <a href={href(stop.id)} class="map-landmark" data-map-stop={stop.id} aria-label={`${stop.name}: jump to photographs`}>
+      {clusters.map(cluster => <g data-map-cluster-overview={cluster.id}>
+        <g class="map-cluster-dots" aria-hidden="true">
+          {stops.filter(stop => stop.cluster === cluster.id).map(stop => <circle cx={(stop.overviewDot ?? stop.anchor)[0]} cy={(stop.overviewDot ?? stop.anchor)[1]} r="2.1" />)}
+        </g>
+        <a class="map-landmark map-city-marker" href={href(stops.find(stop => stop.cluster === cluster.id)!.id)} data-map-city={cluster.id} data-city-zoom={cluster.zoom} data-place-link={stops.find(stop => stop.cluster === cluster.id)!.id} aria-label={`${cluster.name}: explore ${stops.filter(stop => stop.cluster === cluster.id).length} places`}>
+          <g transform={`translate(${cluster.anchor[0]} ${cluster.anchor[1]})`} style={`--map-marker-outline: url('#${prefix}-marker-outline')`}>
+            <rect class="map-hit-area" x="-19" y="-31" width="38" height="38" rx="4" />
+            <g class="map-sprite"><use href={`#${prefix}-${cluster.symbol}`} transform={`scale(${markerScale})`} /></g>
+          </g>
+        </a>
+      </g>)}
+      {stops.map((stop, i) => <a href={href(stop.id)} class="map-landmark" data-map-stop={stop.id} data-stop-cluster={stop.cluster} data-map-x={stop.cluster ? stop.anchor[0] : undefined} data-map-y={stop.cluster ? stop.anchor[1] : undefined} aria-hidden={stop.cluster ? 'true' : undefined} tabindex={stop.cluster ? '-1' : undefined} aria-label={`${stop.name}: jump to photographs`}>
         {!markersOnly && <>
           <path class="map-leader" d={`M${stop.anchor[0]} ${stop.anchor[1]}L${stop.marker[0]} ${stop.marker[1]}`} />
           <circle class="map-anchor" cx={stop.anchor[0]} cy={stop.anchor[1]} r="3" />
         </>}
         <g data-map-focus>
-          <g transform={`translate(${stop.marker[0]} ${stop.marker[1]})`} style={markersOnly ? `--map-marker-outline: url('#${prefix}-marker-outline')` : undefined}>
+          <g transform={`translate(${stop.marker[0]} ${stop.marker[1]})`} style={markersOnly ? `--map-marker-outline: url('#${prefix}-${stop.cluster ? 'cluster' : 'marker'}-outline')` : undefined}>
+            <g data-cluster-symbol={stop.cluster ? '' : undefined}>
+            <g transform={stop.cluster ? `translate(0 ${42.5 * markerScale})` : undefined}>
             <rect class="map-hit-area" x={markersOnly ? -21 * hitScale : -62} y={markersOnly ? -34 * hitScale : -92} width={markersOnly ? 42 * hitScale : 124} height={markersOnly ? 40 * hitScale : 132} rx="4" />
             {!markersOnly && <>
               <ellipse class="map-ground" rx="38" ry="9" transform="scale(.6)" />
@@ -27,11 +40,17 @@ const href = (id: string) => `${linked ? `/travel/${country}/` : ''}#${cardId(id
             </>}
             <g class="map-sprite"><use href={`#${prefix}-${stop.symbol}`} transform={`scale(${markerScale})`} /></g>
             {!markersOnly && <g class="map-label"><rect x="-60" y="12" width="120" height="27" rx="3"/><text x="5" y="32" text-anchor="middle">{stop.mapLabel ?? stop.name}</text><circle cx="-54" cy="25" r="11"/><text class="map-number" x="-54" y="29" text-anchor="middle">{i+1}</text></g>}
+            </g>
+            </g>
           </g>
         </g>
       </a>)}
     </g>
   </svg>
+  {clusters.length > 0 && <>
+    <button class="map-city-back" data-map-city-back type="button" aria-label={`Zoom out to the whole map of ${journal.name}`} hidden><span aria-hidden="true">↖</span> {journal.name}</button>
+    <a class="map-city-credit" data-map-city-credit href="https://www.openstreetmap.org/copyright" target="_blank" rel="noreferrer" hidden>© OpenStreetMap</a>
+  </>}
   <div class="travel-map-footer">
     <a class="map-book-caption" href={stops[0] ? href(stops[0].id) : `${linked ? `/travel/${country}/` : ''}#${country}-journal`} data-place-link={stops[0]?.id}>Explore the map <span aria-hidden="true">↓</span></a>
     <span class="map-current"><span class="map-current-dot" aria-hidden="true"></span><span data-map-current>Choose a place, or follow the photographs</span></span>

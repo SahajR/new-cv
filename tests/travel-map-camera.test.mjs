@@ -80,3 +80,34 @@ test('leaving the page removes the camera transform and pending animation', t =>
   tick(1000);
   assert.equal(attributes.has('transform'), false);
 });
+
+test('street-scale focus centers exact coordinates without rounding away neighboring sights', () => {
+  const view = { x: 90, y: 80, width: 560, height: 295 };
+  const bund = { x: 513.6313995, y: 260.7187725 };
+  const garden = { x: 513.6426195, y: 260.7899775 };
+  const camera = focusMapTransform(view, bund, 1100);
+  assert.ok(Math.abs(bund.x * camera.scale + camera.x - 370) < 1e-7);
+  assert.ok(Math.abs(bund.y * camera.scale + camera.y - 227.5) < 1e-7);
+  assert.ok((garden.y - bund.y) * camera.scale > 75, 'the two nearby sights remain distinct');
+});
+
+test('city zoom uses intermediate scales, retargets, and returns completely to the overview', t => {
+  const { camera, tick, attributes, frames } = animationHarness(t);
+  const city = { x: -564624, y: -286565, scale: 1100 };
+  camera.move(city, true);
+  tick(0);
+  tick(MAP_CAMERA.cityDuration / 4);
+  const zoom = Number(attributes.get('transform').match(/scale\(([^)]+)\)/)[1]);
+  assert.ok(zoom > 1 && zoom < 250, 'approach geographically before revealing street-scale icons');
+  const interrupted = attributes.get('transform');
+  camera.move(MAP_CAMERA_HOME, true);
+  tick(300);
+  assert.equal(attributes.get('transform'), interrupted);
+  camera.move(MAP_CAMERA_HOME, true);
+  tick(300 + MAP_CAMERA.cityDuration);
+  assert.equal(attributes.get('transform'), 'translate(0 0) scale(1)');
+  assert.equal(frames.size, 0);
+  camera.move(city, false);
+  assert.equal(attributes.get('transform'), 'translate(-564624 -286565) scale(1100)');
+  assert.equal(frames.size, 0, 'reduced motion resolves a city immediately');
+});

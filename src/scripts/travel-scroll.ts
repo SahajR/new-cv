@@ -1,4 +1,5 @@
 import { createMapCamera, focusMapTransform, MAP_CAMERA_HOME } from './travel-map-camera.ts';
+import { createMapClusters } from './travel-map-clusters.ts';
 
 export interface StoryPosition { id: string; top: number; bottom: number }
 
@@ -102,7 +103,8 @@ export function setupTravelScroll(root: HTMLElement) {
   const country = root.dataset.travelJournal!;
   const map = root.closest('main')!.querySelector<HTMLElement>(`[data-travel-map="${country}"]`)!;
   const canvas = map.querySelector<SVGSVGElement>('[data-map-canvas]')!;
-  const camera = createMapCamera(canvas.querySelector<SVGGElement>('[data-map-camera]')!);
+  const clusters = createMapClusters(map, canvas);
+  const camera = createMapCamera(canvas.querySelector<SVGGElement>('[data-map-camera]')!, clusters.render);
   const followsMarker = map.hasAttribute('data-map-follow');
   const toggle = map.querySelector<HTMLButtonElement>('[data-map-view]')!;
   const current = map.querySelector<HTMLElement>('[data-map-current]')!;
@@ -116,11 +118,20 @@ export function setupTravelScroll(root: HTMLElement) {
   let frame = 0;
   let settle: ReturnType<typeof setTimeout> | undefined;
   let fullMap = false;
+  let cityOverview = false;
   const handoff = setupMapHandoff(root, map, schedule);
 
   function focusMap(animate = true) {
     const marker = markers.find(link => link.dataset.mapStop === active);
-    const follow = followsMarker && small.matches && !fullMap && map.dataset.mapPlacement === 'dock' && marker;
+    const wasCity = Boolean(map.dataset.activeCluster);
+    const city = !cityOverview && !fullMap && map.dataset.mapPlacement === 'dock' ? marker?.dataset.stopCluster ?? '' : '';
+    clusters.setCluster(city);
+    if (city && marker) {
+      canvas.dataset.mapMode = 'city';
+      camera.move(focusMapTransform(canvas.viewBox.baseVal, { x: Number(marker.dataset.mapX), y: Number(marker.dataset.mapY) }, clusters.zoomFor(city)), animate && !reduced.matches);
+      return;
+    }
+    const follow = followsMarker && small.matches && !fullMap && map.dataset.mapPlacement === 'dock' && marker && !marker.dataset.stopCluster;
     canvas.dataset.mapMode = follow ? 'follow' : small.matches && !fullMap ? 'detail' : 'country';
     if (follow) {
       // getBBox excludes the camera's ancestor transform, so panning never
@@ -132,18 +143,23 @@ export function setupTravelScroll(root: HTMLElement) {
         y: box.y + box.height / 2,
       }), animate && !reduced.matches);
     } else {
-      camera.move(MAP_CAMERA_HOME, animate && small.matches && map.dataset.mapPlacement === 'flight' && !reduced.matches);
+      camera.move(MAP_CAMERA_HOME, animate && (wasCity || map.hasAttribute('data-map-clusters') && map.dataset.mapPlacement !== 'book' || small.matches && map.dataset.mapPlacement === 'flight') && !reduced.matches);
     }
   }
 
   function paint(id: string) {
     if (id === active) return;
+    cityOverview = false;
     active = id;
     const card = cards.find(card => card.dataset.travelStory === id);
     current.textContent = card?.dataset.placeName ?? 'Choose a place, or follow the photographs';
     cards.forEach(card => card.classList.toggle('is-active', card.dataset.travelStory === id));
     markers.forEach(link => {
       if (link.dataset.mapStop === id) link.setAttribute('aria-current','location');
+      else link.removeAttribute('aria-current');
+    });
+    map.querySelectorAll<SVGAElement>('[data-map-city]').forEach(link => {
+      if (markers.find(marker => marker.dataset.mapStop === id)?.dataset.stopCluster === link.dataset.mapCity) link.setAttribute('aria-current', 'location');
       else link.removeAttribute('aria-current');
     });
     focusMap();
@@ -191,10 +207,16 @@ export function setupTravelScroll(root: HTMLElement) {
     const card = cards.find(card => card.dataset.travelStory === id);
     if (!card) return;
     event.preventDefault();
+    cityOverview = false;
     history.replaceState(history.state, '', `#${card.id}`);
     jump(card,true);
   };
   map.addEventListener('click', clickPlace, { signal });
+  map.querySelector<HTMLButtonElement>('[data-map-city-back]')?.addEventListener('click', () => {
+    cityOverview = true;
+    focusMap();
+    canvas.focus({ preventScroll: true });
+  }, { signal });
   toggle.addEventListener('click', () => { fullMap = !fullMap; resize(); }, { signal });
   window.addEventListener('scroll',schedule,{ passive:true, signal });
   window.addEventListener('scrollend',unlock,{ signal });
@@ -228,5 +250,5 @@ export function setupTravelScroll(root: HTMLElement) {
   resize();
   // Reserve all image dimensions; wait one frame for the initial sticky offset.
   const restoreFrame = requestAnimationFrame(restoreHash);
-  return () => { abort.abort(); observer.disconnect(); sizing.disconnect(); paint(''); handoff.cleanup(); camera.cleanup(); cancelAnimationFrame(frame); cancelAnimationFrame(restoreFrame); clearTimeout(settle); };
+  return () => { abort.abort(); observer.disconnect(); sizing.disconnect(); paint(''); handoff.cleanup(); camera.cleanup(); clusters.cleanup(); cancelAnimationFrame(frame); cancelAnimationFrame(restoreFrame); clearTimeout(settle); };
 }

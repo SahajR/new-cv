@@ -47,18 +47,25 @@
 [data-markers-only][data-map-placement='book'] { box-shadow: none; }
 [data-markers-only]:not([data-map-placement='book']) { background: #f3e6c9 url('/images/travel/scrapbook-paper.webp') center / cover; box-shadow: 0 3px 8px #44332216; }
 .painted-map-base { pointer-events: none; }
+[data-map-clusters] { position: relative; }
+.map-city-geography { opacity: 0; pointer-events: none; }
+.map-cluster-dots { fill: #647a63; stroke: #f4e9ce; stroke-width: .8; pointer-events: none; }
+[data-stop-cluster] { opacity: 0; visibility: hidden; }
+.map-landmark[aria-hidden='true'] { pointer-events: none; }
+[data-map-concealed] { opacity: 0; visibility: hidden; }
+.map-city-back { position: absolute; top: 6px; left: 10px; min-height: 44px; padding: 6px 10px; color: #475b48; border: 0; border-radius: 3px; background: #f3e6c9e8; font: 15px var(--font-serif); cursor: pointer; }
+.map-city-back > span { margin-right: 5px; }
+.map-city-back:focus-visible { outline: 2px solid #b7392d; outline-offset: 2px; }
+.map-city-credit { position: absolute; bottom: 4px; right: 8px; color: #58614b; background: #f3e6c9d9; padding: 2px 3px; font: 9px var(--font-main); text-decoration: none; }
+.map-city-back[hidden], .map-city-credit[hidden] { display: none; }
 [data-map-follow] .travel-map-canvas { overflow: hidden; }
 [data-markers-only] .map-landmark:is(:hover, :focus-visible, [aria-current]) .map-sprite { filter: var(--map-marker-outline); transform: none; }
 [data-markers-only] .map-landmark:focus-visible .map-hit-area { stroke: #b7392d; stroke-width: 1.5; }
 [data-markers-only] .travel-map-footer { display: none; }
-.travel-journal:is([data-travel-journal='japan'], [data-travel-journal='egypt'], [data-travel-journal='jordan']) { --travel-footer-height: 0px; }
+.travel-journal:is([data-travel-journal='japan'], [data-travel-journal='egypt'], [data-travel-journal='jordan'], [data-travel-journal='china']) { --travel-footer-height: 0px; }
 [data-travel-map='jordan'] { --map-ink: #6a513c; }
 [data-travel-map='egypt'] { --map-ink: #645237; }
-[data-travel-map='china'] { --map-water: #e1e9d4; border-color: #acba94; }
-[data-travel-map='china'] .map-label > rect { fill: #f0e9cc; stroke: #adba8c; }
-[data-travel-map='china'] .map-label > text { font-size: 18px; }
-[data-travel-map='china'] .map-label > .map-number { font-size: 12px; }
-[data-travel-map='china'] .map-landmark:is(:hover, :focus-visible, [aria-current]) .map-label > rect { fill: #b74e38; stroke: #b74e38; }
+[data-travel-map='china'] { --map-ink: #475b48; }
 [data-travel-map='india'] { --map-water: #e3ead6; border-color: #b2bf99; }
 [data-travel-map='india'] .map-label > rect { fill: #f5eace; stroke: #b8b48c; }
 [data-travel-map='india'] .map-label > circle { fill: #8b9671; stroke: #f0e7cf; }
