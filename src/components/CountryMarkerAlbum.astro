@@ -1,0 +1,32 @@
+---
+import AlbumStack, { type AlbumImage } from './AlbumStack';
+import jordanArt from '../data/jordan-map-art.json';
+import japanArt from '../data/japan-map-art.json';
+import egyptArt from '../data/egypt-map-art.json';
+import chinaArt from '../data/china-map-art.json';
+import indiaArt from '../data/india-map-art.json';
+import type { JournalCountry, TravelStop } from '../data/travel-journals';
+
+interface Props { country: JournalCountry; stops: readonly TravelStop[] }
+const { country, stops } = Astro.props;
+const bounds: Record<JournalCountry, Record<string, string>> = {
+  jordan: jordanArt,
+  japan: japanArt,
+  egypt: egyptArt,
+  china: chinaArt,
+  india: indiaArt,
+};
+const featured: Record<JournalCountry, string> = {
+  jordan: 'treasury', japan: 'fuji-lake', egypt: 'pyramids', india: 'taj', china: 'wall',
+};
+// Open on the familiar landmark, then shuffle through every published stop.
+const ordered = [...stops.filter(stop => stop.symbol === featured[country]), ...stops.filter(stop => stop.symbol !== featured[country])];
+const images: AlbumImage[] = ordered.map(stop => {
+  const viewBox = bounds[country][stop.symbol];
+  if (!viewBox) throw new Error(`Missing album artwork: ${country}/${stop.symbol}`);
+  return { src: `/images/travel/${country}-map/${stop.symbol}.webp`, viewBox };
+});
+---
+<span class="sb-contents-album" aria-hidden="true">
+  <AlbumStack client:visible images={images} size={48} variant="illustration" rotation={-5} />
+</span>

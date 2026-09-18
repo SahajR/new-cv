@@ -4,6 +4,7 @@ import Footer from '../../components/Footer.astro';
 import TravelScrapbook from '../../components/TravelScrapbook.astro';
 import CountryJournal from '../../components/CountryJournal.astro';
 import CountryBites from '../../components/CountryBites.astro';
+import CountryEnding from '../../components/CountryEnding.astro';
 import '../../styles/travel-journal.css';
 import '../../styles/travel-bites.css';
 import { isJournalCountry } from '../../data/travel-journals';
@@ -21,6 +22,7 @@ const { country } = Astro.props;
     <div data-country-journal={country.slug}>
       {isJournalCountry(country.slug) && <CountryJournal country={country.slug} />}
       <CountryBites country={country.slug} />
+      <CountryEnding country={country.slug} />
     </div>
   </main>
   <Footer />

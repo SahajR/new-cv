@@ -2,6 +2,7 @@
 import { travelCountries, countryHref, BOOK_VISIT_KEY, BOOK_HANDOFF_KEY } from '../data/travel';
 import ScrapbookNote from './ScrapbookNote.astro';
 import CountryMap from './CountryMap.astro';
+import CountryMarkerAlbum from './CountryMarkerAlbum.astro';
 import { getCountryStories } from '../lib/travel-content';
 import { journalCountries, isJournalCountry } from '../data/travel-journals';
 import '../styles/scrapbook.css';
@@ -35,7 +36,7 @@ const dust = Array.from({ length: 14 }, (_, i) => ({
             {mode === 'embedded' && <button type="button" class="sb-open" data-book-open aria-label="Open travel scrapbook"><span>Open the book <span aria-hidden="true">↗</span></span></button>}
           </div>
           <div class="sb-face sb-back" data-face-page="1" aria-hidden={page !== 1 ? 'true' : undefined} inert={page !== 1}>
-            <ScrapbookNote country={travelCountries[0]} journal={mode === 'journal'} />
+            <ScrapbookNote country={travelCountries[0]} journal={mode === 'journal'} eager={page === 1} />
           </div>
         </div>
         {travelCountries.map((entry, i) => (
@@ -51,7 +52,7 @@ const dust = Array.from({ length: 14 }, (_, i) => ({
               <span class="sb-postmark" aria-hidden="true">{entry.code} / {String(entry.page).padStart(2, '0')}</span>
             </div>
             <div class="sb-face sb-back" data-face-page={entry.page + 1} aria-hidden={page !== entry.page + 1 ? 'true' : undefined} inert={page !== entry.page + 1}>
-              {travelCountries[i + 1] ? <ScrapbookNote country={travelCountries[i + 1]} journal={mode === 'journal'} /> : <p class="sb-endpaper">More of the world<br />is still out there.</p>}
+              {travelCountries[i + 1] ? <ScrapbookNote country={travelCountries[i + 1]} journal={mode === 'journal'} eager={page === entry.page + 1} /> : <p class="sb-endpaper">More of the world<br />is still out there.</p>}
             </div>
           </div>
         ))}
@@ -75,7 +76,7 @@ const dust = Array.from({ length: 14 }, (_, i) => ({
   {mode === 'index' && <h2 class="sb-contents-title" id="book-contents">Contents</h2>}
   {mode === 'index' && <nav class="sb-destinations sb-contents" aria-label="Scrapbook countries">
     {travelCountries.map((entry) => (
-      <a href={countryHref(entry)} data-book-country={entry.slug} data-page={entry.page} aria-current={entry.page === page ? 'page' : undefined}><span>{String(entry.page).padStart(2, '0')}</span>{entry.name}<span class="sb-contents-arrow" aria-hidden="true">↗</span></a>
+      <a href={countryHref(entry)} data-book-country={entry.slug} data-page={entry.page} aria-current={entry.page === page ? 'page' : undefined}><span>{String(entry.page).padStart(2, '0')}</span>{isJournalCountry(entry.slug) && <CountryMarkerAlbum country={entry.slug} stops={journalEntries[entry.slug].map(({ stop }) => stop)} />}{entry.name}<span class="sb-contents-arrow" aria-hidden="true">↗</span></a>
     ))}
   </nav>}
   {mode === 'embedded' && <a class="sb-read" data-book-read href="/travel/">Explore the travel journal <span aria-hidden="true">↗</span></a>}

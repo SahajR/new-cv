@@ -36,6 +36,13 @@
   height: 100%;
   object-fit: cover;
 }
+.album--illustration .album-card {
+  border: 1px solid #cebea2;
+  border-radius: 4px;
+  background: #f9f2e2;
+}
+.album--illustration .album-card-front { box-shadow: 0 2px 5px #44332229; }
+.album-art { box-sizing: border-box; padding: 4px; }
 a.album:focus-visible {
   outline-offset: 6px;
   border-radius: 10px;

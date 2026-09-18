@@ -18,14 +18,20 @@ const SHADOWS = [
 const SIZE = 36;
 const PLACEHOLDER_COUNT = 3;
 
+export type AlbumImage = string
+  | { src: string; viewBox: string }
+  | { symbol: string; viewBox: string };
+
 interface AlbumStackProps {
-  images: string[];
+  images: readonly AlbumImage[];
   /** Resting tilt of the whole stack, in degrees. */
   rotation?: number;
   intervalMs?: number;
   /** Where clicking the stack goes. Omit to render a non-link stack. */
   href?: string;
   label?: string;
+  size?: number;
+  variant?: 'photo' | 'illustration';
 }
 
 export default function AlbumStack({
@@ -34,6 +40,8 @@ export default function AlbumStack({
   intervalMs = 2400,
   href,
   label = 'Photo album',
+  size = SIZE,
+  variant = 'photo',
 }: AlbumStackProps) {
   const reduced = useReducedMotion();
   const [idx, setIdx] = useState(0);
@@ -59,12 +67,13 @@ export default function AlbumStack({
     };
   }, [n, intervalMs, reduced]);
 
-  const card = (src: string | undefined) =>
-    src ? (
-      <img src={src} alt="" draggable={false} className="album-img" />
-    ) : (
-      <span className="album-blank" aria-hidden="true" />
-    );
+  const card = (image: AlbumImage | undefined) => {
+    if (!image) return <span className="album-blank" aria-hidden="true" />;
+    if (typeof image === 'string') return <img src={image} alt="" draggable={false} className="album-img" />;
+    return <svg className="album-img album-art" viewBox={image.viewBox} aria-hidden="true" focusable="false">
+      {'symbol' in image ? <use href={image.symbol} /> : <image href={image.src} width="256" height="256" />}
+    </svg>;
+  };
 
   const Tag: 'a' | 'span' = href ? 'a' : 'span';
 
@@ -72,7 +81,7 @@ export default function AlbumStack({
     <Tag
       href={href}
       aria-label={href ? label : undefined}
-      className="album"
+      className={`album${variant === 'illustration' ? ' album--illustration' : ''}`}
       style={{
         transform: `rotate(${hovered ? rotation * 0.5 : rotation}deg) scale(${hovered ? 1.1 : 1})`,
       }}
@@ -81,7 +90,7 @@ export default function AlbumStack({
       onFocus={() => setHovered(true)}
       onBlur={() => setHovered(false)}
     >
-      <span className="album-stack" style={{ width: SIZE, height: SIZE }}>
+      <span className="album-stack" style={{ width: size, height: size }}>
         {/* Cards peeking out behind the front card */}
         {SHADOWS.map((s, i) => (
           <span

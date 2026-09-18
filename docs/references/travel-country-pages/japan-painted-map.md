@@ -6,12 +6,29 @@ Implemented with the built-in image-generation tool (one base and fourteen separ
 
 - The coastline is independent of the interactive landmarks. It contains no baked-in buildings or labels.
 - `JapanMap.astro` uses `PaintedTravelMap.astro`, shared with Egypt, to supply painted images to `TravelMapFrame` with `markersOnly` enabled. Japan uses a 0.32 marker scale (about half the previous 0.6 scale) and keeps keyboard targets, accessible place names, current-stop state and the book-to-sticky handoff.
-- Japan has no visible labels, numbers, connector lines, anchor dots or map footer. Small markers sit near their illustrated locations with modest offsets around crowded regions. Hovered, keyboard-focused and current markers receive a red silhouette outline from an SVG filter. Other countries retain the labelled frame.
+- Japan has no visible place labels, numbers or connector lines. Four overview illustrations collect nearby sights, with 13 small dots around them; Tokyo remains a separate marker. Hovered, keyboard-focused and current markers receive a red silhouette outline from an SVG filter.
 - `src/data/japan-map-art.json` records each sprite's painted bounds as an SVG viewBox. This normalizes transparent padding without altering the generated artwork.
 - Book placement has no background or border; floating/sticky placement uses the existing scrapbook paper for legibility above scrolling content.
-- At mobile widths (600px and below), the docked Japan map centers the active marker at 2× scale. A 420ms ease-out pan follows story highlights, retargeting from the current frame during fast scrolling. The book and desktop retain the wide view; reduced-motion preferences use the same framing without animation. Camera settings live in `src/scripts/travel-map-camera.ts`.
+- Entering a clustered stop zooms into its regional map on desktop and mobile; the individual cutouts reveal near the end of the approach. Tokyo retains the 2× mobile following behavior. Transitions retarget from their current frame during fast scrolling; reduced-motion preferences use the same framing without animation. Camera settings live in `src/scripts/travel-map-camera.ts`.
 - The coastline is an illustrative rendering. Anchor positions follow its recognizable regions; this is not a navigation chart.
 - Export: Sharp resize and WebP encoding, quality 86, alphaQuality 100; 1600px base and 256px markers. Original alpha is preserved. No background removal or illustration drawing was done with code.
+
+## Regional clusters
+
+| Overview icon | Stops | Zoom |
+| --- | --- | --- |
+| Osaka Castle / Kansai | Osaka, Kōyasan, Expo Park, Kyoto | 40× |
+| Torii / Hiroshima & Miyajima | Hiroshima, Miyajima | 40× |
+| Great Buddha / Kamakura & Enoshima | Kamakura, Kamakurakōkōmae, Enoshima | 150× |
+| Fuji over the lake / Around Mount Fuji | Kawaguchiko, Lawson, Oshino Hakkai, Chureito | 120× |
+
+All 14 stories and their order remain unchanged. The overview icons link to each area's first stop. Scrolling or tapping revealed cutouts centers that stop, adds its red outline, and pans at the area's scale. The Japan button restores the four group icons, their dots, and Tokyo. Hidden and offscreen detail markers leave the keyboard tab order.
+
+`japan.ts` uses the cover photographs' existing coordinates from the private photo index. `japan-map-projection.ts` applies a local equirectangular projection for each region, tied to its existing illustrated overview anchor. This keeps geographic distances and bearings within each area consistent with its detailed map. The hand-painted overview remains illustrative; the small overview dots are spaced slightly for readability. The photos and Timeline are not re-imported.
+
+The four local SVG layers contain public map data © OpenStreetMap contributors, ODbL. Attribution appears in the expanded view. Water, coastlines, major roads and railways load from local assets only when their area is entered. `scripts/build-japan-details.mjs /tmp/sahaj-japan` rebuilds them from `<prefix>-<area>-osm.json`; it joins water multipolygon rings, simplifies lines and omits tiny ponds.
+
+Data downloaded from `https://overpass-api.de/api/interpreter` on 17 September 2026, using general regional rectangles from `japanDetailExtents`, not the photographs' exact coordinates. Queries used `way(BBOX)[natural~"^(water|coastline)$"]`, `way(BBOX)[waterway=river]`, `way(BBOX)[highway~"^(primary|trunk|motorway)$"]`, `way(BBOX)[railway=rail]`, and `relation(BBOX)[natural=water][type=multipolygon]`, with `out geom`. Fuji's water relation uses the narrower named query `relation["name"="河口湖"][natural=water];out geom` because the broader water request timed out.
 
 ## Base prompt
 

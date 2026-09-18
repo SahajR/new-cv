@@ -1,8 +1,9 @@
 ---
 import PaintedTravelMap from './PaintedTravelMap.astro';
 import paintedBounds from '../data/japan-map-art.json';
+import { japanClusters } from '../data/japan';
 import type { TravelStop } from '../data/travel-journals';
 interface Props { stops: readonly TravelStop[]; linked?: boolean }
 const { stops, linked = false } = Astro.props;
 ---
-<PaintedTravelMap country="japan" prefix="jp" stops={stops} linked={linked} bounds={paintedBounds} base={[40, -10, 890, 425]} />
+<PaintedTravelMap country="japan" prefix="jp" stops={stops} linked={linked} bounds={paintedBounds} base={[40, -10, 890, 425]} clusters={japanClusters} />

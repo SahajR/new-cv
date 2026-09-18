@@ -8,15 +8,20 @@ interface Props {
   linked?: boolean;
   bounds: Record<string, string>;
   base: readonly [number, number, number, number];
+  outline?: string;
   markerScale?: number;
   clusters?: readonly TravelMapCluster[];
 }
-const { country, prefix, stops, linked = false, bounds, base, markerScale = .32, clusters = [] } = Astro.props;
+const { country, prefix, stops, linked = false, bounds, base, outline, markerScale = .32, clusters = [] } = Astro.props;
 const symbols = [...new Set([...stops.map(stop => stop.symbol), ...clusters.map(cluster => cluster.symbol)])];
 const assetRoot = `/images/travel/${country}-map`;
 ---
 <TravelMapFrame country={country} prefix={prefix} stops={stops} linked={linked} markerScale={markerScale} clusters={clusters} markersOnly followOnMobile>
   <defs>
+    {outline && <>
+      <path id={`${prefix}-country-outline`} d={outline} fill-rule="evenodd" clip-rule="evenodd" />
+      <clipPath id={`${prefix}-painted-outline`}><use href={`#${prefix}-country-outline`} /></clipPath>
+    </>}
     {clusters.length > 0 && <filter id={`${prefix}-cluster-outline`} x="-20%" y="-20%" width="140%" height="140%" color-interpolation-filters="sRGB">
       <feMorphology in="SourceAlpha" operator="dilate" radius=".7" result="border" />
       <feFlood flood-color="#b7392d" />
@@ -35,6 +40,9 @@ const assetRoot = `/images/travel/${country}-map`;
       </svg>
     </g>)}
   </defs>
-  <image class="painted-map-base" href={`${assetRoot}/base.webp`} x={base[0]} y={base[1]} width={base[2]} height={base[3]} preserveAspectRatio="none" aria-hidden="true" />
+  <g class="painted-map-base" aria-hidden="true">
+    {outline && <use href={`#${prefix}-country-outline`} fill="#a7b58b" />}
+    <image href={`${assetRoot}/base.webp`} x={base[0]} y={base[1]} width={base[2]} height={base[3]} preserveAspectRatio="none" clip-path={outline ? `url(#${prefix}-painted-outline)` : undefined} />
+  </g>
   {clusters.map(cluster => <image class="map-city-geography" data-map-detail={cluster.id} data-detail-src={cluster.detail.src} x={cluster.detail.bounds[0]} y={cluster.detail.bounds[1]} width={cluster.detail.bounds[2]} height={cluster.detail.bounds[3]} preserveAspectRatio="none" aria-hidden="true" />)}
 </TravelMapFrame>

@@ -1,0 +1,45 @@
+---
+import { travelEndings, type TravelEndingCountry } from '../data/travel-endings';
+
+interface Props { country: string }
+const { country } = Astro.props;
+const ending = travelEndings[country as TravelEndingCountry];
+---
+{ending && <footer class="country-ending" data-country-ending={country}>
+  <img src={ending.image} alt={ending.alt} width="960" height="640" loading="lazy" decoding="async" />
+  <p><em>“{ending.quote}”</em></p>
+</footer>}
+
+<style>
+  .country-ending {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+    width: min(100%, 640px);
+    margin: 0 auto;
+    /* Any extra room needed by the last stop becomes breathing room around
+       the closing scene, instead of a separate empty scroll spacer. */
+    padding: calc(52px + var(--travel-scroll-tail, 0px) / 2) 20px;
+    text-align: center;
+  }
+  .country-ending img {
+    display: block;
+    width: min(100%, 360px);
+    height: auto;
+    mix-blend-mode: multiply;
+  }
+  .country-ending p {
+    max-width: 32ch;
+    margin: 0;
+    color: var(--body);
+    font: 22px/1.45 var(--font-serif);
+    text-wrap: balance;
+  }
+  :global(:root[data-theme='dark']) .country-ending img { mix-blend-mode: normal; }
+  @media (max-width: 600px) {
+    .country-ending { padding-block: calc(40px + var(--travel-scroll-tail, 0px) / 2); gap: 16px; }
+    .country-ending img { width: min(100%, 300px); }
+    .country-ending p { font-size: 20px; }
+  }
+</style>

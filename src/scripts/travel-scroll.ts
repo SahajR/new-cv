@@ -3,8 +3,18 @@ import { createMapClusters } from './travel-map-clusters.ts';
 
 export interface StoryPosition { id: string; top: number; bottom: number }
 
+export function storyScrollTail(viewportHeight: number, mapOffset: number, spaceAfterLast: number) {
+  // Let the last card reach the same position as a map-link destination.
+  // The illustrated ending, Bites and page padding already count toward it.
+  return Math.max(0, Math.ceil(viewportHeight - mapOffset - spaceAfterLast));
+}
+
 export function selectActiveStory(stories: StoryPosition[], mapBottom: number, viewportHeight: number): string | undefined {
   const visible = stories.filter(story => story.bottom > mapBottom && story.top < viewportHeight);
+  // A fast scroll may skip straight to the illustrated ending. Keep the last
+  // stop selected as the map leaves with the journal, including subpixel edges.
+  const last = stories.at(-1);
+  if (last && last.bottom <= mapBottom + 1) return last.id;
   const line = mapBottom + Math.max(0, viewportHeight - mapBottom) * .2;
   // A short card aligned below the map should retain its highlight after a jump,
   // even when the following card's top is closer to the reading line.
@@ -109,6 +119,7 @@ export function setupTravelScroll(root: HTMLElement) {
   const toggle = map.querySelector<HTMLButtonElement>('[data-map-view]')!;
   const current = map.querySelector<HTMLElement>('[data-map-current]')!;
   const cards = [...root.querySelectorAll<HTMLElement>('[data-travel-story]')];
+  const ending = root.closest('[data-country-journal]')?.querySelector<HTMLElement>('[data-country-ending]');
   const markers = [...map.querySelectorAll<SVGAElement>('[data-map-stop]')];
   const small = matchMedia('(max-width:600px)');
   const reduced = matchMedia('(prefers-reduced-motion:reduce)');
@@ -120,6 +131,15 @@ export function setupTravelScroll(root: HTMLElement) {
   let fullMap = false;
   let cityOverview = false;
   const handoff = setupMapHandoff(root, map, schedule);
+
+  function resizeScrollTail() {
+    const lastCard = cards.at(-1);
+    if (!lastCard || !ending) return;
+    const previous = parseFloat(ending.style.getPropertyValue('--travel-scroll-tail')) || 0;
+    const spaceAfterLast = document.documentElement.scrollHeight - previous - (lastCard.getBoundingClientRect().top + scrollY);
+    const tail = `${storyScrollTail(innerHeight, handoff.dock.getBoundingClientRect().height + 24, spaceAfterLast)}px`;
+    if (ending.style.getPropertyValue('--travel-scroll-tail') !== tail) ending.style.setProperty('--travel-scroll-tail', tail);
+  }
 
   function focusMap(animate = true) {
     const marker = markers.find(link => link.dataset.mapStop === active);
@@ -167,6 +187,7 @@ export function setupTravelScroll(root: HTMLElement) {
   function measure() {
     frame = 0;
     handoff.update(locked);
+    resizeScrollTail();
     if (visible && !locked) {
       const mapRect = map.getBoundingClientRect();
       const positions = cards.map(card => { const rect = card.getBoundingClientRect(); return { id: card.dataset.travelStory!, top: rect.top, bottom: rect.bottom }; });
@@ -185,6 +206,7 @@ export function setupTravelScroll(root: HTMLElement) {
     toggle.setAttribute('aria-label', fullMap ? 'Show the journey in detail' : `Show the whole map of ${map.dataset.mapName}`);
     root.style.setProperty('--travel-map-offset', `${handoff.dock.getBoundingClientRect().height+24}px`);
     handoff.resize();
+    resizeScrollTail();
     focusMap(false);
     schedule();
   }
@@ -245,10 +267,12 @@ export function setupTravelScroll(root: HTMLElement) {
   observer.observe(root);
   const sizing = new ResizeObserver(resize);
   sizing.observe(handoff.dock);
+  const contentSizing = new ResizeObserver(schedule);
+  contentSizing.observe(root.closest('main')!);
   const firstRegion = root.querySelector('.travel-stories > .travel-region-heading:first-child');
   if (firstRegion) sizing.observe(firstRegion);
   resize();
   // Reserve all image dimensions; wait one frame for the initial sticky offset.
   const restoreFrame = requestAnimationFrame(restoreHash);
-  return () => { abort.abort(); observer.disconnect(); sizing.disconnect(); paint(''); handoff.cleanup(); camera.cleanup(); clusters.cleanup(); cancelAnimationFrame(frame); cancelAnimationFrame(restoreFrame); clearTimeout(settle); };
+  return () => { abort.abort(); observer.disconnect(); sizing.disconnect(); contentSizing.disconnect(); paint(''); handoff.cleanup(); ending?.style.removeProperty('--travel-scroll-tail'); camera.cleanup(); clusters.cleanup(); cancelAnimationFrame(frame); cancelAnimationFrame(restoreFrame); clearTimeout(settle); };
 }

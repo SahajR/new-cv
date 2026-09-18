@@ -15,6 +15,27 @@ test('the overview hides individual sights; street scale reveals them without ov
   }
 });
 
+test('a smaller city zoom fully reveals its landmarks at the same readable size', () => {
+  assert.equal(cityMapPresentation(1, 600).landmarks, 0);
+  const approaching = cityMapPresentation(300, 600);
+  assert.ok(approaching.landmarks > 0 && approaching.landmarks < 1);
+  const arrived = cityMapPresentation(600, 600);
+  assert.equal(arrived.landmarks, 1);
+  assert.equal(arrived.geography, 1);
+  assert.ok(Math.abs(arrived.symbolScale * 600 - 2) < 1e-12);
+});
+
+test('Japan regional zooms finish revealing both geography and readable landmarks', () => {
+  for (const zoom of [40,120,150]) {
+    const overview = cityMapPresentation(1,zoom);
+    const regional = cityMapPresentation(zoom,zoom);
+    assert.equal(overview.landmarks,0);
+    assert.equal(regional.geography,1);
+    assert.equal(regional.landmarks,1);
+    assert.ok(Math.abs(regional.symbolScale*zoom-2)<1e-12);
+  }
+});
+
 function node(dataset = {}) {
   const attrs = new Map();
   return { dataset, style: {}, attrs,
@@ -59,4 +80,37 @@ test('city entry, offscreen targets, exit and cleanup keep the map usable by key
   clusters.cleanup();
   assert.equal(map.dataset.activeCluster, undefined);
   assert.equal(symbols[0].attrs.has('transform'), false);
+});
+
+test('switching Japan areas replaces the visible geography and keyboard targets', () => {
+  const cities = [node({mapCity:'kansai',cityZoom:'40'}),node({mapCity:'fuji',cityZoom:'120'})];
+  const osaka = node({stopCluster:'kansai',mapX:'387',mapY:'254'});
+  const lake = node({stopCluster:'fuji',mapX:'548',mapY:'240'});
+  const symbols = [osaka,lake].map(marker => ({...node(),closest:()=>marker}));
+  const details = [node({mapDetail:'kansai'}),node({mapDetail:'fuji'})];
+  const overviews = [node(),node()];
+  const base = node();
+  const all = {'[data-map-city]':cities,'[data-map-stop]':[osaka,lake],'[data-map-detail]':details,'[data-map-cluster-overview]':overviews,'[data-cluster-symbol]':symbols};
+  const map = {dataset:{},querySelectorAll:s=>all[s]??[],querySelector:s=>s==='.painted-map-base'?base:undefined};
+  const canvas = {viewBox:{baseVal:{x:40,y:-10,width:890,height:425}},getBoundingClientRect:()=>({width:390,height:205})};
+  const clusters = createMapClusters(map,canvas);
+  for (const [id,zoom,x,y,current,other,detail] of [
+    ['kansai',40,387,254,osaka,lake,0],
+    ['fuji',120,548,240,lake,osaka,1],
+    ['kansai',40,387,254,osaka,lake,0],
+  ]) {
+    clusters.setCluster(id);
+    clusters.render({scale:zoom,x:485-x*zoom,y:202.5-y*zoom});
+    assert.equal(current.attrs.get('tabindex'),'0');
+    assert.equal(other.attrs.get('tabindex'),'-1');
+    assert.equal(current.style.visibility,'visible');
+    assert.equal(other.style.visibility,'hidden');
+    assert.equal(details[detail].style.opacity,'1');
+    assert.equal(details[1-detail].style.opacity,'0');
+  }
+  clusters.setCluster('');
+  clusters.render({scale:1,x:0,y:0});
+  assert.ok(cities.every(city=>city.attrs.get('tabindex')==='0'));
+  assert.ok(overviews.every(overview=>overview.style.visibility==='visible'));
+  assert.ok([osaka,lake].every(marker=>marker.attrs.get('tabindex')==='-1'));
 });

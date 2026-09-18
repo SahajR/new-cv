@@ -1,0 +1,18 @@
+---
+import { travelCollages } from '../data/travel-collages';
+import { travelJournals, type JournalCountry } from '../data/travel-journals';
+
+interface Props { country: JournalCountry; eager?: boolean }
+const { country, eager = false } = Astro.props;
+const photographs = travelCollages[country].map(pick => {
+  const photo = travelJournals[country].photos[pick.place]?.[pick.photo ?? 0];
+  if (!photo) throw new Error(`Missing scrapbook photograph: ${country}/${pick.place}/${pick.photo ?? 0}`);
+  return { ...photo, position: pick.position ?? '50% 50%' };
+});
+---
+<div class="sb-photo-collage">
+  {photographs.map(photo => <figure class="sb-polaroid">
+    <img src={photo.thumbnail ?? photo.src} width={photo.width} height={photo.height} alt={photo.alt} loading={eager ? 'eager' : 'lazy'} decoding="async" style={`object-position: ${photo.position}`} />
+    <span class="sb-photo-tape" aria-hidden="true"></span>
+  </figure>)}
+</div>

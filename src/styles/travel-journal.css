@@ -41,11 +41,19 @@
 .travel-map:not([data-map-placement='dock']) .map-book-caption { display: flex; align-items: center; justify-content: space-between; width: 100%; min-height: 24px; }
 .travel-map[data-map-placement='flight'] .map-follow-hint { display: none; }
 .travel-map[data-map-placement='book'] .travel-map-footer { padding-block: 0; }
-/* Painted cutouts sit directly on the book paper. The floating sheet
-   gains its own paper backing so scrolling photographs cannot show through. */
-[data-markers-only] { --map-ink: #374e43; --map-red: #a94f3c; background: transparent; border-color: transparent; box-shadow: none; }
+/* Keep the artwork transparent through the lift. Its own paper fades in
+   only after docking, without fading the map or its interactive markers. */
+[data-markers-only] { --map-ink: #374e43; --map-red: #a94f3c; position: relative; isolation: isolate; background: transparent; border-color: transparent; box-shadow: none; }
 [data-markers-only][data-map-placement='book'] { box-shadow: none; }
-[data-markers-only]:not([data-map-placement='book']) { background: #f3e6c9 url('/images/travel/scrapbook-paper.webp') center / cover; box-shadow: 0 3px 8px #44332216; }
+[data-markers-only]::before {
+  content: ''; position: absolute; inset: 0; z-index: -1; pointer-events: none;
+  background: #f3e6c9 url('/images/travel/scrapbook-paper.webp') center / cover;
+  box-shadow: 0 3px 8px #44332216; opacity: 0;
+}
+[data-markers-only][data-map-placement='dock']::before {
+  opacity: 1; animation: map-paper-arrive 280ms cubic-bezier(.25, 1, .5, 1) both;
+}
+@keyframes map-paper-arrive { from { opacity: 0; } to { opacity: 1; } }
 .painted-map-base { pointer-events: none; }
 [data-map-clusters] { position: relative; }
 .map-city-geography { opacity: 0; pointer-events: none; }
@@ -62,14 +70,11 @@
 [data-markers-only] .map-landmark:is(:hover, :focus-visible, [aria-current]) .map-sprite { filter: var(--map-marker-outline); transform: none; }
 [data-markers-only] .map-landmark:focus-visible .map-hit-area { stroke: #b7392d; stroke-width: 1.5; }
 [data-markers-only] .travel-map-footer { display: none; }
-.travel-journal:is([data-travel-journal='japan'], [data-travel-journal='egypt'], [data-travel-journal='jordan'], [data-travel-journal='china']) { --travel-footer-height: 0px; }
+.travel-journal:is([data-travel-journal='japan'], [data-travel-journal='egypt'], [data-travel-journal='jordan'], [data-travel-journal='china'], [data-travel-journal='india']) { --travel-footer-height: 0px; }
 [data-travel-map='jordan'] { --map-ink: #6a513c; }
 [data-travel-map='egypt'] { --map-ink: #645237; }
 [data-travel-map='china'] { --map-ink: #475b48; }
-[data-travel-map='india'] { --map-water: #e3ead6; border-color: #b2bf99; }
-[data-travel-map='india'] .map-label > rect { fill: #f5eace; stroke: #b8b48c; }
-[data-travel-map='india'] .map-label > circle { fill: #8b9671; stroke: #f0e7cf; }
-[data-travel-map='india'] .map-landmark:is(:hover, :focus-visible, [aria-current]) .map-label > rect { fill: #b74e38; stroke: #b74e38; }
+[data-travel-map='india'] { --map-ink: #475b48; }
 .map-current { display: flex; align-items: center; gap: 8px; }
 .map-current-dot { width: 6px; height: 6px; background: var(--map-red); transform: rotate(45deg); }
 .map-follow-hint { color: #516d5e; white-space: nowrap; }
@@ -99,8 +104,6 @@
 .travel-story.is-active .travel-story-title { color: var(--map-red); }
 .travel-story-link:hover .travel-story-photo { transform: rotate(0) translateY(-2px); }
 .travel-story-link:hover .travel-open > span { transform: translate(2px,-2px); }
-.travel-endnote { display: flex; gap: 14px; align-items: center; justify-content: center; border-top: 1px solid var(--rule); padding-top: 36px; font: 20px var(--font-serif); color: var(--body); }
-.travel-endnote > span { color: var(--map-red); }
 :root[data-theme='dark'] .travel-journal { --map-red: #df9678; --map-paper: #d8ccaf; }
 @media (max-width:600px) {
   .travel-journal { margin-top: 52px; --travel-canvas-height: max(175px, min(24svh, 205px)); --travel-footer-height: 44px; }
@@ -133,6 +136,7 @@
   .travel-map-footer { padding-block: 5px; }
 }
 @media (prefers-reduced-motion:reduce) {
+  [data-markers-only][data-map-placement='dock']::before { animation: none; }
   .map-sprite, .travel-story-photo, .travel-open > span { transition: none; }
   .travel-journal[data-map-ready] .travel-region-heading:first-child { transition: none; }
 }

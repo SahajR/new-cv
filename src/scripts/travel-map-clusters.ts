@@ -7,9 +7,11 @@ const clamp = (value: number) => Math.max(0, Math.min(1, value));
 // 2. Near street scale, reveal cutouts from 65% to their readable screen size.
 // 3. Pan to each next stop; reverse the same layers on the way out.
 // Reduced motion uses the same final frame immediately, with no CSS delay.
-export function cityMapPresentation(zoom: number) {
+export function cityMapPresentation(zoom: number, cityZoom = 1100) {
   const geography = clamp(Math.log(Math.max(1, zoom) / 3) / Math.log(10));
-  const landmarks = clamp((zoom - 250) / 600);
+  // Reveal relative to the city's chosen zoom: a compact Agra scene needs
+  // less magnification than Shanghai, but its landmarks must still finish.
+  const landmarks = clamp((zoom / cityZoom * 1100 - 250) / 600);
   return { geography, landmarks, symbolScale: 2 * (.65 + .35 * landmarks) / zoom };
 }
 
@@ -19,7 +21,7 @@ export function createMapClusters(map: HTMLElement, canvas: SVGSVGElement) {
   const details = [...map.querySelectorAll<SVGImageElement>('[data-map-detail]')];
   const overviews = [...map.querySelectorAll<SVGGElement>('[data-map-cluster-overview]')];
   const symbols = [...map.querySelectorAll<SVGGElement>('[data-cluster-symbol]')];
-  const base = map.querySelector<SVGImageElement>('.painted-map-base');
+  const base = map.querySelector<SVGGElement>('.painted-map-base');
   const back = map.querySelector<HTMLButtonElement>('[data-map-city-back]');
   const credit = map.querySelector<HTMLAnchorElement>('[data-map-city-credit]');
   let active = '';
@@ -65,7 +67,8 @@ export function createMapClusters(map: HTMLElement, canvas: SVGSVGElement) {
     render({ scale, x, y }: MapCameraTransform) {
       if (!cities.length) return;
       if (!active && scale <= 2) scene = '';
-      const { geography, landmarks, symbolScale } = cityMapPresentation(scale);
+      const cityZoom = Number(cities.find(city => city.dataset.mapCity === scene)?.dataset.cityZoom) || 1100;
+      const { geography, landmarks, symbolScale } = cityMapPresentation(scale, cityZoom);
       const detail = scene ? geography : 0;
       if (base) base.style.opacity = String(1 - detail);
       for (const image of details) image.style.opacity = image.dataset.mapDetail === scene ? String(detail) : '0';

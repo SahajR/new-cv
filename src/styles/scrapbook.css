@@ -13,6 +13,10 @@
 .sb-topline > span:last-child { font-family: var(--font-main); font-size: 8px; letter-spacing: .12em; align-self: center; }
 .sb-stage { position: relative; display: grid; align-items: center; aspect-ratio: 2 / 1; padding: 16px 10px 20px; perspective: 1400px; }
 .sb-arrival { position: relative; width: 100%; transform-style: preserve-3d; }
+/* The tilted page can sit behind its wrapper's flat hit plane. Let the
+   visible page receive taps instead of that otherwise empty plane. */
+.scrapbook[data-mode='journal'] .sb-arrival { pointer-events: none; }
+.scrapbook[data-mode='journal'] .sb-face:not([inert]) { pointer-events: auto; }
 .scrapbook[data-arrival='waiting'] .sb-arrival { opacity: 0; }
 .scrapbook[data-arrival='landing'] { --arrival-play-state: paused; }
 .scrapbook[data-arrival='landing'][data-playback='playing'] { --arrival-play-state: running; }
@@ -115,6 +119,28 @@
 .sb-stamp b { font: 20px var(--font-serif); line-height: 1; }
 .sb-stamp > span { font-size: 6px; letter-spacing: .09em; }
 .sb-page-number { position: absolute; bottom: 6%; left: 10%; font: 11px var(--font-serif); color: #897555; }
+/* Four loose prints on the left page. All dimensions follow the book's
+   container, so the paper borders and tiny tape shrink with the spread. */
+.sb-photo-collage { position: absolute; inset: 0; }
+.sb-polaroid {
+  position: absolute; width: 33%; margin: 0;
+  padding: .55cqw .55cqw 1.8cqw;
+  background: #fffaf0;
+  box-shadow: .12cqw .2cqw .5cqw #493b292e;
+  transform: rotate(var(--photo-tilt));
+}
+.sb-polaroid:nth-child(1) { left: 11%; top: 7%; --photo-tilt: -7deg; --tape-tilt: 9deg; }
+.sb-polaroid:nth-child(2) { left: 54%; top: 8%; --photo-tilt: 5deg; --tape-tilt: -12deg; }
+.sb-polaroid:nth-child(3) { left: 16%; top: 49%; --photo-tilt: 4deg; --tape-tilt: -8deg; }
+.sb-polaroid:nth-child(4) { left: 52%; top: 48%; --photo-tilt: -5deg; --tape-tilt: 13deg; }
+.sb-polaroid > img { display: block; width: 100%; height: auto; aspect-ratio: 1; object-fit: cover; }
+.sb-photo-tape {
+  position: absolute; top: -.55cqw; left: 34%; width: 30%; height: 1.3cqw;
+  background: #d6bc87a6; box-shadow: 0 .08cqw .12cqw #59462316;
+  transform: rotate(var(--tape-tilt));
+  clip-path: polygon(3% 0, 23% 4%, 48% 0, 76% 3%, 98% 0, 96% 22%, 100% 47%, 97% 69%, 99% 100%, 75% 96%, 48% 100%, 25% 97%, 0 100%, 3% 73%, 0 49%, 4% 24%);
+  pointer-events: none;
+}
 .sb-postcard { position: absolute; margin: 0; top: 9%; bottom: 13%; left: 16%; right: 13%; padding: 5% 5% 10%; background: #fff9e9; box-shadow: 1px 2px 3px #33200f35; transform: rotate(4deg); display: flex; flex-direction: column; align-items: center; gap: 5%; }
 .sb-postcard::before { content: ''; position: absolute; width: 35%; height: 11%; top: -4%; left: 31%; background: #b6a06d70; transform: rotate(-7deg); z-index: 1; }
 .sb-postcard img { width: 100%; height: 100%; min-height: 0; object-fit: contain; image-rendering: pixelated; background: #e4d8bf; }
@@ -135,8 +161,10 @@
 .sb-destinations a:hover { color: #8e3924; }
 .sb-contents-title { margin: 8px auto 0; width: min(100% - 32px, 420px); font: 28px var(--font-serif); color: #503724; }
 .sb-contents { display: grid; grid-template-columns: 1fr; width: min(100% - 32px, 420px); margin: 16px auto 12px; padding: 4px 0; }
-.sb-destinations.sb-contents a { display: flex; gap: 16px; min-height: 52px; padding: 0 4px; border-bottom: 1px dotted #caba9b; font-size: 22px; }
+.sb-destinations.sb-contents a { display: flex; gap: 16px; min-height: 72px; padding: 8px 4px; border-bottom: 1px dotted #caba9b; font-size: 22px; }
 .sb-contents a > span:first-child { font: 11px var(--font-main); }
+.sb-contents-album { display: inline-grid; place-items: center; flex: 0 0 56px; width: 56px; height: 54px; }
+.sb-contents-album .album { margin: 0; }
 .sb-contents .sb-contents-arrow { margin-left: auto; font: 20px var(--font-serif); }
 .sb-read { display: block; width: fit-content; margin: 4px auto 0; min-height: 44px; align-content: center; font: 17px var(--font-serif); text-underline-offset: 4px; }
 .scrapbook :focus-visible { outline-color: #8e3924; }
