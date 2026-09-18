@@ -6,6 +6,14 @@ The first entry is [Hachikō](../src/content/bites/japan/hachiko.md), using the 
 
 The second entry, [Serene Kyoto](../src/content/bites/japan/serene-kyoto.md), uses `travel_data/og japan/bite2_serene_kyoto.jpg`, photographed on 3 June 2025. Its square crop favors the river valley and Sahaj at the railing. The starter describes the Arashiyama viewpoint visible in the photograph; the Markdown is ready for a personal story about the bamboo park visit. `order: 2` pairs it with Hachikō in the first row.
 
+The next row pairs [Starbucks on Ninenzaka](../src/content/bites/japan/starbucks-kyoto.md) (`order: 3`) and [Under the bamboo](../src/content/bites/japan/arashiyama-bamboo.md) (`order: 4`), added on 18 September 2026. Both use 3 June photographs from `travel_data/og japan`: `PXL_20250603_031200090.MP.jpg` shows the Starbucks storefront, and `PXL_20250603_060106800.jpg` shows Sahaj in the bamboo grove. Bottom-aligned square crops keep the wooden sign and the person visible; the full portrait sources remain available to adjust later. Both were resized to 1084 × 1440 WebP with EXIF/GPS stripped.
+
+The Starbucks starter also reflects the photographed coffee tray and tatami in `PXL_20250603_032002260.jpg`. The branch name and tatami seating are corroborated by [Starbucks Japan’s announcement](https://www.starbucks.co.jp/press_release/pr2017-2182.php). The new bamboo bite links to the existing river-view bite; the two describe different moments. All prose remains editable Markdown, with no invented personal reactions.
+
+The third row pairs [Flower ice cream](../src/content/bites/japan/flower-ice-cream.md) (`order: 5`) and [Through the red gates](../src/content/bites/japan/fushimi-inari.md) (`order: 6`). The ice cream uses `travel_data/more japan/fuji/PXL_20250607_040431849.jpg`, photographed on 7 June 2025. The user identified the pale soft-serve cone in front of Oishi Park’s gardens and Mount Fuji. Its bottom-aligned square crop keeps the cone, blue flowers, and mountain together; the flavour is left unspecified in the editable starter.
+
+The torii photograph is `travel_data/og japan/PXL_20250603_015623661.jpg`, photographed on 3 June 2025. The user confirmed Fushimi Inari as the intended location. Its bottom-aligned square crop emphasizes the torii corridor and wet path. Both WebPs are 1084 × 1440 with EXIF/GPS stripped.
+
 ## Add a Bite
 
 1. Put a web-sized photo in `src/assets/bites/<country>/`. JPEG, PNG, and WebP work; Astro generates responsive WebP variants automatically. Keep originals in ignored `travel_data/` and strip private EXIF/GPS before adding a public asset, as with the existing country imports.

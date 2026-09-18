@@ -1,6 +1,6 @@
 # Japan photo journal
 
-Japan is implemented at `/travel/japan/`, with 14 photo groups, 45 selected photographs, and editable MDX starter pages. Source material is the user's Japan photos in `travel_data/Photos-1-001` and `travel_data/more japan`. Normal imports read only these photo folders.
+Japan is implemented at `/travel/japan/`, with 15 photo groups, 48 selected photographs, and editable MDX starter pages. Source material is the user's Japan photos in `travel_data/og japan` and `travel_data/more japan`. Normal imports read only these photo folders.
 
 ## Import evidence
 
@@ -8,14 +8,15 @@ Japan is implemented at `/travel/japan/`, with 14 photo groups, 45 selected phot
 - The complete photographs run from 30 May through 7 June 2025, normalized to Japan time. The first original photo retains a +08:00 camera offset: converting the instant to Japan time avoids a one-hour error.
 - The original import found 56 corroborating Timeline matches within 15 minutes and 1 km of a photo. The current import uses photo metadata and visual inspection; it does not read Timeline or update that historic matching report.
 - All 27 previously selected photographs remain. Contact sheets of the new files were inspected to select 18 more: two seaside-station photos, seven from Enoshima, three from Lake Kawaguchiko, one Lawson view, one Oshino Hakkai view, three from Chureito, and one café photograph added to Kamakura. A menu-board photo and a similar Lawson selfie were omitted.
-- Street food and Expo 2025 remain grouped under Osaka. Expo ’70 Park in Suita remains a separate stop; these are different sites.
+- Expo 2025 is a separate stop on Yumeshima with four photographs from 1 June (18:03–19:22 JST). Photo GPS identifies these four among the 115 indexed Japan images; the 1 June contact sheet distinguishes them from Expo ’70 Park, later dinner in Osaka, and the next morning’s train. The mascot photo moved out of Osaka; the other three are newly published. Expo ’70 Park in Suita remains its own stop.
 - The book's memory about visiting five cities in a day is not treated as an itinerary for this photo set. The photographs show Hiroshima/Miyajima on 2 June and Kyoto on 3 June. Existing personal memories are retained.
 
 | Group | Photos | Photo dates in Japan |
 | --- | ---: | --- |
-| Osaka | 5 | 30 May–1 June |
+| Osaka | 4 | 30–31 May |
 | Kōyasan | 4 | 31 May |
 | Expo Park | 2 | 1 June |
+| Expo 2025 | 4 | 1 June |
 | Hiroshima | 3 | 2 June |
 | Miyajima | 4 | 2 June |
 | Kyoto | 4 | 3 June |
@@ -36,7 +37,7 @@ The starter prose describes the supplied photographs and their sequence. It does
 
 ## Rebuilding photographs
 
-Run `node scripts/import-japan.mjs` from the project root. It requires the existing ExifTool command and the project's Sharp dependency. `scripts/japan-photo-selection.json` contains the selected filenames and image descriptions. Original entries use bare filenames; added entries use paths relative to `travel_data/` to avoid collisions between folders. The command generates stripped WebP derivatives and `src/data/japan-photos.json`; it never edits the MDX files.
+Run `node scripts/import-japan.mjs` from the project root. It requires the existing ExifTool command and the project's Sharp dependency. `scripts/japan-photo-selection.json` contains the selected filenames and image descriptions. Original entries use bare filenames in `og japan` (with a fallback to the former `Photos-1-001` folder); added entries use paths relative to `travel_data/` to avoid collisions between folders. Two original photographs are now named `bite_1_hachiko.jpg` and `bite2_serene_kyoto.jpg`; the selection records those current filenames. The command generates stripped WebP derivatives and `src/data/japan-photos.json`; it never edits the MDX files.
 
 A private photo index is written to `travel_data/japan-import/photo-index.json`. Optional `node scripts/import-japan.mjs --match-timeline` also regenerates `matched-report.json`, bounding visits to the first/last photo plus one hour and matching each photo within 15 minutes and 1 km. That option was not used for the added photographs. Raw photographs, original GPS and Timeline candidates remain under the existing ignored `travel_data/` path. The public JSON contains only selected image URLs, dimensions, descriptions, and capture times. The web photographs do not retain EXIF/GPS metadata.
 
@@ -70,3 +71,7 @@ The broader plan still covers future country artwork, more granular/repeated sto
 - The additional stops were checked at desktop, 390px, and 320px: all 14 marker labels hit their own targets and fit inside their labels; new station and Chureito article photos load; Lake Kawaguchiko jumps leave 24px clearance below the map; no horizontal overflow.
 - The book handoff was checked separately at desktop, 390px, and 320px: right-page placement, intermediate expansion, sticky docking, reverse scroll, jumps from the book, and country navigation retaining exactly one map.
 - Fourteen lazy-loaded card thumbnails total about 712 KiB. Full-sized photos load on article pages. All 59 Japan WebP files total about 11.33 MiB and contain no retained EXIF/GPS. The 35 pre-existing WebP files remain byte-identical after importing the additional photos.
+
+## Expo 2025 addition — 18 September 2026
+
+The new editable article is `src/content/travel/japan/expo-2025.mdx`. The cover is MYAKU-MYAKU, followed by the Osaka Healthcare Pavilion, an Expo pavement emblem and a pavilion at sunset. The map marker uses the cover photo GPS within Kansai, with a fifth overview dot and a separately generated transparent mascot cutout; it also appears in the country’s marker album. Naming was checked against the official [MYAKU-MYAKU page](https://www.expo2025.or.jp/en/overview/Character/) and [Osaka Healthcare Pavilion page](https://www.expo2025.or.jp/en/dailylife/025/). The historical validation counts above describe earlier imports.

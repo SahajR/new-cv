@@ -24,13 +24,6 @@
     },
     {
       "src": "/images/travel/japan/osaka-04.webp",
-      "width": 1440,
-      "height": 1084,
-      "alt": "The Osaka Expo 2025 mascot beside a pavilion.",
-      "capturedAt": "2025-06-01T09:12:37.000Z"
-    },
-    {
-      "src": "/images/travel/japan/osaka-05.webp",
       "width": 1084,
       "height": 1440,
       "alt": "Pikachu curry and a Gengar drink at the Pokémon Café.",
@@ -83,6 +76,37 @@
       "height": 1440,
       "alt": "A Pokémon-themed display at Expo Park.",
       "capturedAt": "2025-06-01T05:28:16.000Z"
+    }
+  ],
+  "expo-2025": [
+    {
+      "src": "/images/travel/japan/expo-2025-01.webp",
+      "thumbnail": "/images/travel/japan/expo-2025-01-small.webp",
+      "width": 1440,
+      "height": 1084,
+      "alt": "The red-and-blue MYAKU-MYAKU mascot display at Expo 2025 on Yumeshima.",
+      "capturedAt": "2025-06-01T09:12:37.000Z"
+    },
+    {
+      "src": "/images/travel/japan/expo-2025-02.webp",
+      "width": 1440,
+      "height": 1084,
+      "alt": "The sweeping canopy and entrance of the Osaka Healthcare Pavilion at Expo 2025.",
+      "capturedAt": "2025-06-01T09:03:45.000Z"
+    },
+    {
+      "src": "/images/travel/japan/expo-2025-03.webp",
+      "width": 1084,
+      "height": 1440,
+      "alt": "A circular Expo 2025 mascot emblem set into the pavement, with a shoe at the edge of the frame.",
+      "capturedAt": "2025-06-01T10:07:23.000Z"
+    },
+    {
+      "src": "/images/travel/japan/expo-2025-04.webp",
+      "width": 1440,
+      "height": 1084,
+      "alt": "Tall columns glowing inside a glass-fronted pavilion at Expo 2025 beneath a pink evening sky.",
+      "capturedAt": "2025-06-01T10:22:42.000Z"
     }
   ],
   "hiroshima": [

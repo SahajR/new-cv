@@ -1,13 +1,14 @@
 // Rebuild selected web photographs from the original and additional Japan folders.
 // Timeline matching is optional (--match-timeline); normal imports read only photos.
 import { execFileSync } from 'node:child_process';
+import { existsSync } from 'node:fs';
 import { readFile, writeFile, mkdir } from 'node:fs/promises';
 import { resolve, relative, basename } from 'node:path';
 import sharp from 'sharp';
 
 const root = resolve(import.meta.dirname, '..');
 const input = resolve(root, 'travel_data');
-const originalPhotos = resolve(input, 'Photos-1-001');
+const originalPhotos = resolve(input, existsSync(resolve(input, 'og japan')) ? 'og japan' : 'Photos-1-001');
 const sourceFolders = [originalPhotos, resolve(input, 'more japan')];
 const privateOutput = resolve(root, 'travel_data/japan-import');
 const output = resolve(root, 'public/images/travel/japan');

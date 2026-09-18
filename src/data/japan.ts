@@ -23,6 +23,7 @@ export const japanStops = [
   { id: 'osaka', name: 'Osaka', symbol: 'castle', ...at('kansai', 34.6868694444444, 135.526169444444, [379, 260]) },
   { id: 'koyasan', name: 'Kōyasan', symbol: 'temple', ...at('kansai', 34.2189472222222, 135.605730555556, [393, 277]) },
   { id: 'expo-park', name: 'Expo Park', symbol: 'sun', ...at('kansai', 34.8088472222222, 135.532894444444, [373, 245]) },
+  { id: 'expo-2025', name: 'Expo 2025', symbol: 'myaku-myaku', ...at('kansai', 34.64985, 135.388008333333, [365, 263]) },
   { id: 'hiroshima', name: 'Hiroshima', symbol: 'dome', ...at('hiroshima', 34.3957083333333, 132.454080555556, [278, 252]) },
   { id: 'miyajima', name: 'Miyajima', symbol: 'torii', ...at('hiroshima', 34.2971138888889, 132.319113888889, [257, 256]) },
   { id: 'kyoto', name: 'Kyoto', symbol: 'pagoda', ...at('kansai', 34.9985472222222, 135.778986111111, [405, 247]) },

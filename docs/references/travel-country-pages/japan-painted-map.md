@@ -1,14 +1,14 @@
 # Japan painted map
 
-Implemented with the built-in image-generation tool (one base and fourteen separately generated landmark assets). Source style: [paper study](japan-paper-study-v1.png). Final transparent WebP assets: `public/images/travel/japan-map/`.
+Implemented with the built-in image-generation tool (one base and fifteen separately generated landmark assets). Source style: [paper study](japan-paper-study-v1.png). Final transparent WebP assets: `public/images/travel/japan-map/`.
 
 ## Implementation
 
 - The coastline is independent of the interactive landmarks. It contains no baked-in buildings or labels.
 - `JapanMap.astro` uses `PaintedTravelMap.astro`, shared with Egypt, to supply painted images to `TravelMapFrame` with `markersOnly` enabled. Japan uses a 0.32 marker scale (about half the previous 0.6 scale) and keeps keyboard targets, accessible place names, current-stop state and the book-to-sticky handoff.
-- Japan has no visible place labels, numbers or connector lines. Four overview illustrations collect nearby sights, with 13 small dots around them; Tokyo remains a separate marker. Hovered, keyboard-focused and current markers receive a red silhouette outline from an SVG filter.
+- Japan has no visible place labels, numbers or connector lines. Four overview illustrations collect nearby sights, with 14 small dots around them; Tokyo remains a separate marker. Hovered, keyboard-focused and current markers receive a red silhouette outline from an SVG filter.
 - `src/data/japan-map-art.json` records each sprite's painted bounds as an SVG viewBox. This normalizes transparent padding without altering the generated artwork.
-- Book placement has no background or border; floating/sticky placement uses the existing scrapbook paper for legibility above scrolling content.
+- Book and moving placement have no background or border; the existing scrapbook paper fades in after the map docks for legibility above scrolling content.
 - Entering a clustered stop zooms into its regional map on desktop and mobile; the individual cutouts reveal near the end of the approach. Tokyo retains the 2× mobile following behavior. Transitions retarget from their current frame during fast scrolling; reduced-motion preferences use the same framing without animation. Camera settings live in `src/scripts/travel-map-camera.ts`.
 - The coastline is an illustrative rendering. Anchor positions follow its recognizable regions; this is not a navigation chart.
 - Export: Sharp resize and WebP encoding, quality 86, alphaQuality 100; 1600px base and 256px markers. Original alpha is preserved. No background removal or illustration drawing was done with code.
@@ -17,12 +17,12 @@ Implemented with the built-in image-generation tool (one base and fourteen separ
 
 | Overview icon | Stops | Zoom |
 | --- | --- | --- |
-| Osaka Castle / Kansai | Osaka, Kōyasan, Expo Park, Kyoto | 40× |
+| Osaka Castle / Kansai | Osaka, Kōyasan, Expo Park, Expo 2025, Kyoto | 40× |
 | Torii / Hiroshima & Miyajima | Hiroshima, Miyajima | 40× |
 | Great Buddha / Kamakura & Enoshima | Kamakura, Kamakurakōkōmae, Enoshima | 150× |
 | Fuji over the lake / Around Mount Fuji | Kawaguchiko, Lawson, Oshino Hakkai, Chureito | 120× |
 
-All 14 stories and their order remain unchanged. The overview icons link to each area's first stop. Scrolling or tapping revealed cutouts centers that stop, adds its red outline, and pans at the area's scale. The Japan button restores the four group icons, their dots, and Tokyo. Hidden and offscreen detail markers leave the keyboard tab order.
+There are 15 stories. Expo 2025 follows Expo ’70 Park in the itinerary. The overview icons link to each area's first stop. Scrolling or tapping revealed cutouts centers that stop, adds its red outline, and pans at the area's scale. The Japan button restores the four group icons, their dots, and Tokyo. Hidden and offscreen detail markers leave the keyboard tab order.
 
 `japan.ts` uses the cover photographs' existing coordinates from the private photo index. `japan-map-projection.ts` applies a local equirectangular projection for each region, tied to its existing illustrated overview anchor. This keeps geographic distances and bearings within each area consistent with its detailed map. The hand-painted overview remains illustrative; the small overview dots are spaced slightly for readability. The photos and Timeline are not re-imported.
 
@@ -136,3 +136,13 @@ Oshino Hakkai: a small traditional Japanese thatched-roof village house behind a
 Reference: `chureito-pagoda-01-small.webp`.
 
 Chureito Pagoda and Mount Fuji together: the five-tier oxide-red pagoda with dark forest-green curved eaves and a thin finial at RIGHT; a broad slate-blue Mount Fuji with warm-ivory snowcap at LEFT behind it. Keep the recognizable juxtaposition and proportions. Pagoda slightly taller in frame than Fuji. A tiny moss-green base stroke connects them. No fence, people, buildings, sky or landscape rectangle. Exactly five roof tiers, only essential flat shapes.
+
+### myaku-myaku.webp
+
+Added 18 September 2026 with the built-in imagegen tool. Style reference: `public/images/travel/japan-map/sun.webp`. Subject photograph: `travel_data/og japan/PXL_20250601_091237872.jpg`. Saved asset: `public/images/travel/japan-map/myaku-myaku.webp` (256 × 256 with generated alpha preserved).
+
+Use case: stylized-concept / style-transfer. Create ONE isolated illustrated landmark sprite for an interactive travel scrapbook map.
+Image 1 is STYLE ONLY: match the tiny hand-painted acrylic editorial illustration, slightly irregular organic edge, subtle rough paper grain inside paint, delicate imperfect fine lines, restrained flat pigment shapes. Ignore its Tower of the Sun subject. Image 2 supplies the exact SUBJECT, the large blue-and-red MYAKU-MYAKU mascot statue at Expo 2025 Osaka in the center of the photograph.
+Draw only the recognizable mascot: a rounded irregular wreath of red bubble-like cells surrounding a bright blue smiling face, about five small white eyeballs with blue pupils on the red cells, a tiny simplified blue body with short arms and rounded feet beneath it. Preserve the mascot's unusual red-cell silhouette and friendly white crescent smile. Full figure, front view, compact upright composition. No people, no miniature scenery, no pavilion, no trees, no platform, no lettering or logo. Do not copy the cutout fences in the foreground of image 2.
+Reduce to no more than FOUR main pigments: softly muted vermilion red, restrained cobalt blue, warm ivory for eyes and smile, a trace of dark blue-green fine linework. Flat acrylic shapes, handmade dry brush marks, paper grain within paint, no plastic shine or 3D modeling. It must be clearly recognizable at 35 pixels.
+Square canvas. Centered isolated mascot occupies about 80% height with generous even empty margins. CRITICAL real transparent RGBA background everywhere outside the figure and in any open gaps, not white paper or a checkerboard. No background wash, rectangular backdrop, cast shadow, text, captions, numbers or watermarks.

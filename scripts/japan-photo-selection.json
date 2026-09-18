@@ -15,10 +15,6 @@
         "alt": "Illuminated signs along the Dotonbori canal."
       },
       {
-        "file": "PXL_20250601_091237872.jpg",
-        "alt": "The Osaka Expo 2025 mascot beside a pavilion."
-      },
-      {
         "file": "PXL_20250530_052453011.jpg",
         "alt": "Pikachu curry and a Gengar drink at the Pokémon Café."
       }
@@ -55,6 +51,27 @@
       {
         "file": "PXL_20250601_052816022.jpg",
         "alt": "A Pokémon-themed display at Expo Park."
+      }
+    ]
+  },
+  {
+    "slug": "expo-2025",
+    "photos": [
+      {
+        "file": "PXL_20250601_091237872.jpg",
+        "alt": "The red-and-blue MYAKU-MYAKU mascot display at Expo 2025 on Yumeshima."
+      },
+      {
+        "file": "PXL_20250601_090345903.jpg",
+        "alt": "The sweeping canopy and entrance of the Osaka Healthcare Pavilion at Expo 2025."
+      },
+      {
+        "file": "PXL_20250601_100723267.jpg",
+        "alt": "A circular Expo 2025 mascot emblem set into the pavement, with a shoe at the edge of the frame."
+      },
+      {
+        "file": "PXL_20250601_102242995.jpg",
+        "alt": "Tall columns glowing inside a glass-fronted pavilion at Expo 2025 beneath a pink evening sky."
       }
     ]
   },
@@ -112,7 +129,7 @@
         "alt": "Tall bamboo beside the path in Arashiyama."
       },
       {
-        "file": "PXL_20250603_061517360.jpg",
+        "file": "bite2_serene_kyoto.jpg",
         "alt": "Sahaj overlooking a river valley in Arashiyama."
       }
     ]
@@ -129,7 +146,7 @@
         "alt": "Sahaj looking across Tokyo from the Skytree during the day."
       },
       {
-        "file": "PXL_20250605_090911734.jpg",
+        "file": "bite_1_hachiko.jpg",
         "alt": "Sahaj beside the Hachikō statue in Shibuya."
       },
       {
