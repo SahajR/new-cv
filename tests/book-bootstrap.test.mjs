@@ -2,21 +2,21 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { runInNewContext } from 'node:vm';
 import { test } from 'node:test';
-import { BOOK_VISIT_KEY, BOOK_HANDOFF_KEY } from '../src/data/travel.ts';
+import { BOOK_VISIT_KEY, BOOK_HANDOFF_KEY, travelCountries } from '../src/data/travel.ts';
 
 const component = readFileSync(new URL('../src/components/TravelScrapbook.astro', import.meta.url), 'utf8');
 const bootstrap = component.match(/<script is:inline define:vars=\{\{ visitKey:[^\n]+\}\}>([\s\S]*?)<\/script>/)[1];
 
 function boot({ mode = 'embedded', page = 2, path = '/', bookmark, handoff, reduced = false, blocked = false, navigationType = 'navigate' } = {}) {
   const values = new Map([[BOOK_VISIT_KEY, bookmark], [BOOK_HANDOFF_KEY, handoff && JSON.stringify(handoff)]]);
-  const faces = Array.from({ length: 7 }, (_, i) => ({ dataset: { facePage: String(i) }, setAttribute() {} }));
+  const faces = Array.from({ length: travelCountries.length + 1 }, (_, i) => ({ dataset: { facePage: String(i) }, setAttribute() {} }));
   const root = { dataset: { mode, target: String(page) }, style: { setProperty() {} }, querySelectorAll: () => faces };
   runInNewContext(bootstrap, {
     document: { currentScript: { previousElementSibling: root } },
     location: { pathname: path },
     matchMedia: () => ({ matches: reduced }),
     performance: { getEntriesByType: () => [{ type: navigationType }] },
-    visitKey: BOOK_VISIT_KEY, transferKey: BOOK_HANDOFF_KEY,
+    visitKey: BOOK_VISIT_KEY, transferKey: BOOK_HANDOFF_KEY, countryCount: travelCountries.length,
     sessionStorage: {
       getItem(key) { if (blocked) throw new Error('disabled'); return values.get(key) ?? null; },
       removeItem(key) { values.delete(key); },
@@ -47,6 +47,15 @@ test('returning home preserves the country instead of repeating the base reveal'
   assert.equal(root.dataset.target, '5');
   assert.equal(root.dataset.arrival, 'complete');
   assert.equal(boot({ bookmark: '3' }).root.dataset.position, '3');
+});
+
+test('the newest country restores from both bookmarks and cross-document handoffs', () => {
+  const last = travelCountries.length;
+  assert.equal(boot({ bookmark: String(last) }).root.dataset.position, String(last));
+  const { root } = boot({ mode: 'index', page: 0, path: '/travel/', handoff: { path: '/travel', page: last, time: Date.now() } });
+  assert.equal(root.dataset.position, String(last));
+  assert.equal(root.dataset.target, '0');
+  assert.equal(root.dataset.arrival, 'complete');
 });
 
 test('unrelated, expired, and malformed transfers do not affect direct country entry', () => {

@@ -5,6 +5,7 @@ import japanArt from '../data/japan-map-art.json';
 import egyptArt from '../data/egypt-map-art.json';
 import chinaArt from '../data/china-map-art.json';
 import indiaArt from '../data/india-map-art.json';
+import uaeArt from '../data/uae-map-art.json';
 import type { JournalCountry, TravelStop } from '../data/travel-journals';
 
 interface Props { country: JournalCountry; stops: readonly TravelStop[] }
@@ -15,9 +16,10 @@ const bounds: Record<JournalCountry, Record<string, string>> = {
   egypt: egyptArt,
   china: chinaArt,
   india: indiaArt,
+  uae: uaeArt,
 };
 const featured: Record<JournalCountry, string> = {
-  jordan: 'treasury', japan: 'fuji-lake', egypt: 'pyramids', india: 'taj', china: 'wall',
+  jordan: 'treasury', japan: 'fuji-lake', egypt: 'pyramids', india: 'taj', china: 'wall', uae: 'burj-khalifa',
 };
 // Open on the familiar landmark, then shuffle through every published stop.
 const ordered = [...stops.filter(stop => stop.symbol === featured[country]), ...stops.filter(stop => stop.symbol !== featured[country])];

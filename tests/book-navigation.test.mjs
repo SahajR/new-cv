@@ -8,6 +8,7 @@ test('country URLs have stable, unique positions and Japan/China are three turns
   assert.equal(new Set(travelCountries.map((c) => c.page)).size, travelCountries.length);
   assert.equal(countryFromPath('/travel/japan/').page, 2);
   assert.equal(countryFromPath('/travel/china').page, 5);
+  assert.equal(countryFromPath('/travel/uae/').page, 6);
   assert.equal(countryFromPath('/travel/not-a-country'), undefined);
   assert.deepEqual(pageSteps(5, 2, 5), [4, 3, 2]);
   assert.deepEqual(pageSteps(2, 5, 5), [3, 4, 5]);
@@ -36,7 +37,7 @@ test('country journals open their complete preceding stack in one turn', async (
   for (const country of travelCountries) {
     const turns = [];
     const settled = [];
-    const book = new BookNavigation(5, 0, async (from, to) => { turns.push([from, to]); }, (page) => settled.push(page), { bundleOpening: true });
+    const book = new BookNavigation(travelCountries.length, 0, async (from, to) => { turns.push([from, to]); }, (page) => settled.push(page), { bundleOpening: true });
     book.request(country.page);
     assert.deepEqual(turns, [], 'the stack waits for the shared transition and viewport');
     book.resume();
@@ -99,7 +100,7 @@ test('every country closes directly to the cover without exposing an intermediat
   for (const country of travelCountries) {
     const turns = [];
     const settled = [];
-    const book = new BookNavigation(5, country.page, async (from, to) => { turns.push([from, to]); }, (page) => settled.push(page), { bundleClosing: true });
+    const book = new BookNavigation(travelCountries.length, country.page, async (from, to) => { turns.push([from, to]); }, (page) => settled.push(page), { bundleClosing: true });
     book.request(0);
     book.resume();
     await setImmediate();

@@ -1,0 +1,10 @@
+---
+import PaintedTravelMap from './PaintedTravelMap.astro';
+import paintedBounds from '../data/uae-map-art.json';
+import { uaeClusters } from '../data/uae';
+import { uaeOutline } from '../data/uae-outline';
+import type { TravelStop } from '../data/travel-journals';
+interface Props { stops: readonly TravelStop[]; linked?: boolean }
+const { stops, linked = false } = Astro.props;
+---
+<PaintedTravelMap country="uae" prefix="ae" stops={stops} linked={linked} bounds={paintedBounds} base={[33.662, 22.521, 438.776, 345.385]} outline={uaeOutline} landColor="#d1b981" markerScale={.23} clusters={uaeClusters} />

@@ -70,7 +70,7 @@
 [data-markers-only] .map-landmark:is(:hover, :focus-visible, [aria-current]) .map-sprite { filter: var(--map-marker-outline); transform: none; }
 [data-markers-only] .map-landmark:focus-visible .map-hit-area { stroke: #b7392d; stroke-width: 1.5; }
 [data-markers-only] .travel-map-footer { display: none; }
-.travel-journal:is([data-travel-journal='japan'], [data-travel-journal='egypt'], [data-travel-journal='jordan'], [data-travel-journal='china'], [data-travel-journal='india']) { --travel-footer-height: 0px; }
+.travel-journal:is([data-travel-journal='japan'], [data-travel-journal='egypt'], [data-travel-journal='jordan'], [data-travel-journal='china'], [data-travel-journal='india'], [data-travel-journal='uae']) { --travel-footer-height: 0px; }
 [data-travel-map='jordan'] { --map-ink: #6a513c; }
 [data-travel-map='egypt'] { --map-ink: #645237; }
 [data-travel-map='china'] { --map-ink: #475b48; }

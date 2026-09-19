@@ -3,8 +3,9 @@ import { jordanStops, jordanPhotos } from './jordan';
 import { egyptStops, egyptPhotos } from './egypt';
 import { chinaStops, chinaPhotos } from './china';
 import { indiaStops, indiaPhotos } from './india';
+import { uaeStops, uaePhotos } from './uae';
 
-export const journalCountries = ['jordan', 'japan', 'egypt', 'india', 'china'] as const;
+export const journalCountries = ['jordan', 'japan', 'egypt', 'india', 'china', 'uae'] as const;
 export type JournalCountry = typeof journalCountries[number];
 export interface TravelStop {
   readonly id: string;
@@ -25,7 +26,7 @@ export interface TravelMapCluster {
   readonly zoom: number;
   readonly detail: { readonly src: string; readonly bounds: readonly [number, number, number, number] };
 }
-export interface TravelPhoto { src: string; thumbnail?: string; width: number; height: number; alt: string; capturedAt: string }
+export interface TravelPhoto { src: string; thumbnail?: string; width: number; height: number; alt: string; capturedAt?: string; placeholder?: boolean }
 export interface TravelJournal {
   name: string;
   stops: readonly TravelStop[];
@@ -37,6 +38,7 @@ export interface TravelJournal {
   journeyView: string;
 }
 export const travelJournals: Record<JournalCountry, TravelJournal> = {
+  uae: { name: 'UAE', stops: uaeStops, photos: uaePhotos, dates: '', year: '', description: 'Fourteen places across Abu Dhabi, Dubai and Fujairah. Photographs and stories to come.', countryView: '0 0 510 390', journeyView: '0 0 510 390' },
   japan: { name: 'Japan', stops: japanStops, photos: japanPhotos, dates: '30 May — 7 June', year: '2025', description: 'Places photographed between 30 May and 7 June 2025, including the Kamakura coast and sights around Mount Fuji.', countryView: '40 -10 890 425', journeyView: '75 -5 820 405' },
   jordan: { name: 'Jordan', stops: jordanStops, photos: jordanPhotos, dates: '12 February — 12 March', year: '2023', description: 'Places photographed between 12 February and 12 March 2023.', countryView: '320 5 380 345', journeyView: '330 20 350 320' },
   egypt: { name: 'Egypt', stops: egyptStops, photos: egyptPhotos, dates: '29 — 30 May', year: '2026', description: 'Four sights around Luxor and five around Cairo and Giza, photographed on 29 and 30 May 2026.', countryView: '320 0 370 330', journeyView: '340 20 330 295' },

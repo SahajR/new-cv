@@ -70,7 +70,7 @@ const dust = Array.from({ length: 14 }, (_, i) => ({
   </div>
   <div class="sb-controls" hidden={mode === 'index'}>
     <button type="button" data-book-previous aria-label="Previous scrapbook page" disabled={page <= 1}>←</button>
-    <p class="sb-counter" data-book-status role="status" aria-live="polite" aria-atomic="true">{country?.name ?? 'An adventure awaits'} <span>{country && ` / ${String(page).padStart(2, '0')}—05`}</span></p>
+    <p class="sb-counter" data-book-status role="status" aria-live="polite" aria-atomic="true">{country?.name ?? 'An adventure awaits'} <span>{country && ` / ${String(page).padStart(2, '0')}—${String(travelCountries.length).padStart(2, '0')}`}</span></p>
     <button type="button" data-book-next aria-label="Next scrapbook page" disabled={page === travelCountries.length}>→</button>
   </div>
   {mode === 'index' && <h2 class="sb-contents-title" id="book-contents">Contents</h2>}
@@ -81,7 +81,7 @@ const dust = Array.from({ length: 14 }, (_, i) => ({
   </nav>}
   {mode === 'embedded' && <a class="sb-read" data-book-read href="/travel/">Explore the travel journal <span aria-hidden="true">↗</span></a>}
 </section>
-<script is:inline define:vars={{ visitKey: BOOK_VISIT_KEY, transferKey: BOOK_HANDOFF_KEY }}>
+<script is:inline define:vars={{ visitKey: BOOK_VISIT_KEY, transferKey: BOOK_HANDOFF_KEY, countryCount: travelCountries.length }}>
   {
     const root = document.currentScript.previousElementSibling;
     const target = Number(root.dataset.target);
@@ -91,7 +91,7 @@ const dust = Array.from({ length: 14 }, (_, i) => ({
     try {
       const handoff = JSON.parse(sessionStorage.getItem(transferKey) || 'null');
       const bookmark = Number(sessionStorage.getItem(visitKey));
-      const valid = (n) => Number.isInteger(n) && n >= 0 && n <= 5;
+      const valid = (n) => Number.isInteger(n) && n >= 0 && n <= countryCount;
       const reloading = performance.getEntriesByType('navigation')[0]?.type === 'reload';
       if (!reloading && handoff && handoff.path === location.pathname.replace(/\/$/, '') && Date.now() - handoff.time < 15000 && valid(handoff.page)) {
         position = handoff.page;

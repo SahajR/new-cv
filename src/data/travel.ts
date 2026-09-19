@@ -54,6 +54,14 @@ export const travelCountries: TravelCountry[] = [
     note: 'Palace roofs, mountain walls, and a little make-believe.',
     memories: ['Visited Shanghai Disneyland.'],
   },
+  {
+    slug: 'uae', name: 'UAE', code: 'AE', page: 6,
+    image: '/images/travel/uae/placeholder.webp',
+    imageAlt: 'A generated desert photograph used as a temporary placeholder for the UAE album.',
+    caption: 'Between the city and the sea', places: 'Abu Dhabi · Dubai · Fujairah',
+    note: 'Skylines, desert tracks, and the coast.',
+    memories: [],
+  },
 ];
 
 export const countryHref = (country: TravelCountry) => `/travel/${country.slug}/`;

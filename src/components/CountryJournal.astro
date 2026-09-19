@@ -20,7 +20,7 @@ const entries = await getCountryStories(country);
       <article class="travel-story" id={cardId(stop.id)} data-travel-story={stop.id} data-place-name={stop.name} tabindex="-1">
         <a class="travel-story-link" href={storyHref(country, stop.id)}>
           <div class="travel-story-photo"><img src={cover.thumbnail} width={cover.width} height={cover.height} alt={cover.alt} loading="lazy" decoding="async"/><span class="travel-photo-number" aria-hidden="true">{String(i+1).padStart(2,'0')}</span></div>
-          <div class="travel-story-text"><div class="travel-story-meta"><span>{stop.name}</span><time datetime={story.data.visited}>{story.data.dateLabel ?? formatVisitDate(story.data.visited)}</time></div><StoryHeading class="travel-story-title">{story.data.title}</StoryHeading><p>{story.data.caption}</p><span class="travel-story-bottom">{photos.length} {photos.length === 1 ? 'photograph' : 'photographs'}<span class="travel-open">Open the page <span aria-hidden="true">↗</span></span></span></div>
+          <div class="travel-story-text"><div class="travel-story-meta"><span>{stop.name}</span>{story.data.visited && <time datetime={story.data.visited}>{story.data.dateLabel ?? formatVisitDate(story.data.visited)}</time>}</div><StoryHeading class="travel-story-title">{story.data.title}</StoryHeading><p>{story.data.caption}</p><span class="travel-story-bottom">{cover.placeholder ? 'Photo to come' : `${photos.length} ${photos.length === 1 ? 'photograph' : 'photographs'}`}<span class="travel-open">Open the page <span aria-hidden="true">↗</span></span></span></div>
         </a>
       </article></>;
     })}

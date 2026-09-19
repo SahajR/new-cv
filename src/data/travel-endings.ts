@@ -1,5 +1,10 @@
 // Original closing lines, kept here so each country's ending is easy to edit.
 export const travelEndings = {
+  uae: {
+    image: '/images/travel/endings/uae.webp',
+    alt: 'A small hand-painted scene of warm desert dunes, Dubai’s skyline, and a quiet turquoise coast.',
+    quote: 'Somewhere between the city and the sea.',
+  },
   jordan: {
     image: '/images/travel/endings/jordan.webp',
     alt: 'A small painted scene of Petra’s Treasury, rose-red canyon walls, and two visitors below.',

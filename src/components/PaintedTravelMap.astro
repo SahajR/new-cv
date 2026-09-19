@@ -9,10 +9,11 @@ interface Props {
   bounds: Record<string, string>;
   base: readonly [number, number, number, number];
   outline?: string;
+  landColor?: string;
   markerScale?: number;
   clusters?: readonly TravelMapCluster[];
 }
-const { country, prefix, stops, linked = false, bounds, base, outline, markerScale = .32, clusters = [] } = Astro.props;
+const { country, prefix, stops, linked = false, bounds, base, outline, landColor = '#a7b58b', markerScale = .32, clusters = [] } = Astro.props;
 const symbols = [...new Set([...stops.map(stop => stop.symbol), ...clusters.map(cluster => cluster.symbol)])];
 const assetRoot = `/images/travel/${country}-map`;
 ---
@@ -41,7 +42,7 @@ const assetRoot = `/images/travel/${country}-map`;
     </g>)}
   </defs>
   <g class="painted-map-base" aria-hidden="true">
-    {outline && <use href={`#${prefix}-country-outline`} fill="#a7b58b" />}
+    {outline && <use href={`#${prefix}-country-outline`} fill={landColor} />}
     <image href={`${assetRoot}/base.webp`} x={base[0]} y={base[1]} width={base[2]} height={base[3]} preserveAspectRatio="none" clip-path={outline ? `url(#${prefix}-painted-outline)` : undefined} />
   </g>
   {clusters.map(cluster => <image class="map-city-geography" data-map-detail={cluster.id} data-detail-src={cluster.detail.src} x={cluster.detail.bounds[0]} y={cluster.detail.bounds[1]} width={cluster.detail.bounds[2]} height={cluster.detail.bounds[3]} preserveAspectRatio="none" aria-hidden="true" />)}

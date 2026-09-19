@@ -73,7 +73,7 @@ export function setupScrapbook(root: HTMLElement) {
     const country = travelCountries[Math.max(0, position - 1)];
     status.replaceChildren(document.createTextNode(position === 0 ? 'An adventure awaits' : country.name));
     const number = document.createElement('span');
-    number.textContent = position === 0 ? '' : ` / ${String(position).padStart(2, '0')}—05`;
+    number.textContent = position === 0 ? '' : ` / ${String(position).padStart(2, '0')}—${String(travelCountries.length).padStart(2, '0')}`;
     status.append(number);
     root.querySelectorAll<HTMLElement>('[data-book-country]').forEach((link) => {
       if (Number(link.dataset.page) === position) link.setAttribute('aria-current', 'page');

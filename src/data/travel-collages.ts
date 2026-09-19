@@ -6,9 +6,10 @@ interface CollagePhoto {
   position?: string;
 }
 
-// Four real photographs per country. Indices refer to the existing photo
+// Four photographs per country (UAE shares its temporary placeholder). Indices refer to the existing photo
 // collections; position keeps the subject visible in the square print crop.
 export const travelCollages: Record<JournalCountry, readonly CollagePhoto[]> = {
+  uae: [{ place: 'ferrari-world' }, { place: 'burj-khalifa' }, { place: 'desert-bike' }, { place: 'dibba-rock' }],
   jordan: [
     { place: 'petra' },
     { place: 'wadi-rum' },

@@ -29,7 +29,7 @@ const [cover, ...gallery] = photos;
 <Layout title={`${entry.data.title} — Sahaj in ${name}`} description={entry.data.caption}>
   <main class="travel-entry" id="main">
     <a class="entry-back" href={`/travel/${country}/#${cardId(place)}`}><span aria-hidden="true">←</span> Back to {journal.name}</a>
-    <header class="entry-heading"><p class="entry-place">{journal.name} <span aria-hidden="true">/</span> {name}</p><h1>{entry.data.title}</h1><p class="entry-caption">{entry.data.caption}</p><time datetime={entry.data.visited}>{entry.data.dateLabel ?? formatVisitDate(entry.data.visited)}</time></header>
+    <header class="entry-heading"><p class="entry-place">{journal.name} <span aria-hidden="true">/</span> {name}</p><h1>{entry.data.title}</h1><p class="entry-caption">{entry.data.caption}</p>{entry.data.visited && <time datetime={entry.data.visited}>{entry.data.dateLabel ?? formatVisitDate(entry.data.visited)}</time>}</header>
     <figure class="entry-cover"><img src={cover.src} width={cover.width} height={cover.height} alt={cover.alt} fetchpriority="high"/><figcaption>{cover.alt}</figcaption></figure>
     <div class="entry-prose"><Content /></div>
     {gallery.length > 0 && <div class="entry-gallery" aria-label={`More photographs from ${name}`}>{gallery.map(photo => <figure><img src={photo.src} width={photo.width} height={photo.height} alt={photo.alt} loading="lazy" decoding="async"/><figcaption>{photo.alt}</figcaption></figure>)}</div>}
