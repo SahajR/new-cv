@@ -147,11 +147,12 @@ if (root && stage && subtitle && iGlyph && baseline && imTail && dot && core && 
       const compact = isR
         ? `translate(${sRect.right + srKerning - to.left}px, ${sRect.top - to.top}px) scale(1)`
         : 'translate(0px, 0px) scale(1)';
+      const initial = `translate(${from.left - to.left}px, ${from.top - to.top}px) scale(${from.height / to.height})`;
+      // Motion resolves keyframes on its next frame. Prepare the same starting
+      // pose synchronously so leaving boot cannot expose the finished heading.
+      el.style.transform = initial;
       sequence.push([el, {
-        transform: [
-          `translate(${from.left - to.left}px, ${from.top - to.top}px) scale(${from.height / to.height})`,
-          compact,
-        ],
+        transform: [initial, compact],
       }, { at: at(index * TIMING.seedStagger), ...SPRINGS.initials }]);
       if (isR) {
         sequence.push([el, { transform: [compact, 'translate(0px, 0px) scale(1)'] },
@@ -176,6 +177,10 @@ if (root && stage && subtitle && iGlyph && baseline && imTail && dot && core && 
       `translate(${x}px, ${y}px) scale(${xScale}, ${yScale})`;
     const landed = point(tx, ty);
     const stem = point(tx, ty, lineWidth, lineHeight);
+    dot.style.transform = point(sx, sy);
+    dot.style.opacity = '1';
+    iGlyph.style.opacity = '0';
+    imTail.style.opacity = '0';
 
     sequence.push(
       [core, { transform: ['scale(1)', `scale(${MOTION.dotCharge})`, 'scale(1)'] },
@@ -201,6 +206,7 @@ if (root && stage && subtitle && iGlyph && baseline && imTail && dot && core && 
     );
 
     letters.forEach((el) => {
+      el.style.opacity = '0';
       const group = el.dataset.unfold!;
       const index = Number(el.dataset.index);
       const seed = seeds.find((seed) => seed.dataset.seed === (group === 'comma' ? 'y' : group))!;
