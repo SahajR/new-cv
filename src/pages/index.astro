@@ -4,11 +4,12 @@ import Hero from '../components/Hero.astro';
 import Journey from '../components/Journey.astro';
 import Footer from '../components/Footer.astro';
 import MusicAtmosphere from '../components/MusicAtmosphere.astro';
+import { FULL_VERSION_AVAILABLE } from '../data/features';
 ---
 
 <Layout travelTransitions>
   <div class="folio">
-    <MusicAtmosphere />
+    {FULL_VERSION_AVAILABLE && <MusicAtmosphere />}
     <main id="main">
       <Hero>
         <Journey />

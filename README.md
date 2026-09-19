@@ -42,6 +42,8 @@ All commands are run from the root of the project, from a terminal:
 
 See [the deployment guide](docs/cloudflare-workers.md) for Workers Builds settings, local preview, and dry-run validation. This site deploys the generated `dist/` files using the root `wrangler.jsonc`.
 
+`FULL_VERSION_AVAILABLE` defaults to `true` during local development and `false` for builds. See the deployment guide to override it. Hobby writeups live in `src/content/hobbies/`; [the hobbies guide](docs/hobbies.md) explains photos, illustrations and adding entries.
+
 ## 👀 Want to learn more?
 
 Feel free to check [our documentation](https://docs.astro.build) or jump into our [Discord server](https://astro.build/chat).

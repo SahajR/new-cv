@@ -1,0 +1,29 @@
+---
+import { render } from 'astro:content';
+import Layout from '../../layouts/Layout.astro';
+import Footer from '../../components/Footer.astro';
+import HobbyScrapbook from '../../components/HobbyScrapbook.astro';
+import HobbyAlbum from '../../components/HobbyAlbum.astro';
+import { getHobbies, hobbyPhotos, type Hobby } from '../../lib/hobbies';
+import '../../styles/hobbies.css';
+export async function getStaticPaths() {
+  return (await getHobbies()).map(hobby => ({ params: { hobby: hobby.id }, props: { hobby } }));
+}
+interface Props { hobby: Hobby }
+const { hobby } = Astro.props;
+const hobbies = await getHobbies();
+const photos = hobbyPhotos(hobby);
+const { Content } = await render(hobby);
+---
+<Layout title={`${hobby.data.title} — Sahaj’s hobbies`} description={hobby.data.description} travelTransitions>
+  <main id="main" class="hobbies-main">
+    <a class="hobbies-back" href="/hobbies/"><span aria-hidden="true">←</span> All hobbies</a>
+    <HobbyScrapbook hobbies={hobbies} hobby={hobby} />
+    <article class="hobby-story">
+      <h1>{hobby.data.title}</h1>
+      <HobbyAlbum title={hobby.data.title} photos={photos} />
+      <div class="hobby-prose"><Content /></div>
+    </article>
+  </main>
+  <Footer />
+</Layout>

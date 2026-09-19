@@ -20,6 +20,27 @@ Commit `wrangler.jsonc`, `.node-version`, `astro.config.mjs`, `package.json`, an
 
 ## Local verification
 
+### Full-version feature gate
+
+`FULL_VERSION_AVAILABLE` is evaluated by Astro at build time:
+
+| Environment | Default |
+| --- | --- |
+| Local `astro dev` | `true` |
+| Production build / Workers deployment | `false` |
+
+With the flag off, the homepage keeps the introduction and Work section, then ends at the warning with “website is unfinished” and links to Travel and Hobbies. The remaining Interests, embedded Travel, and Music sections are omitted from the generated HTML. The standalone travel and hobby pages stay available.
+
+To enable the full homepage on Cloudflare, set `FULL_VERSION_AVAILABLE=true` in **Workers Builds environment variables** and rebuild. A runtime Worker binding cannot change this static build. Unset it (or set it to `false`) for the limited site. Only the literal values `true` and `false` are accepted.
+
+To preview the limited version locally, build normally and run `npm run preview`. To develop that version with live updates, stop the existing dev server, then run:
+
+```sh
+FULL_VERSION_AVAILABLE=false npx astro dev --background
+```
+
+An explicit flag overrides the development default. Ordinary local development needs no environment file.
+
 Use Node 24.19.0 from `.node-version` (the dependency minimum is 22.19.0). The previous local Node 22.13 does not satisfy Wrangler's Undici dependency.
 
 ```sh

@@ -1,4 +1,6 @@
 ---
+interface Props { unfinished?: boolean }
+const { unfinished = false } = Astro.props;
 const channels = ['red', 'green', 'blue'];
 ---
 
@@ -22,8 +24,8 @@ const channels = ['red', 'green', 'blue'];
           <span class="warning-slice" aria-hidden="true">WARNING</span>
         </h2>
 
-        <p class="warning-message">The deeper you scroll,<br />the more you'll know about me.</p>
-        <p class="warning-caution">Proceed with caution. <span aria-hidden="true">↓</span></p>
+        <p class="warning-message">{unfinished ? 'website is unfinished' : <>The deeper you scroll,<br />the more you'll know about me.</>}</p>
+        {!unfinished && <p class="warning-caution">Proceed with caution. <span aria-hidden="true">↓</span></p>}
       </div>
     </div>
 

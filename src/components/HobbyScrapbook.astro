@@ -1,0 +1,73 @@
+---
+import AlbumStack from './AlbumStack';
+import { hobbyHref, hobbyPhotos, type Hobby } from '../lib/hobbies';
+import '../styles/scrapbook.css';
+interface Props { hobbies: Hobby[]; hobby?: Hobby }
+const { hobbies, hobby } = Astro.props;
+const index = !hobby;
+const position = index ? 0 : 1;
+const photographs = hobby ? hobbyPhotos(hobby).slice(0, 4) : [];
+const current = hobby ? hobbies.findIndex(entry => entry.id === hobby.id) : -1;
+const previous = hobbies[current - 1];
+const next = hobbies[current + 1];
+---
+<section class="scrapbook hobby-scrapbook" data-mode={index ? 'index' : 'journal'} data-open={String(!index)} data-ready data-turning="false" style={`--position: ${position}; --leaf-count: 2`} aria-label="Hobbies scrapbook">
+  <div class="sb-stage">
+    <div class="sb-arrival">
+      <div class="sb-volume">
+        <div class="sb-board sb-board-right" aria-hidden="true"></div>
+        <div class="sb-leaf sb-cover" style="--leaf: 0">
+          <div class="sb-cover-board" aria-hidden="true"></div>
+          {['fore', 'top', 'bottom'].map(side => <div class={`sb-leaf-edge sb-leaf-edge-${side}`} aria-hidden="true"></div>)}
+          <div class="sb-face sb-front sb-cover-art" aria-hidden={!index} inert={!index}>
+            <img src="/images/travel/scrapbook-cover.webp" width="1200" height="778" alt="Our Adventure Book — a worn leather scrapbook with a red cloth binding" loading="eager" />
+          </div>
+          <div class="sb-face sb-back" aria-hidden={index} inert={index}>
+            <div class:list={['sb-photo-collage', { 'hobby-collage-pair': photographs.length === 2 }]}>
+              {photographs.map(photo => <figure class="sb-polaroid">
+                <img src={photo.thumbnail} width={photo.width} height={photo.height} alt={photo.alt} loading="eager" decoding="async" />
+                <span class="sb-photo-tape" aria-hidden="true"></span>
+              </figure>)}
+            </div>
+          </div>
+        </div>
+        <div class="sb-leaf" style="--leaf: 1">
+          {['fore', 'top', 'bottom'].map(side => <div class={`sb-leaf-edge sb-leaf-edge-${side}`} aria-hidden="true"></div>)}
+          <div class="sb-face sb-front" aria-hidden={index} inert={index}>
+            {hobby && <div class="hobby-book-scene"><img src={hobby.data.illustration} alt={hobby.data.illustrationAlt} width={hobby.data.illustrationWidth} height={hobby.data.illustrationHeight} loading="eager" decoding="async" /></div>}
+          </div>
+        </div>
+        <svg class="sb-cord" viewBox="0 0 30 200" aria-hidden="true" fill="none">
+          <path d="M15 35C-9 4 2 0 9 15L18 74C35 140-4 123 12 75C28 43 29 26 15 35ZM14 36L20 190M15 36L4 176" stroke="#322318" stroke-width="3" stroke-linecap="round" />
+        </svg>
+      </div>
+    </div>
+  </div>
+  {index ? <>
+    <h2 class="sb-contents-title">Contents</h2>
+    <nav class="sb-destinations sb-contents" aria-label="Scrapbook hobbies">
+      {hobbies.map((entry, i) => <a href={hobbyHref(entry)}>
+        <span>{String(i + 1).padStart(2, '0')}</span>
+        <span class="sb-contents-album" aria-hidden="true"><AlbumStack client:visible images={hobbyPhotos(entry).map(photo => photo.thumbnail)} size={48} rotation={-5} /></span>
+        {entry.data.title}<span class="sb-contents-arrow" aria-hidden="true">↗</span>
+      </a>)}
+    </nav>
+  </> : <nav class="hobby-book-controls" aria-label="Browse hobbies">
+    {previous ? <a href={hobbyHref(previous)} aria-label={`Previous hobby: ${previous.data.title}`}>←</a> : <span aria-hidden="true">←</span>}
+    <p>{hobby.data.title}<span>{String(current + 1).padStart(2, '0')} / {String(hobbies.length).padStart(2, '0')}</span></p>
+    {next ? <a href={hobbyHref(next)} aria-label={`Next hobby: ${next.data.title}`}>→</a> : <span aria-hidden="true">→</span>}
+  </nav>}
+</section>
+<style>
+  .hobby-book-scene { position: absolute; inset: 10% 7% 9% 10%; display: grid; align-items: end; }
+  .hobby-book-scene img { display: block; width: 100%; height: 100%; object-fit: contain; object-position: center 70%; }
+  .hobby-collage-pair .sb-polaroid { width: 44%; }
+  .hobby-collage-pair .sb-polaroid:nth-child(1) { left: 9%; top: 12%; }
+  .hobby-collage-pair .sb-polaroid:nth-child(2) { left: 45%; top: 41%; }
+  .hobby-book-controls { display: flex; justify-content: center; align-items: center; gap: 20px; }
+  .hobby-book-controls > a, .hobby-book-controls > span { display: grid; place-items: center; flex: 0 0 44px; height: 44px; border: 1px solid #b6a17f; border-radius: 50%; text-decoration: none; color: #6b412a; font: 24px var(--font-serif); }
+  .hobby-book-controls > span { opacity: .35; }
+  .hobby-book-controls > a:hover { background: #e1ceac; }
+  .hobby-book-controls p { max-width: 210px; text-align: center; font: 20px/1.2 var(--font-serif); }
+  .hobby-book-controls p span { display: block; margin-top: 6px; color: #8c7352; font-size: 13px; }
+</style>

@@ -1,0 +1,72 @@
+---
+import type { HobbyPhoto } from '../lib/hobbies';
+interface Props { title: string; photos: HobbyPhoto[] }
+const { title, photos } = Astro.props;
+const cover = photos[0];
+---
+<section class="hobby-album" data-hobby-album aria-label={`${title} photo album`}>
+  <figure class="hobby-album-photo">
+    <img data-album-photo src={cover.src} width={cover.width} height={cover.height} alt={cover.alt} decoding="async" />
+  </figure>
+  <div class="hobby-album-controls">
+    <button type="button" data-album-previous aria-label="Previous photograph" hidden>←</button>
+    <p data-album-status role="status" aria-live="polite" aria-atomic="true">1 / {photos.length}</p>
+    <button type="button" data-album-next aria-label="Next photograph" hidden>→</button>
+  </div>
+  <nav class="hobby-album-thumbs" aria-label="Choose a photograph">
+    {photos.map((photo, i) => <a href={photo.src} data-album-thumb data-width={photo.width} data-height={photo.height} aria-label={`View photograph ${i + 1} of ${photos.length}`} aria-current={i === 0 ? 'true' : undefined}>
+      <img src={photo.thumbnail} width={photo.width} height={photo.height} alt={photo.alt} loading="lazy" decoding="async" />
+    </a>)}
+  </nav>
+</section>
+<script>
+  document.querySelectorAll<HTMLElement>('[data-hobby-album]').forEach(album => {
+    const image = album.querySelector<HTMLImageElement>('[data-album-photo]')!;
+    const thumbnails = [...album.querySelectorAll<HTMLAnchorElement>('[data-album-thumb]')];
+    const previous = album.querySelector<HTMLButtonElement>('[data-album-previous]')!;
+    const next = album.querySelector<HTMLButtonElement>('[data-album-next]')!;
+    const status = album.querySelector<HTMLElement>('[data-album-status]')!;
+    let selected = 0;
+    const show = (index: number) => {
+      selected = Math.max(0, Math.min(thumbnails.length - 1, index));
+      const thumbnail = thumbnails[selected];
+      image.src = thumbnail.href;
+      image.alt = thumbnail.querySelector('img')!.alt;
+      image.width = Number(thumbnail.dataset.width);
+      image.height = Number(thumbnail.dataset.height);
+      thumbnails.forEach((item, i) => i === selected ? item.setAttribute('aria-current', 'true') : item.removeAttribute('aria-current'));
+      status.textContent = `${selected + 1} / ${thumbnails.length}`;
+      previous.disabled = selected === 0;
+      next.disabled = selected === thumbnails.length - 1;
+      // Only scroll the thumbnail strip; never move the reader up the page.
+      const strip = thumbnail.parentElement!;
+      strip.scrollLeft = thumbnail.offsetLeft - strip.offsetLeft - (strip.clientWidth - thumbnail.clientWidth) / 2;
+    };
+    thumbnails.forEach((thumbnail, index) => thumbnail.addEventListener('click', event => {
+      if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+      event.preventDefault(); show(index);
+    }));
+    previous.addEventListener('click', () => show(selected - 1));
+    next.addEventListener('click', () => show(selected + 1));
+    album.addEventListener('keydown', event => {
+      if (event.key !== 'ArrowLeft' && event.key !== 'ArrowRight') return;
+      event.preventDefault(); show(selected + (event.key === 'ArrowRight' ? 1 : -1));
+    });
+    previous.hidden = next.hidden = false;
+    previous.disabled = true;
+    next.disabled = thumbnails.length <= 1;
+  });
+</script>
+<style>
+  .hobby-album-photo { margin: 0; padding: clamp(8px, 2vw, 16px); background: #fbf5e8; box-shadow: 1px 3px 9px #493b291c; }
+  .hobby-album-photo > img { display: block; width: 100%; height: auto; aspect-ratio: 4/3; object-fit: contain; background: #eee6d6; }
+  .hobby-album-controls { display: flex; align-items: center; justify-content: center; gap: 24px; margin: 16px 0; }
+  .hobby-album-controls p { min-width: 56px; text-align: center; font: 18px var(--font-serif); color: var(--body); }
+  .hobby-album-controls button { width: 44px; height: 44px; border: 1px solid var(--rule); background: transparent; color: var(--ink); font: 24px var(--font-serif); cursor: pointer; }
+  .hobby-album-controls button[hidden] { display: none; }
+  .hobby-album-controls button:disabled { opacity: .3; cursor: default; }
+  .hobby-album-thumbs { position: relative; display: flex; gap: 12px; padding: 6px 4px 12px; overflow-x: auto; scrollbar-width: thin; }
+  .hobby-album-thumbs a { display: block; flex: 0 0 72px; padding: 4px; background: #fbf5e8; border: 1px solid transparent; }
+  .hobby-album-thumbs a[aria-current] { border-color: #923d27; }
+  .hobby-album-thumbs img { display: block; width: 100%; height: auto; aspect-ratio: 1; object-fit: cover; }
+</style>

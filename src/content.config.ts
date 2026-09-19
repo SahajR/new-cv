@@ -28,4 +28,17 @@ const bites = defineCollection({
     draft: z.boolean().default(true),
   }),
 });
-export const collections = { travel, bites };
+const hobbies = defineCollection({
+  loader: glob({ pattern: '**/*.{md,mdx}', base: './src/content/hobbies' }),
+  schema: z.object({
+    title: z.string().min(1),
+    description: z.string().min(1),
+    order: z.number().int().nonnegative(),
+    album: z.string().min(1),
+    illustration: z.string().startsWith('/images/hobbies/'),
+    illustrationAlt: z.string().min(1),
+    illustrationWidth: z.number().positive().default(1000),
+    illustrationHeight: z.number().positive().default(667),
+  }),
+});
+export const collections = { travel, bites, hobbies };

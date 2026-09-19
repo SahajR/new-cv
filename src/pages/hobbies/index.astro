@@ -1,0 +1,16 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import Footer from '../../components/Footer.astro';
+import HobbyScrapbook from '../../components/HobbyScrapbook.astro';
+import { getHobbies } from '../../lib/hobbies';
+import '../../styles/hobbies.css';
+const hobbies = await getHobbies();
+---
+<Layout title="Hobbies — Sahaj’s adventure book" description="A scrapbook of scuba diving, skydiving, horse riding and motocross." travelTransitions>
+  <main id="main" class="hobbies-main">
+    <a class="hobbies-back" href="/#interests"><span aria-hidden="true">←</span> Back to the journey</a>
+    <h1 class="sr-only">Sahaj’s hobbies</h1>
+    <HobbyScrapbook hobbies={hobbies} />
+  </main>
+  <Footer />
+</Layout>

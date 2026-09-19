@@ -1,0 +1,164 @@
+{
+  "scuba-diving": [
+    {
+      "src": "/images/hobbies/scuba-diving/01.webp",
+      "thumbnail": "/images/hobbies/scuba-diving/01-small.webp",
+      "width": 1600,
+      "height": 1400,
+      "alt": "Scuba diving — photograph 1 from my album"
+    },
+    {
+      "src": "/images/hobbies/scuba-diving/02.webp",
+      "thumbnail": "/images/hobbies/scuba-diving/02-small.webp",
+      "width": 1466,
+      "height": 1600,
+      "alt": "Scuba diving — photograph 2 from my album"
+    },
+    {
+      "src": "/images/hobbies/scuba-diving/03.webp",
+      "thumbnail": "/images/hobbies/scuba-diving/03-small.webp",
+      "width": 1600,
+      "height": 902,
+      "alt": "Scuba diving — photograph 3 from my album"
+    },
+    {
+      "src": "/images/hobbies/scuba-diving/04.webp",
+      "thumbnail": "/images/hobbies/scuba-diving/04-small.webp",
+      "width": 1600,
+      "height": 1439,
+      "alt": "Scuba diving — photograph 4 from my album"
+    },
+    {
+      "src": "/images/hobbies/scuba-diving/05.webp",
+      "thumbnail": "/images/hobbies/scuba-diving/05-small.webp",
+      "width": 1600,
+      "height": 902,
+      "alt": "Scuba diving — photograph 5 from my album"
+    },
+    {
+      "src": "/images/hobbies/scuba-diving/06.webp",
+      "thumbnail": "/images/hobbies/scuba-diving/06-small.webp",
+      "width": 1294,
+      "height": 1250,
+      "alt": "Scuba diving — photograph 6 from my album"
+    },
+    {
+      "src": "/images/hobbies/scuba-diving/07.webp",
+      "thumbnail": "/images/hobbies/scuba-diving/07-small.webp",
+      "width": 1079,
+      "height": 1026,
+      "alt": "Scuba diving — photograph 7 from my album"
+    },
+    {
+      "src": "/images/hobbies/scuba-diving/08.webp",
+      "thumbnail": "/images/hobbies/scuba-diving/08-small.webp",
+      "width": 1600,
+      "height": 1400,
+      "alt": "Scuba diving — photograph 8 from my album"
+    }
+  ],
+  "skydiving": [
+    {
+      "src": "/images/hobbies/skydiving/01.webp",
+      "thumbnail": "/images/hobbies/skydiving/01-small.webp",
+      "width": 1600,
+      "height": 925,
+      "alt": "Skydiving and wind tunneling — photograph 1 from my album"
+    },
+    {
+      "src": "/images/hobbies/skydiving/02.webp",
+      "thumbnail": "/images/hobbies/skydiving/02-small.webp",
+      "width": 1600,
+      "height": 1319,
+      "alt": "Skydiving and wind tunneling — photograph 2 from my album"
+    },
+    {
+      "src": "/images/hobbies/skydiving/03.webp",
+      "thumbnail": "/images/hobbies/skydiving/03-small.webp",
+      "width": 1600,
+      "height": 1171,
+      "alt": "Skydiving and wind tunneling — photograph 3 from my album"
+    },
+    {
+      "src": "/images/hobbies/skydiving/04.webp",
+      "thumbnail": "/images/hobbies/skydiving/04-small.webp",
+      "width": 1600,
+      "height": 1424,
+      "alt": "Skydiving and wind tunneling — photograph 4 from my album"
+    },
+    {
+      "src": "/images/hobbies/skydiving/05.webp",
+      "thumbnail": "/images/hobbies/skydiving/05-small.webp",
+      "width": 1507,
+      "height": 1600,
+      "alt": "Skydiving and wind tunneling — photograph 5 from my album"
+    },
+    {
+      "src": "/images/hobbies/skydiving/06.webp",
+      "thumbnail": "/images/hobbies/skydiving/06-small.webp",
+      "width": 1290,
+      "height": 1080,
+      "alt": "Skydiving and wind tunneling — photograph 6 from my album"
+    },
+    {
+      "src": "/images/hobbies/skydiving/07.webp",
+      "thumbnail": "/images/hobbies/skydiving/07-small.webp",
+      "width": 1600,
+      "height": 1441,
+      "alt": "Skydiving and wind tunneling — photograph 7 from my album"
+    }
+  ],
+  "equestrianism": [
+    {
+      "src": "/images/hobbies/equestrianism/01.webp",
+      "thumbnail": "/images/hobbies/equestrianism/01-small.webp",
+      "width": 876,
+      "height": 958,
+      "alt": "Horse riding — photograph 1 from my album"
+    },
+    {
+      "src": "/images/hobbies/equestrianism/02.webp",
+      "thumbnail": "/images/hobbies/equestrianism/02-small.webp",
+      "width": 816,
+      "height": 754,
+      "alt": "Horse riding — photograph 2 from my album"
+    },
+    {
+      "src": "/images/hobbies/equestrianism/03.webp",
+      "thumbnail": "/images/hobbies/equestrianism/03-small.webp",
+      "width": 1334,
+      "height": 1524,
+      "alt": "Horse riding — photograph 3 from my album"
+    },
+    {
+      "src": "/images/hobbies/equestrianism/04.webp",
+      "thumbnail": "/images/hobbies/equestrianism/04-small.webp",
+      "width": 1440,
+      "height": 1552,
+      "alt": "Horse riding — photograph 4 from my album"
+    },
+    {
+      "src": "/images/hobbies/equestrianism/05.webp",
+      "thumbnail": "/images/hobbies/equestrianism/05-small.webp",
+      "width": 1368,
+      "height": 1322,
+      "alt": "Horse riding — photograph 5 from my album"
+    }
+  ],
+  "motocross": [
+    {
+      "src": "/images/hobbies/motocross/01.webp",
+      "thumbnail": "/images/hobbies/motocross/01-small.webp",
+      "width": 488,
+      "height": 486,
+      "alt": "Motocross — photograph 1 from my album"
+    },
+    {
+      "src": "/images/hobbies/motocross/02.webp",
+      "thumbnail": "/images/hobbies/motocross/02-small.webp",
+      "width": 1450,
+      "height": 1582,
+      "alt": "Motocross — photograph 2 from my album"
+    }
+  ]
+}
