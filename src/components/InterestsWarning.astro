@@ -44,7 +44,8 @@ const channels = ['red', 'green', 'blue'];
    *   0–24%  top bar flies in from the left, near the top of the section
    *   4–28%  bottom bar flies in from the right and meets the top bar
    *  30–100% bars separate upward/downward, opening the warning between them
-   * After opening: RGB separation, title tears, and tilt build on further scroll.
+   * During opening: RGB separation builds as the title comes into view.
+   * After opening: title tears and tilt build on further scroll.
    */
   const ENTRANCE = {
     pivot: 0.2,           // start near the top instead of reserving half an empty panel
@@ -57,6 +58,8 @@ const channels = ['red', 'green', 'blue'];
     travel: 110,          // percent of the sheet width; clears both viewport edges
   };
   const GLITCH = {
+    rgbStartAt: 0.72,      // begin separating channels during the panel reveal
+    rgbFullAt: 0.32,       // reach full colour while the title is still on screen
     steps: 16,             // distinct signal offsets across the section's passage
     split: 12,             // maximum RGB separation in px
     tear: 18,              // maximum title-slice offset in px
@@ -93,12 +96,14 @@ const channels = ['red', 'green', 'blue'];
       const top = easeOut(range(entrance, 0, ENTRANCE.topLanded));
       const bottom = easeOut(range(entrance, ENTRANCE.bottomStart, ENTRANCE.bottomLanded));
       const open = smoothstep(range(entrance, ENTRANCE.openStart, 1));
-      // Distortion starts only after the warning is fully open.
+      // Give colour its own earlier range; the larger tears and tilt still
+      // wait until the warning is fully open.
+      const rgb = smoothstep(range(vh * GLITCH.rgbStartAt - anchor, 0, vh * (GLITCH.rgbStartAt - GLITCH.rgbFullAt)));
       const progress = range(vh * ENTRANCE.fullOpenAt - anchor, 0, vh * ENTRANCE.fullOpenAt + rect.height - anchorOffset);
       const intensity = progress * progress;
       const step = Math.floor(progress * GLITCH.steps);
       const signal = Math.sin(step * 2.4);
-      const split = intensity * GLITCH.split;
+      const split = rgb * GLITCH.split;
 
       warning.style.setProperty('--warning-top-x', `${(top - 1) * ENTRANCE.travel}%`);
       warning.style.setProperty('--warning-bottom-x', `${(1 - bottom) * ENTRANCE.travel}%`);
@@ -111,7 +116,7 @@ const channels = ['red', 'green', 'blue'];
       warning.style.setProperty('--warning-skew', `${signal * intensity * GLITCH.skew}deg`);
       warning.style.setProperty('--warning-split', `${split}px`);
       warning.style.setProperty('--warning-tear', `${signal * intensity * GLITCH.tear}px`);
-      warning.style.setProperty('--warning-rgb-opacity', `${Math.min(0.85, progress * 1.2)}`);
+      warning.style.setProperty('--warning-rgb-opacity', `${Math.min(0.85, rgb * 1.2)}`);
       warning.style.setProperty('--warning-tape-x', `${progress * GLITCH.tapeTravel}px`);
     };
 
