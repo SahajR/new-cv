@@ -1,5 +1,5 @@
 // A compact 200 × 50 ASCII motion piece: requests fall into an orchestrator
-// loop at the centre, and small agents orbit it. Each agent is tethered to
+// core of two concentric cubes at the centre, and small agents orbit it. Each agent is tethered to
 // the loop, receives a task along its tether, works, and sends the result back.
 // Pure and deterministic in `t`, so the server can render the same still.
 
@@ -118,41 +118,112 @@ export function createScene() {
     }
   }
 
-  // Flashes sweep across the loop as a band: down for a dispatch, up for a result.
-  function torus(t: number, scale: number, reveal: number, flash: { pink: number; teal: number }) {
+  // Two concentric cubes spin out of sync: a solid inner cube inside a
+  // wireframe outer cube. Flashes sweep across both as a band: down for a
+  // dispatch, up for a result.
+  function cubes(t: number, scale: number, reveal: number, flash: { pink: number; teal: number }) {
     depth.fill(0);
-    const A = t * 0.8;
-    const B = t * 0.37;
-    const cA = Math.cos(A), sA = Math.sin(A), cB = Math.cos(B), sB = Math.sin(B);
-    const K2 = 12;
-    const K1 = 34 * scale;
+    const K2 = 10;
+    const K1 = 26 * scale;
+    const rotation = (ax: number, ay: number, az: number) => {
+      const [ca, sa, cb, sb, cc, sc] = [Math.cos(ax), Math.sin(ax), Math.cos(ay), Math.sin(ay), Math.cos(az), Math.sin(az)];
+      // Rz · Ry · Rx
+      return [
+        cc * cb, cc * sb * sa - sc * ca, cc * sb * ca + sc * sa,
+        sc * cb, sc * sb * sa + cc * ca, sc * sb * ca - cc * sa,
+        -sb, cb * sa, cb * ca,
+      ];
+    };
+    const apply = (m: number[], x: number, y: number, z: number) => [
+      m[0] * x + m[1] * y + m[2] * z, m[3] * x + m[4] * y + m[5] * z, m[6] * x + m[7] * y + m[8] * z,
+    ];
+    const project = (x: number, y: number, z: number) => {
+      const ooz = 1 / (K2 + z);
+      return { px: Math.round(CORE.x + (K1 * ooz * x) / CELL_ASPECT), py: Math.round(CORE.y - K1 * ooz * y), ooz };
+    };
+    const tint = (py: number, color: number) => {
+      const row = (py - CORE.y + CORE_RADIUS) / (CORE_RADIUS * 2);
+      if (flash.pink > 0 && Math.abs(row - flash.pink) < 0.12) return INK.pink;
+      if (flash.teal > 0 && Math.abs(row - (1 - flash.teal)) < 0.12) return INK.teal;
+      return color;
+    };
+
+    // Inner cube: solid, lit faces with brighter edges.
+    const inner = rotation(-t * 0.83, t * 0.61, t * 0.29);
+    const size = 1.1;
     const ramp = '.,-~:;=!*#$@';
-    for (let theta = 0; theta < Math.PI * 2; theta += 0.11) {
-      const ct = Math.cos(theta), st = Math.sin(theta);
-      for (let phi = 0; phi < Math.PI * 2; phi += 0.04) {
-        const cp = Math.cos(phi), sp = Math.sin(phi);
-        const cx = 2 + ct;
-        const cy = st;
-        const x = cx * (cB * cp + sA * sB * sp) - cy * cA * sB;
-        const y = cx * (sB * cp - sA * cB * sp) + cy * cA * cB;
-        const z = K2 + cA * cx * sp + cy * sA;
-        const ooz = 1 / z;
-        const px = Math.round(CORE.x + (K1 * ooz * x) / CELL_ASPECT);
-        const py = Math.round(CORE.y - K1 * ooz * y);
-        if (px < 0 || py < 0 || px >= COLS || py >= ROWS) continue;
-        const index = py * COLS + px;
-        if (ooz <= depth[index]) continue;
-        depth[index] = ooz;
-        if (cellNoise(px, py, 3) > reveal) { chars[index] = 32; colors[index] = 0; continue; }
-        const L = cp * ct * sB - cA * ct * sp - sA * st + cB * (cA * st - ct * sA * sp);
-        const lum = clamp((L + 1.1) / 2.5);
-        chars[index] = ramp.charCodeAt(Math.min(ramp.length - 1, Math.floor(lum * ramp.length)));
-        let color: number = lum > 0.78 ? INK.white : lum > 0.58 ? INK.ink : lum > 0.38 ? INK.lav : lum > 0.2 ? INK.muted : INK.dim;
-        const row = (py - CORE.y + CORE_RADIUS) / (CORE_RADIUS * 2);
-        if (flash.pink > 0 && lum > 0.3 && Math.abs(row - flash.pink) < 0.12) color = INK.pink;
-        if (flash.teal > 0 && lum > 0.3 && Math.abs(row - (1 - flash.teal)) < 0.12) color = INK.teal;
-        colors[index] = color;
+    const light = [0.45, 0.55, -0.7];
+    const faces = [[1, 0, 0], [-1, 0, 0], [0, 1, 0], [0, -1, 0], [0, 0, 1], [0, 0, -1]];
+    for (const n of faces) {
+      const [nx, ny, nz] = apply(inner, n[0], n[1], n[2]);
+      if (nz > 0.15) continue; // facing away
+      const lit = clamp(0.2 + 0.8 * Math.max(0, nx * light[0] + ny * light[1] + nz * light[2]));
+      const a = n[0] ? [0, 1, 0] : [1, 0, 0];
+      const b = n[2] ? [0, 1, 0] : [0, 0, 1];
+      for (let u = -1; u <= 1; u += 0.045) {
+        for (let v = -1; v <= 1; v += 0.045) {
+          const x0 = (n[0] + a[0] * u + b[0] * v) * size;
+          const y0 = (n[1] + a[1] * u + b[1] * v) * size;
+          const z0 = (n[2] + a[2] * u + b[2] * v) * size;
+          const [x, y, z] = apply(inner, x0, y0, z0);
+          const { px, py, ooz } = project(x, y, z);
+          if (px < 0 || py < 0 || px >= COLS || py >= ROWS) continue;
+          const index = py * COLS + px;
+          if (ooz <= depth[index]) continue;
+          depth[index] = ooz;
+          if (cellNoise(px, py, 3) > reveal) { chars[index] = 32; colors[index] = 0; continue; }
+          const edge = Math.max(Math.abs(u), Math.abs(v)) > 0.9;
+          const lum = clamp(lit + (edge ? 0.3 : 0));
+          chars[index] = ramp.charCodeAt(Math.min(ramp.length - 1, Math.floor(lum * ramp.length)));
+          const base = lum > 0.8 ? INK.white : lum > 0.6 ? INK.ink : lum > 0.4 ? INK.lav : lum > 0.22 ? INK.muted : INK.dim;
+          colors[index] = lum > 0.3 ? tint(py, base) : base;
+        }
       }
+    }
+
+    // Outer cube: a wireframe whose line characters follow each edge's slope.
+    const outer = rotation(t * 0.37, -t * 0.23, t * 0.13 + 0.6);
+    const s = 1.95;
+    const corners: number[][] = [];
+    for (let i = 0; i < 8; i++) corners.push(apply(outer, i & 1 ? s : -s, i & 2 ? s : -s, i & 4 ? s : -s));
+    for (let i = 0; i < 8; i++) {
+      for (const bit of [1, 2, 4]) {
+        if (i & bit) continue;
+        const p = corners[i];
+        const q = corners[i | bit];
+        const a = project(p[0], p[1], p[2]);
+        const b = project(q[0], q[1], q[2]);
+        // Pick the character from the edge's slope in cells, one cell per step.
+        const dx = b.px - a.px, dy = b.py - a.py;
+        const ratio = Math.abs(dy) / (Math.abs(dx) || 1e-6);
+        const slope = ratio < 0.35 ? '-' : ratio > 2.2 ? '|' : (dx > 0) === (dy < 0) ? '/' : '\\';
+        // Diagonals take one cell per row so they stay a single stroke wide.
+        const steps = Math.max(slope === '-' ? Math.abs(dx) : Math.abs(dy), 1);
+        for (let k = 0; k <= steps; k++) {
+          const f = k / steps;
+          const x = p[0] + (q[0] - p[0]) * f, y = p[1] + (q[1] - p[1]) * f, z = p[2] + (q[2] - p[2]) * f;
+          const { px, py, ooz } = project(x, y, z);
+          if (px < 0 || py < 0 || px >= COLS || py >= ROWS) continue;
+          const index = py * COLS + px;
+          if (ooz <= depth[index]) continue;
+          if (cellNoise(px, py, 5) > reveal) continue;
+          const near = -z / s; // 1 nearest, -1 farthest
+          // Far edges break into dashes, the classic hidden-line cue.
+          if (near < -0.35 && k % 4 > 1) continue;
+          depth[index] = ooz;
+          chars[index] = slope.charCodeAt(0);
+          const base = near > 0.4 ? INK.white : near > -0.1 ? INK.ink : near > -0.5 ? INK.lav : INK.muted;
+          colors[index] = tint(py, base);
+        }
+      }
+    }
+    for (const c of corners) {
+      const { px, py, ooz } = project(c[0], c[1], c[2]);
+      if (px < 0 || py < 0 || px >= COLS || py >= ROWS || cellNoise(px, py, 5) > reveal) continue;
+      const index = py * COLS + px;
+      if (ooz < depth[index] - 0.002) continue;
+      chars[index] = 43;
+      colors[index] = -c[2] / s > -0.3 ? INK.white : INK.lav;
     }
   }
 
@@ -358,7 +429,7 @@ export function createScene() {
     stars(t);
     if (ringReveal > 0) ring(t, false, ringReveal);
     for (let slot = 0; slot < 5; slot++) agentLayer(slot, t, true);
-    if (coreReveal > 0) torus(t, scale, coreReveal * 1.2, { pink, teal });
+    if (coreReveal > 0) cubes(t, scale, coreReveal * 1.2, { pink, teal });
     if (ringReveal > 0) ring(t, true, ringReveal);
     ripples(t);
     for (let slot = 0; slot < 5; slot++) agentLayer(slot, t, false);
