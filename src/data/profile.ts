@@ -92,10 +92,10 @@ const workParts: JourneyPart[] = [
   {
     id: 'origins',
     label: '01',
-    title: 'Origins',
+    title: 'Discovering code',
     paragraphs: [
       [
-        { text: "I've been programming since I was 16, starting with ROM hacks for GBA", icon: 'gba' },
+        { text: "I've been programming since I was 16, through an assembly-like scripting language for modifying GBA", icon: 'gba' },
         { text: " Pokémon games. I've been hooked ever since." },
       ],
     ],

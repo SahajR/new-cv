@@ -1,0 +1,190 @@
+---
+const message = '(this emdash is not AI, I typed it out)';
+---
+
+<span class="dash-desktop" data-noted-dash>—</span><button
+  class="dash-trigger"
+  type="button"
+  aria-label="A note about this em dash"
+  aria-controls="emdash-note-popup"
+  aria-expanded="false"
+  data-dash-trigger
+>—<span class="dash-sparkle" aria-hidden="true">✦</span></button>
+<span class="dash-note" data-dash-note>{message}</span>
+<svg class="dash-arrow" data-dash-arrow aria-hidden="true" fill="none">
+  <path data-dash-line />
+  <path data-dash-tip />
+</svg>
+<span class="dash-popup" id="emdash-note-popup" popover="auto" role="note">
+  <span>{message}</span>
+  <button type="button" class="dash-close" popovertarget="emdash-note-popup" popovertargetaction="hide" aria-label="Close note">×</button>
+</span>
+
+<script>
+  const note = document.querySelector<HTMLElement>('[data-dash-note]');
+  if (note) {
+    const section = note.closest<HTMLElement>('[data-journey-part]')!;
+    const target = section.querySelector<HTMLElement>('[data-noted-dash]')!;
+    const trigger = section.querySelector<HTMLButtonElement>('[data-dash-trigger]')!;
+    const popup = section.querySelector<HTMLElement>('#emdash-note-popup')!;
+    const arrow = section.querySelector<SVGSVGElement>('[data-dash-arrow]')!;
+    const line = arrow.querySelector<SVGPathElement>('[data-dash-line]')!;
+    const tip = arrow.querySelector<SVGPathElement>('[data-dash-tip]')!;
+    const compact = matchMedia('(max-width: 1039px)');
+
+    const positionPopup = () => {
+      const dash = trigger.getBoundingClientRect();
+      const gap = 12;
+      const left = Math.max(gap, Math.min(
+        dash.left + dash.width / 2 - popup.offsetWidth / 2,
+        document.documentElement.clientWidth - popup.offsetWidth - gap,
+      ));
+      const above = dash.top - popup.offsetHeight - gap;
+      popup.style.left = `${left}px`;
+      popup.style.top = `${above >= gap ? above : dash.bottom + gap}px`;
+    };
+
+    const update = () => {
+      if (compact.matches) {
+        if (popup.matches(':popover-open')) positionPopup();
+        return;
+      }
+      const box = section.getBoundingClientRect();
+      const dash = target.getBoundingClientRect();
+      const label = note.getBoundingClientRect();
+      const x = dash.left + dash.width / 2 - box.left;
+      const y = dash.top - box.top + 4;
+      const startX = label.left - box.left - 8;
+      const startY = label.top + label.height / 2 - box.top;
+      arrow.setAttribute('viewBox', `0 0 ${box.width} ${y + 12}`);
+      arrow.style.height = `${y + 12}px`;
+      line.setAttribute('d', `M ${startX} ${startY} C ${startX - 55} ${startY - 25}, ${x - 55} ${startY - 25}, ${x - 28} ${y - 28} Q ${x - 2} ${y - 24}, ${x} ${y}`);
+      tip.setAttribute('d', `M ${x - 5} ${y - 7} L ${x} ${y} L ${x + 4} ${y - 8}`);
+    };
+
+    trigger.addEventListener('click', () => {
+      popup.togglePopover();
+      if (popup.matches(':popover-open')) positionPopup();
+    });
+    popup.addEventListener('toggle', () => {
+      const open = popup.matches(':popover-open');
+      trigger.setAttribute('aria-expanded', String(open));
+      if (open) window.addEventListener('scroll', positionPopup, { passive: true });
+      else window.removeEventListener('scroll', positionPopup);
+    });
+    compact.addEventListener('change', () => {
+      if (!compact.matches) popup.hidePopover();
+      update();
+    });
+    new ResizeObserver(update).observe(section);
+    window.addEventListener('resize', update);
+    document.fonts.ready.then(update);
+    update();
+  }
+</script>
+
+<style>
+  .dash-trigger { display: none; }
+  .dash-note {
+    position: absolute;
+    top: -26px;
+    left: calc(100% + 36px);
+    width: 178px;
+    color: var(--accent);
+    font: italic 14px/1.35 var(--font-main);
+    text-align: center;
+    transform: rotate(-5deg);
+  }
+  .dash-arrow {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 0;
+    overflow: visible;
+    color: var(--accent);
+    pointer-events: none;
+  }
+  .dash-arrow path { stroke: currentColor; stroke-width: 1.25; stroke-linecap: round; stroke-linejoin: round; }
+  .dash-popup {
+    position: fixed;
+    inset: auto;
+    margin: 0;
+    width: min(254px, calc(100vw - 24px));
+    padding: 18px 44px 18px 20px;
+    border: 1px solid color-mix(in srgb, var(--accent) 30%, var(--bg));
+    border-radius: 3px 8px 4px 6px;
+    background: var(--surface-chip);
+    color: var(--accent);
+    font: italic 15px/1.45 var(--font-main);
+    box-shadow: 3px 5px 0 color-mix(in srgb, var(--accent) 12%, transparent);
+  }
+  .dash-popup:popover-open { animation: note-in 180ms var(--ease-out); }
+  .dash-close {
+    position: absolute;
+    top: 2px;
+    right: 2px;
+    width: 40px;
+    height: 40px;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    color: inherit;
+    font: 22px/1 var(--font-main);
+    cursor: pointer;
+  }
+  @keyframes note-in {
+    from { opacity: 0; transform: translateY(4px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  /* Use the popup whenever the desktop margin cannot fit the annotation. */
+  @media (max-width: 1039px) {
+    .dash-desktop, .dash-note, .dash-arrow { display: none; }
+    .dash-trigger {
+      position: relative;
+      display: inline-block;
+      padding: 0;
+      border: 0;
+      background: transparent;
+      color: var(--accent);
+      font: inherit;
+      line-height: inherit;
+      vertical-align: baseline;
+      cursor: pointer;
+      touch-action: manipulation;
+    }
+    /* Enlarge the tap area without changing the paragraph's spacing. */
+    .dash-trigger::before { content: ''; position: absolute; inset: -8px -14px; }
+    .dash-trigger::after {
+      content: '—';
+      position: absolute;
+      inset: 0;
+      text-shadow: 0 0 5px var(--accent), 0 0 10px var(--accent);
+      opacity: 0;
+      pointer-events: none;
+      animation: dash-shine 3s var(--ease-out) infinite;
+    }
+    .dash-sparkle {
+      position: absolute;
+      right: -6px;
+      top: -3px;
+      font-size: 9px;
+      line-height: 1;
+      pointer-events: none;
+      animation: dash-twinkle 3s var(--ease-out) infinite;
+    }
+    .dash-trigger[aria-expanded='true']::after,
+    .dash-trigger[aria-expanded='true'] .dash-sparkle { animation: none; }
+  }
+  @keyframes dash-shine {
+    0%, 65%, 100% { opacity: 0; }
+    20%, 35% { opacity: 0.7; }
+  }
+  @keyframes dash-twinkle {
+    0%, 65%, 100% { opacity: 0.35; transform: scale(0.65); }
+    25%, 35% { opacity: 1; transform: scale(1); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .dash-trigger::after, .dash-sparkle, .dash-popup:popover-open { animation: none; }
+  }
+</style>

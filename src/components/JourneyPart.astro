@@ -6,6 +6,8 @@ import AlbumStack from './AlbumStack';
 import InlineGba from './InlineGba.astro';
 import StackConsole from './StackConsole.astro';
 import MusicPortal from './MusicPortal.astro';
+import EmDashNote from './EmDashNote.astro';
+import AgentOrchestration from './AgentOrchestration.astro';
 
 interface Props {
   part: JourneyPart;
@@ -44,7 +46,9 @@ const StopIcon = stopIcon ? icons[stopIcon] : null;
               const Icon = seg.icon ? icons[seg.icon] : null;
               return (
                 <>
-                  {seg.text}
+                  {part.id === 'stack' && seg.text.includes('—')
+                    ? seg.text.split('—').map((text, i) => <>{i > 0 && <EmDashNote />}{text}</>)
+                    : seg.text}
                   {seg.icon === 'gba' ? <InlineGba /> : Icon && (
                     <span class="jp-icon" aria-hidden="true">
                       <Icon />
@@ -74,6 +78,7 @@ const StopIcon = stopIcon ? icons[stopIcon] : null;
       </p>
     )}
     {part.id === 'stack' && <StackConsole />}
+    {part.id === 'now' && <AgentOrchestration />}
     {part.id === 'evanescence' && <MusicPortal />}
     {part.id === 'evanescence' && (
       <a class="jp-artist-link" href="https://evanescencestore.com/pages/shop" target="_blank" rel="noreferrer noopener">
