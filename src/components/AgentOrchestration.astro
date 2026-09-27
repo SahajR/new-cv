@@ -18,7 +18,7 @@ const stats = sceneStats(STILL_TIME);
   </div>
   <footer class="aa-bottom">
     <span class="aa-vent" aria-hidden="true"></span>
-    <span aria-hidden="true">200 × 100 ASCII</span>
+    <span aria-hidden="true">200 × 50 ASCII</span>
     <button class="aa-pause" type="button" data-agent-pause aria-label="Pause agent animation" aria-pressed="false" hidden>
       <svg viewBox="0 0 12 12" aria-hidden="true"><path class="aa-pause-icon" d="M2 2h3v8H2zM7 2h3v8H7z" /><path class="aa-play-icon" d="M3 1v10l8-5z" /></svg>
     </button>
@@ -73,10 +73,10 @@ const stats = sceneStats(STILL_TIME);
   .aa-foot { color: var(--aa-muted); padding: 4px 12px 9px; font-size: 9px; }
   .aa-foot b { font-size: 12px; font-weight: 500; font-variant-numeric: tabular-nums; }
 
-  /* 200 columns × 100 rows of 0.6em-wide cells. */
+  /* 200 columns × 50 rows of 0.6em-wide cells. */
   .aa-stage {
     position: relative;
-    aspect-ratio: 6 / 5;
+    aspect-ratio: 12 / 5;
     margin: 0 12px;
     overflow: hidden;
     container-type: inline-size;
@@ -99,7 +99,7 @@ const stats = sceneStats(STILL_TIME);
     position: absolute;
     inset: 0;
     pointer-events: none;
-    background: linear-gradient(to bottom, transparent 65%, #14102133 65%) 0 0 / 100% 1%;
+    background: linear-gradient(to bottom, transparent 65%, #14102133 65%) 0 0 / 100% 2%;
   }
 
   .aa-bottom { display: flex; align-items: center; gap: 14px; height: 44px; color: var(--body); font-size: 10px; letter-spacing: 0.08em; }

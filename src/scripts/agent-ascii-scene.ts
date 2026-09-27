@@ -1,10 +1,10 @@
-// A 200 × 100 ASCII motion piece: requests fall into an orchestrator loop,
+// A compact 200 × 50 ASCII motion piece: requests fall into an orchestrator loop,
 // which dispatches tasks to agents; each agent boots a sandbox VM on a node,
 // makes tool calls into the platform, and returns its result upward.
 // Pure and deterministic in `t`, so the server can render the same still.
 
 export const COLS = 200;
-export const ROWS = 100;
+export const ROWS = 50;
 /** Character cell width ÷ height; a monospace advance is 0.6em. */
 export const CELL_ASPECT = 0.6;
 
@@ -30,22 +30,26 @@ const CALL_START = 3.1;
 const CALL_LENGTH = 1.6;
 
 // Layout, in cells.
-const CORE = { x: 100, y: 17 };
-const RING = { x: 100, y: 18, rx: 46, ry: 7 };
+const CORE = { x: 100, y: 9 };
+const CORE_RADIUS = 9;
+const RING = { x: 100, y: 10, rx: 32, ry: 3 };
 const HUB = { x: RING.x, y: RING.y + RING.ry };
 const AGENT_X = [24, 62, 100, 138, 176];
-const AGENT_BASE = 58;
-const AGENT_TOP = 47;
-const STATUS_ROW = 60;
-const BUS_ROW = 65;
-const NODE_FACE_TOP = 73;
-const NODE_FACE_H = 15;
+const AGENT_BASE = 27;
+const AGENT_H = 6.2;
+/** Antenna tip, where dispatch paths end. */
+const AGENT_TIP = Math.round(AGENT_BASE - AGENT_H) - 2;
+const STATUS_ROW = 28;
+const BUS_ROW = 31;
+const NODE_FACE_TOP = 35;
+const NODE_FACE_H = 10;
 const NODE_FACE_W = 26;
-const NODE_DEPTH_ROWS = 3;
-const NODE_DEPTH_COLS = 5;
+const NODE_DEPTH_ROWS = 2;
+const NODE_DEPTH_COLS = 3;
 const NODE_TOP = NODE_FACE_TOP - NODE_DEPTH_ROWS;
-const HORIZON = 66;
-const FLOOR_TOP = 90;
+const BLADES = 3;
+const HORIZON = 40;
+const FLOOR_TOP = 46;
 
 const clamp = (x: number, lo = 0, hi = 1) => Math.max(lo, Math.min(hi, x));
 const span = (x: number, [a, b]: readonly [number, number]) => clamp((x - a) / (b - a));
@@ -63,9 +67,9 @@ type Point = { x: number; y: number };
 function pathPoint(slot: number, s: number): Point {
   const ax = AGENT_X[slot];
   const u = 1 - s;
-  const p1 = { x: HUB.x, y: HUB.y + 10 };
-  const p2 = { x: ax, y: AGENT_TOP - 12 };
-  const p3 = { x: ax, y: AGENT_TOP - 1 };
+  const p1 = { x: HUB.x, y: HUB.y + 4 };
+  const p2 = { x: ax, y: AGENT_TIP - 5 };
+  const p3 = { x: ax, y: AGENT_TIP };
   return {
     x: u * u * u * HUB.x + 3 * u * u * s * p1.x + 3 * u * s * s * p2.x + s * s * s * p3.x,
     y: u * u * u * HUB.y + 3 * u * u * s * p1.y + 3 * u * s * s * p2.y + s * s * s * p3.y,
@@ -92,7 +96,7 @@ export function agentState(slot: number, t: number): AgentState {
 function cycleStart(slot: number, cycle: number) {
   return INTRO_END + SLOT_ORDER.indexOf(slot) * SLOT_GAP + cycle * CYCLE;
 }
-const bladeFor = (slot: number, cycle: number) => Math.floor(hash(slot * 13 + cycle * 7.3) * 4);
+const bladeFor = (slot: number, cycle: number) => Math.floor(hash(slot * 13 + cycle * 7.3) * BLADES);
 const callsFor = (slot: number, cycle: number) => (hash(slot * 5.1 + cycle * 3.7) > 0.4 ? 3 : 2);
 
 export function sceneStats(t: number) {
@@ -129,8 +133,8 @@ export function createScene() {
   };
 
   function stars(t: number) {
-    for (let i = 0; i < 70; i++) {
-      const y = Math.floor(hash(i * 3.1) * 44);
+    for (let i = 0; i < 45; i++) {
+      const y = Math.floor(hash(i * 3.1) * 22);
       const x = ((hash(i * 7.7) * COLS - t * (0.4 + hash(i) * 0.9)) % COLS + COLS) % COLS;
       const glint = Math.sin(t * (1 + hash(i * 1.3) * 2) + i);
       put(x, y, glint > 0.93 ? '+' : glint > 0.2 ? '.' : '`', glint > 0.93 ? INK.lav : INK.dim);
@@ -139,25 +143,25 @@ export function createScene() {
 
   // A perspective floor that drifts toward the viewer beneath the nodes.
   function floor(t: number, reveal: number) {
-    const lines = 9;
+    const lines = 6;
     const scroll = (t * 0.35) % 1;
     for (let k = 0; k < lines; k++) {
       const z = (k + 1 - scroll) / lines;
       const y = Math.round(HORIZON + 3 + (ROWS - HORIZON - 3) * z ** 1.9);
-      if (y < FLOOR_TOP || y >= ROWS) continue;
-      const near = z > 0.6;
+      if (y < FLOOR_TOP || y >= ROWS || z < 0.8) continue;
+      const near = z > 0.9;
       for (let x = 2; x < COLS - 2; x++) {
         if (Math.abs(x - 100) / 100 > reveal) continue;
         put(x, y, near ? '-' : '.', near ? INK.muted : INK.dim);
       }
     }
     for (let k = -8; k <= 8; k++) {
-      const slope = k * 6;
+      const slope = k * 14;
       for (let y = FLOOR_TOP; y < ROWS; y++) {
         const x = 100 + (y - HORIZON) * slope / 10;
         if (x < 1 || x > COLS - 2 || Math.abs(x - 100) / 100 > reveal) continue;
         const steep = Math.abs(slope) < 5;
-        put(x, y, steep ? '|' : k < 0 ? '/' : '\\', y > 94 ? INK.muted : INK.dim);
+        put(x, y, steep ? '|' : k < 0 ? '/' : '\\', y > 47 ? INK.muted : INK.dim);
       }
     }
   }
@@ -177,7 +181,7 @@ export function createScene() {
 
   function node(slot: number, t: number, lift: number, activity: NodeActivity | null) {
     const cx = AGENT_X[slot];
-    const x0 = cx - 15;
+    const x0 = cx - 14;
     const y0 = NODE_FACE_TOP + lift;
     const x1 = x0 + NODE_FACE_W - 1;
     const y1 = y0 + NODE_FACE_H - 1;
@@ -211,8 +215,8 @@ export function createScene() {
     text(x0 + 2, y0 + 1, `n0${slot + 1}`, INK.muted);
 
     // Blades: one sandbox VM each; neighbours run quiet background workloads.
-    for (let b = 0; b < 4; b++) {
-      const y = y0 + 3 + b * 2;
+    for (let b = 0; b < BLADES; b++) {
+      const y = y0 + 2 + b * 2;
       put(x0 + 2, y, '[', INK.muted);
       put(x0 + 19, y, ']', INK.muted);
       const mine = activity && activity.blade === b;
@@ -237,12 +241,12 @@ export function createScene() {
     // A small GPU heatmap reacts to tool calls.
     const heat = activity ? activity.heat : 0;
     const ramp = ' .:-=+*#%@';
-    for (let row = 0; row < 2; row++) {
+    for (let row = 0; row < 1; row++) {
       for (let i = 0; i < 20; i++) {
         const wave = 0.5 + 0.5 * Math.sin(i * 0.7 + t * 3 + row * 1.9 + slot);
         const v = clamp(0.12 + heat * 0.75 * wave + hash(i + row * 31 + Math.floor(t * 6)) * 0.12);
         const ch = ramp[Math.min(ramp.length - 1, Math.floor(v * ramp.length))];
-        put(x0 + 2 + i, y0 + 11 + row, ch, v > 0.7 ? INK.pink : v > 0.45 ? INK.red : INK.ember);
+        put(x0 + 2 + i, y0 + 8 + row, ch, v > 0.7 ? INK.pink : v > 0.45 ? INK.red : INK.ember);
       }
     }
   }
@@ -253,12 +257,12 @@ export function createScene() {
     const A = t * 0.8;
     const B = t * 0.37;
     const cA = Math.cos(A), sA = Math.sin(A), cB = Math.cos(B), sB = Math.sin(B);
-    const K2 = 9;
-    const K1 = 37 * scale;
+    const K2 = 12;
+    const K1 = 26 * scale;
     const ramp = '.,-~:;=!*#$@';
-    for (let theta = 0; theta < Math.PI * 2; theta += 0.1) {
+    for (let theta = 0; theta < Math.PI * 2; theta += 0.13) {
       const ct = Math.cos(theta), st = Math.sin(theta);
-      for (let phi = 0; phi < Math.PI * 2; phi += 0.035) {
+      for (let phi = 0; phi < Math.PI * 2; phi += 0.045) {
         const cp = Math.cos(phi), sp = Math.sin(phi);
         const cx = 2 + ct;
         const cy = st;
@@ -277,7 +281,7 @@ export function createScene() {
         const lum = clamp((L + 1.1) / 2.5);
         chars[index] = ramp.charCodeAt(Math.min(ramp.length - 1, Math.floor(lum * ramp.length)));
         let color: number = lum > 0.78 ? INK.white : lum > 0.58 ? INK.ink : lum > 0.38 ? INK.lav : lum > 0.2 ? INK.muted : INK.dim;
-        const row = (py - CORE.y + 14) / 28;
+        const row = (py - CORE.y + CORE_RADIUS) / (CORE_RADIUS * 2);
         if (flash.pink > 0 && lum > 0.3 && Math.abs(row - flash.pink) < 0.12) color = INK.pink;
         if (flash.teal > 0 && lum > 0.3 && Math.abs(row - (1 - flash.teal)) < 0.12) color = INK.teal;
         colors[index] = color;
@@ -357,7 +361,7 @@ export function createScene() {
     const hop = span(local, [8.55, 9.35]);
     if (hop > 0 && hop < 1) {
       if (hop < 0.35) { const k = bump(hop / 0.35 / 2); sy *= 1 - 0.18 * k; sx *= 1 + 0.12 * k; }
-      else { const k = (hop - 0.35) / 0.65; lift = 2.2 * bump(k); sy *= 1 + 0.12 * bump(k); }
+      else { const k = (hop - 0.35) / 0.65; lift = 1.3 * bump(k); sy *= 1 + 0.12 * bump(k); }
     }
     const base = AGENT_BASE - lift;
 
@@ -375,14 +379,14 @@ export function createScene() {
     const light = { x: 0.5, y: 0.62, z: 0.6 };
     // A slightly rounded box, bevelled by the lighting below.
     const sdf = (u: number, v: number) => {
-      const r = 0.7;
-      const qx = Math.abs(u) - (4.4 - r);
-      const qy = Math.abs(v - 5.2) - (5.2 - r);
+      const r = 0.6;
+      const qx = Math.abs(u) - (3 - r);
+      const qy = Math.abs(v - AGENT_H / 2) - (AGENT_H / 2 - r);
       return Math.hypot(Math.max(qx, 0), Math.max(qy, 0)) + Math.min(Math.max(qx, qy), 0) - r;
     };
     const ramp = ':-=+*#%@';
-    for (let y = base - 14; y <= base; y++) {
-      for (let x = ax - 13; x <= ax + 13; x++) {
+    for (let y = base - 8; y <= base; y++) {
+      for (let x = ax - 8; x <= ax + 8; x++) {
         const u = ((x - ax) * CELL_ASPECT) / sx;
         const v = (base - y + 0.5) / sy;
         const d = sdf(u, v);
@@ -403,7 +407,7 @@ export function createScene() {
         const e = 0.05;
         const nx = sdf(u + e, v) - sdf(u - e, v);
         const ny = sdf(u, v + e) - sdf(u, v - e);
-        const h = clamp(-d / 1.1);
+        const h = clamp(-d / 0.8);
         const len = Math.hypot(nx * (1 - h), ny * (1 - h), h + 0.25) || 1;
         const lum = clamp(0.25 + 0.85 * ((nx * (1 - h) * light.x + ny * (1 - h) * light.y + (h + 0.25) * light.z) / len));
         const ch = ramp[Math.min(ramp.length - 1, Math.floor(lum * ramp.length))];
@@ -412,20 +416,20 @@ export function createScene() {
     }
     if (spawn < 0.6 || retire > 0.25) return;
     // An antenna catches incoming tasks; its tip lights while one is on the way.
-    const top = Math.round(base - 10.4 * sy);
+    const top = Math.round(base - AGENT_H * sy);
     const catching = dispatch > 0.6 && dispatch < 1 || (caught > 0 && caught < 1);
     put(ax, top - 1, '|', INK.lav);
     put(ax, top - 2, catching ? '@' : 'o', catching ? INK.pink : INK.ink);
     // A chest seam keeps the front reading as a flat panel.
-    const seam = Math.round(base - 3 * sy);
-    for (let x = ax - 5; x <= ax + 5; x++) put(x, seam, '-', INK.muted);
-    // Eyes: two square dark holes, set by gaze.
+    const seam = Math.round(base - 1.6 * sy);
+    for (let x = ax - 3; x <= ax + 3; x++) put(x, seam, '-', INK.muted);
+    // Eyes: two dark slots, set by gaze.
     for (const side of [-1, 1]) {
-      const ex = ax + (side < 0 ? -4 : 3) + Math.round(gx);
-      const ey = Math.round(base - 7.5 * sy) + gy;
+      const ex = ax + (side < 0 ? -3 : 2) + Math.round(gx);
+      const ey = Math.round(base - 4 * sy) + gy;
       for (const dx of [0, 1]) {
-        if (blinking) { erase(ex + dx, ey); put(ex + dx, ey + 1, '_', INK.muted); continue; }
-        erase(ex + dx, ey); erase(ex + dx, ey + 1);
+        if (blinking) put(ex + dx, ey, '-', INK.muted);
+        else erase(ex + dx, ey);
       }
     }
   }
@@ -502,7 +506,7 @@ export function createScene() {
       const p = inOut(call.p);
       const y = call.phase === 'down' ? conduitTop + (NODE_TOP - 1 - conduitTop) * p : NODE_TOP - 1 - (NODE_TOP - 1 - conduitTop) * p;
       const dir = call.phase === 'down' ? -1 : 1;
-      for (let j = 3; j >= 0; j--) {
+      for (let j = 2; j >= 0; j--) {
         const py = y + dir * j;
         if (py >= conduitTop && py < NODE_TOP) put(ax, py, j === 0 ? (call.phase === 'down' ? 'v' : '^') : '|', j < 2 ? INK.blue : INK.muted);
       }
@@ -537,10 +541,10 @@ export function createScene() {
       for (const [start, color] of [[PHASE.dispatch[0], INK.pink], [PHASE.result[1], INK.teal]] as const) {
         const p = span(local, [start, start + 1.1]);
         if (p <= 0 || p >= 1) continue;
-        const r = 26 + 70 * outCubic(p);
+        const r = 16 + 70 * outCubic(p);
         for (let a = 0; a < Math.PI * 2; a += 1.2 / r) {
           const x = CORE.x + r * Math.cos(a);
-          const y = CORE.y + 1 + r * 0.3 * Math.sin(a);
+          const y = CORE.y + 1 + r * 0.2 * Math.sin(a);
           if (at(x, y) !== 32 || cellNoise(Math.round(x), Math.round(y), cycle) < p * 0.9) continue;
           put(x, y, p < 0.35 ? ':' : '.', p < 0.5 ? color : INK.muted);
         }
@@ -554,8 +558,8 @@ export function createScene() {
       if (cycle < 0) continue;
       const exit = span(local, PHASE.exit);
       if (exit <= 0 || exit >= 1) continue;
-      const y = CORE.y - 12 - (CORE.y - 10) * outCubic(exit) * 1.4;
-      for (let j = 0; j < 6; j++) put(CORE.x, y + j, j === 0 ? '^' : j < 3 ? '|' : ':', j < 3 ? INK.teal : INK.muted);
+      const y = CORE.y - CORE_RADIUS + 1 - 14 * outCubic(exit);
+      for (let j = 0; j < 4; j++) put(CORE.x, y + j, j === 0 ? '^' : j < 2 ? '|' : ':', j < 2 ? INK.teal : INK.muted);
     }
   }
 
@@ -573,7 +577,7 @@ export function createScene() {
     for (let slot = 0; slot < 5; slot++) {
       const rise = outBack((t - 0.3 - SLOT_ORDER.indexOf(slot) * 0.12) / 0.7);
       if (rise <= 0) continue;
-      node(slot, t, Math.round((1 - rise) * 30), nodeActivity(slot, t));
+      node(slot, t, Math.round((1 - rise) * 16), nodeActivity(slot, t));
     }
 
     // The orchestrator anticipates each dispatch, then kicks.

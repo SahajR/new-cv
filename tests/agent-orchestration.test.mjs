@@ -2,7 +2,7 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { COLS, ROWS, PALETTE, CYCLE, INTRO_END, STILL_TIME, createScene, agentState, sceneStats, frameText } from '../src/scripts/agent-ascii-scene.ts';
 
-test('every frame is a full 200 × 100 grid of printable ASCII in the palette', () => {
+test('every frame is a full 200 × 50 grid of printable ASCII in the palette', () => {
   const scene = createScene();
   for (let t = 0; t < INTRO_END + CYCLE * 2; t += 0.37) {
     const { chars, colors } = scene.render(t);
@@ -28,7 +28,7 @@ test('frames are deterministic, so the server still matches the client', () => {
 
 test('the build-in starts empty, and agents only arrive after it', () => {
   const { chars } = createScene().render(0);
-  assert.ok(chars.filter(c => c !== 32).length < 400);
+  assert.ok(chars.filter(c => c !== 32).length < 300);
   for (let slot = 0; slot < 5; slot++) assert.equal(agentState(slot, INTRO_END - 0.01).alive, false);
   assert.equal(sceneStats(INTRO_END).active, 0);
 });

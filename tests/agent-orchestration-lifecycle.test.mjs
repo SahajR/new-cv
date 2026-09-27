@@ -61,10 +61,10 @@ function harness(reduce = false, canvas2d = true) {
   };
 }
 
-test('canvas matches the 200 × 100 grid of 0.6em cells', () => {
+test('canvas matches the 200 × 50 grid of 0.6em cells', () => {
   const h = harness();
   assert.equal(h.canvas.width, 1072);
-  assert.equal(h.canvas.height, Math.round((1072 / 200 / 0.6) * 100));
+  assert.equal(h.canvas.height, Math.round((1072 / 200 / 0.6) * scene.ROWS));
 });
 
 test('animation sleeps offscreen, pauses on demand, and stops in a hidden tab', () => {
