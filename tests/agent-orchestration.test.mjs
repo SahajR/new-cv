@@ -1,63 +1,50 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { createTeam, poseAt, agentCenter, EDGES, routeAt, curvePoint, CYCLE_DURATION, ROUTE_START, ROUTE_DURATION } from '../src/scripts/agent-orchestration-model.ts';
+import { COLS, ROWS, PALETTE, CYCLE, INTRO_END, STILL_TIME, createScene, agentState, sceneStats, frameText } from '../src/scripts/agent-ascii-scene.ts';
 
-test('each trio moves along three distinct border edges and retires before the next team', () => {
-  for (const random of [() => 0, () => .25, () => .5, () => .99999]) {
-    const team = createTeam(random);
-    assert.equal(team.length, 3);
-    assert.equal(new Set(team.map(agent => agent.edge)).size, 3);
-    team.forEach(agent => {
-      assert.equal(poseAt(agent, 0).height, 0);
-      assert.equal(poseAt(agent, CYCLE_DURATION).height, 0);
-      const before = poseAt(agent, 1);
-      const after = poseAt(agent, 7.5);
-      assert.ok(Math.hypot(after.x - before.x, after.y - before.y) > 60);
-      for (let time = 0; time < CYCLE_DURATION; time += .1) {
-        const pose = poseAt(agent, time);
-        if (agent.edge === 0) assert.equal(pose.y, 356);
-        if (agent.edge === 1) assert.equal(pose.x, 616);
-        if (agent.edge === 2) assert.equal(pose.y, 24);
-        if (agent.edge === 3) assert.equal(pose.x, 24);
-        const center = agentCenter(pose);
-        assert.ok(center.x >= 24 && center.x <= 616 && center.y >= 24 && center.y <= 356);
-        const { normal, tangent } = EDGES[agent.edge];
-        assert.equal(Math.abs(normal[0] * tangent[0] + normal[1] * tangent[1]), 0);
-        assert.ok(pose.height >= 0 && pose.height <= agent.height);
-      }
-    });
-  }
-});
-
-test('every delivery goes from one visible agent through the coordinator to a different visible agent', () => {
-  const team = createTeam(() => .99999);
-  for (let order = 0; order < 3; order++) {
-    const senders = new Set();
-    for (let step = 0; step < 3; step++) {
-      const start = ROUTE_START + step * ROUTE_DURATION;
-      const phases = [.2, .8, 1.2, 1.9].map(t => routeAt(start + t, order));
-      assert.deepEqual(phases.map(r => r.phase), ['incoming', 'coordinating', 'outgoing', 'received']);
-      const { source, target } = phases[0];
-      senders.add(source);
-      assert.notEqual(source, target);
-      for (const phase of phases) {
-        assert.equal(phase.source, source);
-        assert.equal(phase.target, target);
-      }
-      assert.ok(poseAt(team[source], start).height >= 45);
-      assert.ok(poseAt(team[target], start + ROUTE_DURATION).height >= 45);
+test('every frame is a full 200 × 100 grid of printable ASCII in the palette', () => {
+  const scene = createScene();
+  for (let t = 0; t < INTRO_END + CYCLE * 2; t += 0.37) {
+    const { chars, colors } = scene.render(t);
+    assert.equal(chars.length, COLS * ROWS);
+    for (let i = 0; i < chars.length; i++) {
+      assert.ok(chars[i] >= 32 && chars[i] <= 126, `char ${chars[i]} at ${i}, t=${t}`);
+      assert.ok(colors[i] < PALETTE.length);
     }
-    assert.equal(senders.size, 3);
   }
-  assert.equal(routeAt(0, 0), null);
-  assert.equal(routeAt(8, 0), null);
 });
 
-test('packet curves start and end exactly at their moving endpoints', () => {
-  const start = { x: 132, y: 80 };
-  const end = { x: 372, y: 192 };
-  assert.deepEqual(curvePoint(start, end, 0), start);
-  assert.deepEqual(curvePoint(start, end, 1), end);
-  const moved = { x: 480, y: 291 };
-  assert.deepEqual(curvePoint(end, moved, 1), moved);
+test('frames are deterministic, so the server still matches the client', () => {
+  const a = createScene().render(STILL_TIME);
+  const b = createScene();
+  b.render(3);
+  const again = b.render(STILL_TIME);
+  assert.deepEqual([...a.chars], [...again.chars]);
+  assert.deepEqual([...a.colors], [...again.colors]);
+  const lines = frameText(STILL_TIME).split('\n');
+  assert.equal(lines.length, ROWS);
+  assert.ok(lines.every(line => line.length <= COLS));
+});
+
+test('the build-in starts empty, and agents only arrive after it', () => {
+  const { chars } = createScene().render(0);
+  assert.ok(chars.filter(c => c !== 32).length < 400);
+  for (let slot = 0; slot < 5; slot++) assert.equal(agentState(slot, INTRO_END - 0.01).alive, false);
+  assert.equal(sceneStats(INTRO_END).active, 0);
+});
+
+test('agents overlap in a steady rhythm and keep delivering results', () => {
+  for (let t = INTRO_END + CYCLE; t < INTRO_END + CYCLE * 3; t += 0.1) {
+    const { active } = sceneStats(t);
+    assert.ok(active >= 3 && active <= 4, `active ${active} at t=${t}`);
+  }
+  const early = sceneStats(INTRO_END + CYCLE).delivered;
+  const later = sceneStats(INTRO_END + CYCLE * 2).delivered;
+  assert.equal(later - early, 5);
+  for (let slot = 0; slot < 5; slot++) {
+    const a = agentState(slot, 30);
+    const b = agentState(slot, 30 + CYCLE);
+    assert.equal(b.cycle, a.cycle + 1);
+    assert.ok(Math.abs(b.local - a.local) < 1e-9);
+  }
 });

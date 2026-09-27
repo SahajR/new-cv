@@ -1,47 +1,38 @@
-import fragmentSource from '../shaders/agent-orchestration.frag?raw';
-import { COORDINATOR, CYCLE_DURATION, createTeam, poseAt, agentCenter, routeAt, curvePoint } from './agent-orchestration-model';
+import { COLS, ROWS, CELL_ASPECT, PALETTE, STILL_TIME, createScene, sceneStats } from './agent-ascii-scene';
 
-const vertexSource = `attribute vec2 a_position;
-void main() { gl_Position = vec4(a_position, 0.0, 1.0); }`;
+const FPS = 30;
+const FONT = 'ui-monospace, "SF Mono", Menlo, Consolas, "DejaVu Sans Mono", monospace';
+const FIRST = 32;
+const LAST = 126;
 
-function createRenderer(canvas: HTMLCanvasElement) {
-  const gl = canvas.getContext('webgl', { alpha: false, antialias: false, depth: false, powerPreference: 'low-power' });
-  if (!gl) return null;
-  const shaders: WebGLShader[] = [];
-  const program = gl.createProgram();
-  if (!program) return null;
-  for (const [type, source] of [[gl.VERTEX_SHADER, vertexSource], [gl.FRAGMENT_SHADER, fragmentSource]] as const) {
-    const shader = gl.createShader(type);
-    if (!shader) { gl.deleteProgram(program); shaders.forEach(s => gl.deleteShader(s)); return null; }
-    shaders.push(shader);
-    gl.shaderSource(shader, source);
-    gl.compileShader(shader);
-    if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
-      console.warn('Agent illustration: using the still fallback.', gl.getShaderInfoLog(shader));
-      shaders.forEach(s => gl.deleteShader(s));
-      gl.deleteProgram(program);
-      return null;
+// One tile per printable character per palette colour, drawn once per resize.
+function buildAtlas(cellW: number, cellH: number) {
+  const tileW = Math.ceil(cellW);
+  const tileH = Math.ceil(cellH);
+  const atlas = document.createElement('canvas');
+  atlas.width = tileW * (LAST - FIRST + 1);
+  atlas.height = tileH * PALETTE.length;
+  const ctx = atlas.getContext('2d');
+  if (!ctx) return null;
+  ctx.font = `${cellH * 1.12}px ${FONT}`;
+  // Fit any monospace advance to the cell exactly.
+  const advance = ctx.measureText('M').width || cellW;
+  ctx.textBaseline = 'middle';
+  ctx.textAlign = 'center';
+  for (let c = 1; c < PALETTE.length; c++) {
+    ctx.fillStyle = PALETTE[c];
+    for (let code = FIRST + 1; code <= LAST; code++) {
+      ctx.save();
+      ctx.beginPath();
+      ctx.rect((code - FIRST) * tileW, c * tileH, tileW, tileH);
+      ctx.clip();
+      ctx.translate((code - FIRST) * tileW + tileW / 2, c * tileH + tileH / 2);
+      ctx.scale(Math.min(1.25, (cellW * 1.08) / advance), 1);
+      ctx.fillText(String.fromCharCode(code), 0, 0);
+      ctx.restore();
     }
-    gl.attachShader(program, shader);
   }
-  gl.linkProgram(program);
-  shaders.forEach(s => gl.deleteShader(s));
-  if (!gl.getProgramParameter(program, gl.LINK_STATUS)) { gl.deleteProgram(program); return null; }
-  gl.useProgram(program);
-  const buffer = gl.createBuffer();
-  gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
-  gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 1, -1, -1, 1, -1, 1, 1, -1, 1, 1]), gl.STATIC_DRAW);
-  const position = gl.getAttribLocation(program, 'a_position');
-  gl.enableVertexAttribArray(position);
-  gl.vertexAttribPointer(position, 2, gl.FLOAT, false, 0, 0);
-  const uniform = (name: string) => gl.getUniformLocation(program, name);
-  const locations = {
-    resolution: uniform('u_resolution'), agents: uniform('u_agents[0]'), edges: uniform('u_edges[0]'),
-    softness: uniform('u_softness[0]'),
-    gaze: uniform('u_gaze[0]'), blink: uniform('u_blink[0]'), packet: uniform('u_packet'),
-    trail: uniform('u_trail[0]'), coordinator: uniform('u_coordinator'), time: uniform('u_time'),
-  };
-  return { gl, locations, dispose: () => { gl.deleteBuffer(buffer); gl.deleteProgram(program); } };
+  return { atlas, tileW, tileH };
 }
 
 export function startAgentOrchestration(root: HTMLElement) {
@@ -49,116 +40,106 @@ export function startAgentOrchestration(root: HTMLElement) {
   root.dataset.agentInitialized = 'true';
   const canvas = root.querySelector<HTMLCanvasElement>('[data-agent-canvas]');
   const toggle = root.querySelector<HTMLButtonElement>('[data-agent-pause]');
-  if (!canvas || !toggle) return;
-  let renderer = createRenderer(canvas);
-  if (!renderer) return;
+  const activeOut = root.querySelector<HTMLElement>('[data-agent-active]');
+  const tasksOut = root.querySelector<HTMLElement>('[data-agent-tasks]');
+  const ctx = canvas?.getContext('2d', { alpha: false });
+  const glow = root.querySelector<HTMLCanvasElement>('[data-agent-glow]');
+  const glowCtx = glow?.getContext('2d', { alpha: false });
+  if (!canvas || !toggle || !ctx) return;
+
   const reduced = matchMedia('(prefers-reduced-motion: reduce)');
-  let team = createTeam();
-  let order = Math.floor(Math.random() * 3);
+  const scene = createScene();
+  const shownChars = new Uint8Array(COLS * ROWS);
+  const shownColors = new Uint8Array(COLS * ROWS);
+  const xs = new Float64Array(COLS + 1);
+  const ys = new Float64Array(ROWS + 1);
+  let atlas: ReturnType<typeof buildAtlas> = null;
   let elapsed = 0;
-  let sceneTime = 0;
   let raf = 0;
   let previous = 0;
   let lastPaint = 0;
+  let lastStats = '';
   let visible = false;
   let paused = false;
-  let lost = false;
   let disposed = false;
-  const agents = new Float32Array(12);
-  const edges = new Float32Array(3);
-  const softness = new Float32Array(6);
-  const gaze = new Float32Array(6);
-  const blink = new Float32Array(3);
-  const trail = new Float32Array(60);
-  const look = (x: number, y: number, target: { x: number; y: number }) => {
-    const length = Math.hypot(target.x - x, target.y - y) || 1;
-    return [(target.x - x) / length, (target.y - y) / length];
-  };
+
+  function invalidate() {
+    shownChars.fill(0);
+    ctx!.fillStyle = PALETTE[0];
+    ctx!.fillRect(0, 0, canvas!.width, canvas!.height);
+  }
 
   function paint(time: number) {
-    if (!renderer || lost) return;
-    const { gl, locations: u } = renderer;
-    const poses = team.map(agent => poseAt(agent, time));
-    const route = routeAt(time, order);
-    const centers = poses.map(agentCenter);
-    let packet = { ...COORDINATOR };
-    let packetAlpha = 0;
-    let pulse = 0;
-    trail.fill(0);
-    if (route) {
-      const inbound = route.phase === 'incoming';
-      const source = centers[route.source];
-      const target = centers[route.target];
-      if (inbound || route.phase === 'outgoing') {
-        packet = curvePoint(inbound ? source : COORDINATOR, inbound ? COORDINATOR : target, route.progress);
-        // Tuck the packet into each character at the start/end of its journey.
-        packetAlpha = Math.min(1, route.progress * 7, (1 - route.progress) * 7);
-      }
-      if (route.phase === 'coordinating') pulse = Math.sin(route.progress * Math.PI);
-      for (let i = 0; i < 20; i++) {
-        const incomingTrail = i < 10;
-        const dot = curvePoint(incomingTrail ? source : COORDINATOR, incomingTrail ? COORDINATOR : target, ((i % 10) + 1) / 11);
-        const active = incomingTrail ? inbound : route.phase === 'outgoing';
-        trail.set([dot.x, dot.y, active ? .9 : .28], i * 3);
+    if (!atlas) return;
+    const { chars, colors } = scene.render(time);
+    const { atlas: sheet, tileW, tileH } = atlas;
+    ctx!.fillStyle = PALETTE[0];
+    // Only cells that changed since the last frame are repainted.
+    for (let y = 0, i = 0; y < ROWS; y++) {
+      const top = ys[y];
+      const h = ys[y + 1] - top;
+      for (let x = 0; x < COLS; x++, i++) {
+        const ch = chars[i];
+        const color = colors[i];
+        if (ch === shownChars[i] && color === shownColors[i]) continue;
+        shownChars[i] = ch;
+        shownColors[i] = color;
+        const left = xs[x];
+        const w = xs[x + 1] - left;
+        ctx!.fillRect(left, top, w, h);
+        if (ch > FIRST && color) ctx!.drawImage(sheet, (ch - FIRST) * tileW, color * tileH, tileW, tileH, left, top, w, h);
       }
     }
-    for (let i = 0; i < 3; i++) {
-      const p = poses[i];
-      const received = route?.target === i && route.phase === 'received' ? Math.sin(route.progress * Math.PI) : 0;
-      agents.set([p.x, p.y, p.height, received], i * 4);
-      edges[i] = p.edge;
-      softness.set([p.lean, p.stretch], i * 2);
-      gaze.set(look(centers[i].x, centers[i].y, packetAlpha > 0 ? packet : COORDINATOR), i * 2);
-      blink[i] = 1 - .92 * Math.pow(Math.max(0, Math.cos(time * 2 + i * 2.3)), 80);
+    if (glowCtx) {
+      // Subtract the screen colour so only lit glyphs bloom.
+      glowCtx.globalCompositeOperation = 'copy';
+      glowCtx.drawImage(canvas!, 0, 0, glow!.width, glow!.height);
+      glowCtx.globalCompositeOperation = 'difference';
+      glowCtx.fillStyle = PALETTE[0];
+      glowCtx.fillRect(0, 0, glow!.width, glow!.height);
     }
-    gl.uniform2f(u.resolution, canvas!.width, canvas!.height);
-    gl.uniform4fv(u.agents, agents);
-    gl.uniform1fv(u.edges, edges);
-    gl.uniform2fv(u.softness, softness);
-    gl.uniform2fv(u.gaze, gaze);
-    gl.uniform1fv(u.blink, blink);
-    gl.uniform3fv(u.trail, trail);
-    gl.uniform4f(u.packet, packet.x, packet.y, packetAlpha, time * .7);
-    gl.uniform1f(u.coordinator, pulse);
-    // The background clock never resets when a new team emerges.
-    gl.uniform1f(u.time, reduced.matches ? 2 : sceneTime);
-    gl.drawArrays(gl.TRIANGLES, 0, 6);
+    const stats = sceneStats(time);
+    const label = `${stats.active}|${stats.delivered}`;
+    if (label !== lastStats) {
+      lastStats = label;
+      if (activeOut) activeOut.textContent = String(stats.active);
+      if (tasksOut) tasksOut.textContent = String(1280 + stats.delivered).padStart(4, '0');
+    }
     root.dataset.agentReady = '';
   }
 
+  const stillTime = () => (reduced.matches ? STILL_TIME : elapsed);
+
   function resize() {
-    if (!renderer || lost) return;
-    const width = root.clientWidth;
+    const width = root.querySelector<HTMLElement>('.aa-stage')?.clientWidth ?? root.clientWidth;
     if (!width) return;
-    // Enough detail for the grain, without rendering a full retina canvas.
-    const scale = Math.min(devicePixelRatio || 1, 1.75);
-    canvas!.width = Math.round(Math.min(width, 800) * scale);
-    canvas!.height = Math.round(canvas!.width * 380 / 640);
-    renderer.gl.viewport(0, 0, canvas!.width, canvas!.height);
-    paint(reduced.matches ? 1.45 : elapsed);
+    // Enough pixels for crisp glyphs, without a huge backing store.
+    const scale = Math.min(devicePixelRatio || 1, 2.5);
+    canvas!.width = Math.round(Math.min(width * scale, 1800));
+    const cellW = canvas!.width / COLS;
+    const cellH = cellW / CELL_ASPECT;
+    canvas!.height = Math.round(cellH * ROWS);
+    for (let x = 0; x <= COLS; x++) xs[x] = Math.round(x * cellW);
+    for (let y = 0; y <= ROWS; y++) ys[y] = Math.round(y * cellH);
+    if (glow) { glow.width = Math.round(canvas!.width / 4); glow.height = Math.round(canvas!.height / 4); }
+    atlas = buildAtlas(cellW, cellH);
+    invalidate();
+    paint(stillTime());
   }
 
   function tick(now: number) {
-    raf = 0;
-    if (previous) {
-      const delta = Math.min((now - previous) / 1000, .05);
-      elapsed += delta;
-      sceneTime += delta;
-    }
-    previous = now;
-    if (elapsed >= CYCLE_DURATION) {
-      elapsed %= CYCLE_DURATION;
-      team = createTeam();
-      order = Math.floor(Math.random() * 3);
-    }
-    // Keep motion smooth, without doing extra work on high-refresh displays.
-    if (now - lastPaint >= 1000 / 60 - .5) { paint(elapsed); lastPaint = now; }
     raf = requestAnimationFrame(tick);
+    if (previous) elapsed += Math.min((now - previous) / 1000, 0.05);
+    previous = now;
+    // ASCII reads best slightly stepped; 30 fps also halves the work.
+    if (now - lastPaint < 1000 / FPS - 1) return;
+    lastPaint = now;
+    paint(elapsed);
   }
 
   function sync() {
-    const running = visible && !document.hidden && !paused && !reduced.matches && !lost && !disposed;
-    root.dataset.agentState = lost ? 'fallback' : reduced.matches ? 'reduced' : paused ? 'paused' : running ? 'running' : 'offscreen';
+    const running = visible && !document.hidden && !paused && !reduced.matches && !disposed;
+    root.dataset.agentState = reduced.matches ? 'reduced' : paused ? 'paused' : running ? 'running' : 'offscreen';
     if (running && !raf) { previous = 0; raf = requestAnimationFrame(tick); }
     if (!running && raf) { cancelAnimationFrame(raf); raf = 0; previous = 0; }
   }
@@ -169,25 +150,17 @@ export function startAgentOrchestration(root: HTMLElement) {
     sync();
   };
   const onPreference = () => {
-    toggle.hidden = reduced.matches || lost;
+    toggle.hidden = reduced.matches;
     sync();
-    paint(reduced.matches ? 1.45 : elapsed);
+    paint(stillTime());
   };
-  const observer = new IntersectionObserver(([entry]) => { visible = entry.isIntersecting; sync(); });
+  // The build-in plays the first time the scene is seen, then the loop continues.
+  const observer = new IntersectionObserver(([entry]) => {
+    visible = entry.isIntersecting;
+    sync();
+  }, { threshold: 0.15 });
   const resizeObserver = new ResizeObserver(resize);
-  const onLost = (event: Event) => {
-    event.preventDefault();
-    lost = true;
-    delete root.dataset.agentReady;
-    toggle.hidden = true;
-    sync();
-  };
-  const onRestored = () => {
-    renderer = createRenderer(canvas);
-    lost = !renderer;
-    resize();
-    onPreference();
-  };
+  const onRestored = () => { resize(); };
   const onPageHide = () => { visible = false; sync(); };
   const onPageShow = () => { observer.unobserve(root); observer.observe(root); };
   const dispose = () => {
@@ -195,18 +168,15 @@ export function startAgentOrchestration(root: HTMLElement) {
     sync();
     observer.disconnect();
     resizeObserver.disconnect();
-    renderer?.dispose();
     toggle.removeEventListener('click', onToggle);
     reduced.removeEventListener('change', onPreference);
     document.removeEventListener('visibilitychange', sync);
     window.removeEventListener('pagehide', onPageHide);
     window.removeEventListener('pageshow', onPageShow);
-    canvas.removeEventListener('webglcontextlost', onLost);
-    canvas.removeEventListener('webglcontextrestored', onRestored);
+    canvas.removeEventListener('contextrestored', onRestored);
   };
   toggle.addEventListener('click', onToggle);
-  canvas.addEventListener('webglcontextlost', onLost);
-  canvas.addEventListener('webglcontextrestored', onRestored);
+  canvas.addEventListener('contextrestored', onRestored);
   document.addEventListener('visibilitychange', sync);
   reduced.addEventListener('change', onPreference);
   window.addEventListener('pagehide', onPageHide);
@@ -214,6 +184,7 @@ export function startAgentOrchestration(root: HTMLElement) {
   document.addEventListener('astro:before-swap', dispose, { once: true });
   observer.observe(root);
   resizeObserver.observe(root);
+  elapsed = reduced.matches ? STILL_TIME : 0;
   resize();
   onPreference();
 }
