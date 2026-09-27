@@ -9,12 +9,12 @@ const stats = sceneStats(STILL_TIME);
 <figure class="agent-ascii" data-agent-scene aria-label="Agent orchestration illustration">
   <div class="aa-screen">
     <div class="aa-readout" aria-hidden="true"><span>ORCHESTRATOR / AGENT LOOP</span><span><b data-agent-active>{stats.active}</b> / 5 AGENTS</span></div>
-    <div class="aa-stage" role="img" aria-label="An animated ASCII diagram. Requests fall into a spinning orchestrator loop, which dispatches each task along a line to one of five small agents. Each agent boots a sandbox virtual machine on a server node below, makes tool calls down into the platform, and sends its result back up through the loop.">
+    <div class="aa-stage" role="img" aria-label="An animated ASCII diagram. Requests fall into a spinning orchestrator loop at the centre. Five small box-shaped agents orbit it, each tethered to the loop; tasks travel out along the tethers, the agents work through them, and results travel back in.">
       <pre class="aa-fallback" aria-hidden="true">{still}</pre>
       <canvas data-agent-canvas aria-hidden="true"></canvas>
       <canvas class="aa-glow" data-agent-glow aria-hidden="true"></canvas>
     </div>
-    <div class="aa-foot" aria-hidden="true"><span>SANDBOX VMs / 5 NODES</span><span><b data-agent-tasks>{1280 + stats.delivered}</b> TASKS</span></div>
+    <div class="aa-foot" aria-hidden="true"><span>DISPATCH / ORBIT / RETURN</span><span><b data-agent-tasks>{1280 + stats.delivered}</b> TASKS</span></div>
   </div>
   <footer class="aa-bottom">
     <span class="aa-vent" aria-hidden="true"></span>
@@ -23,7 +23,7 @@ const stats = sceneStats(STILL_TIME);
       <svg viewBox="0 0 12 12" aria-hidden="true"><path class="aa-pause-icon" d="M2 2h3v8H2zM7 2h3v8H7z" /><path class="aa-play-icon" d="M3 1v10l8-5z" /></svg>
     </button>
   </footer>
-  <figcaption class="sr-only">An illustration of the work: an orchestrator hands tasks to agents, the agents run in sandboxes on shared infrastructure, and results flow back.</figcaption>
+  <figcaption class="sr-only">An illustration of the work: an orchestrator at the centre hands tasks to the agents orbiting it, and their results flow back.</figcaption>
 </figure>
 
 <script>
