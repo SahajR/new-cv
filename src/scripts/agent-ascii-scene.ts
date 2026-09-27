@@ -373,13 +373,12 @@ export function createScene() {
     const blinking = ((t + slot * 1.37) % 3.7) < 0.12;
 
     const light = { x: 0.5, y: 0.62, z: 0.6 };
+    // A slightly rounded box, bevelled by the lighting below.
     const sdf = (u: number, v: number) => {
-      const body = Math.hypot(u, v - clamp(v, 2.6, 6.8)) - 4.2;
-      const skirt = (Math.hypot(u / 6.8, v / 1.5) - 1) * 1.5;
-      const k = 1.6;
-      const h = clamp(0.5 + 0.5 * (skirt - body) / k);
-      const blend = skirt * (1 - h) + body * h - k * h * (1 - h);
-      return Math.max(blend, -v);
+      const r = 0.7;
+      const qx = Math.abs(u) - (4.4 - r);
+      const qy = Math.abs(v - 5.2) - (5.2 - r);
+      return Math.hypot(Math.max(qx, 0), Math.max(qy, 0)) + Math.min(Math.max(qx, qy), 0) - r;
     };
     const ramp = ':-=+*#%@';
     for (let y = base - 14; y <= base; y++) {
@@ -404,7 +403,7 @@ export function createScene() {
         const e = 0.05;
         const nx = sdf(u + e, v) - sdf(u - e, v);
         const ny = sdf(u, v + e) - sdf(u, v - e);
-        const h = clamp(-d / 2.2);
+        const h = clamp(-d / 1.1);
         const len = Math.hypot(nx * (1 - h), ny * (1 - h), h + 0.25) || 1;
         const lum = clamp(0.25 + 0.85 * ((nx * (1 - h) * light.x + ny * (1 - h) * light.y + (h + 0.25) * light.z) / len));
         const ch = ramp[Math.min(ramp.length - 1, Math.floor(lum * ramp.length))];
@@ -412,10 +411,18 @@ export function createScene() {
       }
     }
     if (spawn < 0.6 || retire > 0.25) return;
-    // Eyes: two tall dark holes, set by gaze.
+    // An antenna catches incoming tasks; its tip lights while one is on the way.
+    const top = Math.round(base - 10.4 * sy);
+    const catching = dispatch > 0.6 && dispatch < 1 || (caught > 0 && caught < 1);
+    put(ax, top - 1, '|', INK.lav);
+    put(ax, top - 2, catching ? '@' : 'o', catching ? INK.pink : INK.ink);
+    // A chest seam keeps the front reading as a flat panel.
+    const seam = Math.round(base - 3 * sy);
+    for (let x = ax - 5; x <= ax + 5; x++) put(x, seam, '-', INK.muted);
+    // Eyes: two square dark holes, set by gaze.
     for (const side of [-1, 1]) {
       const ex = ax + (side < 0 ? -4 : 3) + Math.round(gx);
-      const ey = Math.round(base - 8 * sy) + gy;
+      const ey = Math.round(base - 7.5 * sy) + gy;
       for (const dx of [0, 1]) {
         if (blinking) { erase(ex + dx, ey); put(ex + dx, ey + 1, '_', INK.muted); continue; }
         erase(ex + dx, ey); erase(ex + dx, ey + 1);
