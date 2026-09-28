@@ -1,53 +1,29 @@
 ---
-const stars = Array.from({ length: 175 }, (_, i) => {
-  const fraction = (value: number) => value - Math.floor(value);
-  return { x: 30 + fraction(Math.sin(i * 127.1 + 3.4) * 43758.5) * 580,
-    y: 30 + fraction(Math.sin(i * 311.7 + 19.2) * 15731.7) * 320,
-    radius: i % 19 === 0 ? 1.1 : .45, opacity: .25 + (i % 7) * .09 };
-});
+import { STILL_TIME, frameText, sceneStats } from '../scripts/agent-ascii-scene';
+
+// The same scene, rendered once at build time for readers without scripts.
+const still = frameText(STILL_TIME);
+const stats = sceneStats(STILL_TIME);
 ---
 
-<figure class="agent-scene" data-agent-scene aria-label="Agent orchestration illustration">
-  <div class="agent-stage" role="img" aria-label="Three white agents with black eyes emerge inward from the border of a layered galaxy, passing packets over drifting nebula clouds and stars through a plain white coordinator square at its center.">
-    <!-- A complete still illustration also serves browsers without WebGL or JavaScript. -->
-    <svg class="agent-fallback" viewBox="0 0 640 380" aria-hidden="true">
-      <defs>
-        <clipPath id="agent-galaxy-clip"><rect x="25.5" y="25.5" width="589" height="329" rx="5.5"/></clipPath>
-        <radialGradient id="agent-galaxy-haze"><stop stop-color="#83728c" stop-opacity=".65"/><stop offset=".4" stop-color="#574464" stop-opacity=".48"/><stop offset="1" stop-color="#17192d" stop-opacity="0"/></radialGradient>
-        <radialGradient id="agent-galaxy-core"><stop stop-color="#b6a28f" stop-opacity=".65"/><stop offset="1" stop-color="#756579" stop-opacity="0"/></radialGradient>
-        <filter id="agent-galaxy-blur" x="-40%" y="-50%" width="180%" height="200%"><feGaussianBlur stdDeviation="12"/></filter>
-        <g id="agent-white-blob">
-          <path d="M-43 0C-29 0-25-7-25-20C-25-38-18-49-4-49C14-49 24-42 24-25C24-8 29 0 43 0Z" fill="white"/>
-          <g fill="black"><ellipse cx="-8" cy="-31" rx="3.2" ry="4.8"/><ellipse cx="8" cy="-31" rx="3.2" ry="4.8"/></g>
-        </g>
-      </defs>
-      <path d="M0 0h640v380H0z" fill="white"/>
-      <g clip-path="url(#agent-galaxy-clip)">
-        <path d="M0 0h640v380H0z" fill="#0b0e1c"/>
-        <g transform="rotate(-19 320 190)">
-          <ellipse cx="320" cy="190" rx="245" ry="142" fill="url(#agent-galaxy-haze)"/>
-          <g filter="url(#agent-galaxy-blur)" fill="none" stroke-linecap="round">
-            <path d="M103 203C146 91 425 68 449 171C472 260 232 286 208 198C189 133 350 130 375 183" stroke="#646080" stroke-width="18" opacity=".45"/>
-            <path d="M529 169C486 283 217 305 192 204C173 123 401 103 423 186" stroke="#815c77" stroke-width="22" opacity=".35"/>
-          </g>
-          <ellipse cx="320" cy="190" rx="80" ry="60" fill="url(#agent-galaxy-core)"/>
-        </g>
-        {stars.map(star => <circle cx={star.x} cy={star.y} r={star.radius} fill={star.radius > 1 ? '#eadbc9' : '#c4cde8'} opacity={star.opacity}/>)}
-      </g>
-      <rect x="24" y="24" width="592" height="332" rx="7" fill="none" stroke="white" stroke-width="3"/>
-      <use href="#agent-white-blob" transform="translate(216 24) rotate(180)"/>
-      <use href="#agent-white-blob" transform="translate(24 226) rotate(90)"/>
-      <use href="#agent-white-blob" transform="translate(616 156) rotate(-90)"/>
-      <rect x="291" y="161" width="58" height="58" rx="1.5" fill="white"/>
-      <path d="M221 50Q280 50 320 190Q405 190 594 156" stroke="white" opacity=".35" stroke-dasharray="2 7" fill="none"/>
-      <rect x="265" y="83" width="10" height="10" rx="1" fill="white" transform="rotate(18 270 88)"/>
-    </svg>
-    <canvas width="640" height="380" data-agent-canvas aria-hidden="true"></canvas>
+<figure class="agent-ascii" data-agent-scene aria-label="Agent orchestration illustration">
+  <div class="aa-screen">
+    <div class="aa-readout" aria-hidden="true"><span>ORCHESTRATOR / AGENT LOOP</span><span><b data-agent-active>{stats.active}</b> / 5 AGENTS</span></div>
+    <div class="aa-stage" role="img" aria-label="An animated ASCII diagram. Requests fall into an orchestrator at the centre: a solid cube inside a wireframe cube, the two spinning out of sync. Five small box-shaped agents orbit it, each tethered to the core; tasks travel out along the tethers, the agents work through them, and results travel back in.">
+      <pre class="aa-fallback" aria-hidden="true">{still}</pre>
+      <canvas data-agent-canvas aria-hidden="true"></canvas>
+      <canvas class="aa-glow" data-agent-glow aria-hidden="true"></canvas>
+    </div>
+    <div class="aa-foot" aria-hidden="true"><span>DISPATCH / ORBIT / RETURN</span><span><b data-agent-tasks>{1280 + stats.delivered}</b> TASKS</span></div>
   </div>
-  <button class="agent-pause" type="button" data-agent-pause aria-label="Pause agent animation" aria-pressed="false" hidden>
-    <svg viewBox="0 0 16 16" aria-hidden="true" fill="currentColor"><path class="agent-pause-icon" d="M4 3h3v10H4zm5 0h3v10H9z"/><path class="agent-play-icon" d="m5 2 9 6-9 6z"/></svg>
-  </button>
-  <figcaption class="sr-only">An illustration of the work: agents appear, collaborate through a coordinator, and make room for the next team.</figcaption>
+  <footer class="aa-bottom">
+    <span class="aa-vent" aria-hidden="true"></span>
+    <span aria-hidden="true">200 × 50 ASCII</span>
+    <button class="aa-pause" type="button" data-agent-pause aria-label="Pause agent animation" aria-pressed="false" hidden>
+      <svg viewBox="0 0 12 12" aria-hidden="true"><path class="aa-pause-icon" d="M2 2h3v8H2zM7 2h3v8H7z" /><path class="aa-play-icon" d="M3 1v10l8-5z" /></svg>
+    </button>
+  </footer>
+  <figcaption class="sr-only">An illustration of the work: an orchestrator at the centre hands tasks to the agents orbiting it, and their results flow back.</figcaption>
 </figure>
 
 <script>
@@ -56,42 +32,92 @@ const stars = Array.from({ length: 175 }, (_, i) => {
 </script>
 
 <style>
-  .agent-scene {
+  .agent-ascii {
+    --aa-screen: #211e33;
+    --aa-edge: #355d73;
+    --aa-ink: #d3d9f5;
+    --aa-muted: #a4a0b9;
+    --aa-pink: #e57889;
     position: relative;
+    z-index: 2;
     width: 100%;
     min-width: 0;
-    margin: 16px 0 4px;
+    margin: 20px 0 4px;
+    color: var(--ink);
+    font-family: var(--font-serif);
+    container-type: inline-size;
+  }
+  .aa-screen {
+    position: relative;
     overflow: hidden;
-    border: 0;
-    border-radius: 7px;
-    background: #fff;
-    isolation: isolate;
+    background: var(--aa-screen);
+    color: var(--aa-ink);
+    border-top: 6px solid var(--aa-edge);
+    border-bottom: 6px solid #cbd5f7;
   }
-  .agent-stage { position: relative; aspect-ratio: 640 / 380; }
-  .agent-stage canvas, .agent-fallback { position: absolute; inset: 0; display: block; width: 100%; height: 100%; }
-  .agent-stage canvas { opacity: 0; }
-  .agent-scene[data-agent-ready] canvas { opacity: 1; }
-  .agent-scene[data-agent-ready] .agent-fallback { visibility: hidden; }
-  .agent-pause {
+  .aa-readout, .aa-foot {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 8px;
+    padding: 10px 12px 4px;
+    font-size: 10px;
+    line-height: 1.3;
+    letter-spacing: 0.03em;
+    white-space: nowrap;
+  }
+  .aa-readout > span:last-child { color: var(--aa-pink); }
+  .aa-readout b { font-size: 20px; font-weight: 500; font-variant-numeric: tabular-nums; }
+  .aa-foot { color: var(--aa-muted); padding: 4px 12px 9px; font-size: 9px; }
+  .aa-foot b { font-size: 12px; font-weight: 500; font-variant-numeric: tabular-nums; }
+
+  /* 200 columns × 50 rows of 0.6em-wide cells. */
+  .aa-stage {
+    position: relative;
+    aspect-ratio: 12 / 5;
+    margin: 0 12px;
+    overflow: hidden;
+    container-type: inline-size;
+  }
+  .aa-stage canvas, .aa-fallback { position: absolute; inset: 0; display: block; width: 100%; height: 100%; }
+  .aa-stage canvas { visibility: hidden; }
+  /* A quarter-resolution copy, blurred, reads as phosphor bloom. */
+  .aa-glow { filter: blur(4px); opacity: 0.7; mix-blend-mode: screen; pointer-events: none; }
+  .agent-ascii[data-agent-ready] canvas { visibility: visible; }
+  .agent-ascii[data-agent-ready] .aa-fallback { visibility: hidden; }
+  .aa-fallback {
+    margin: 0;
+    color: #9d95c9;
+    font: calc(100cqi / 120) / 1 ui-monospace, 'SF Mono', Menlo, Consolas, 'DejaVu Sans Mono', monospace;
+    white-space: pre;
+  }
+  /* One faint scanline per text row. */
+  .aa-stage::after {
+    content: '';
     position: absolute;
-    right: 10px;
-    bottom: 10px;
-    display: grid;
-    place-items: center;
-    width: 44px;
-    height: 44px;
-    padding: 0;
-    border: 0;
-    border-radius: 4px;
-    color: #fff;
-    background: transparent;
-    cursor: pointer;
+    inset: 0;
+    pointer-events: none;
+    background: linear-gradient(to bottom, transparent 65%, #14102133 65%) 0 0 / 100% 2%;
   }
-  .agent-pause[hidden] { display: none; }
-  .agent-pause:hover { background: #ffffff18; }
-  .agent-pause:focus-visible { outline: 2px solid #fff; outline-offset: -5px; }
-  .agent-pause svg { width: 13px; height: 13px; }
-  .agent-play-icon { display: none; }
-  .agent-pause[aria-pressed='true'] .agent-pause-icon { display: none; }
-  .agent-pause[aria-pressed='true'] .agent-play-icon { display: block; }
+
+  .aa-bottom { display: flex; align-items: center; gap: 14px; height: 44px; color: var(--body); font-size: 10px; letter-spacing: 0.08em; }
+  .aa-vent { width: 88px; height: 8px; background: repeating-linear-gradient(to right, currentColor 0 3px, transparent 3px 6px); }
+  .aa-pause { display: grid; place-items: center; flex: none; width: 44px; height: 44px; margin-left: auto; padding: 0; color: var(--ink); border: 0; border-radius: 3px; background: transparent; cursor: pointer; }
+  .aa-pause[hidden] { display: none; }
+  .aa-pause:hover { background: color-mix(in oklab, var(--ink) 8%, transparent); }
+  .aa-pause:focus-visible { outline: 2px solid var(--accent); outline-offset: -3px; }
+  .aa-pause:active { background: color-mix(in oklab, var(--ink) 14%, transparent); }
+  .aa-pause svg { display: block; width: 12px; height: 12px; fill: currentColor; }
+  .aa-play-icon { display: none; }
+  .aa-pause[aria-pressed='true'] .aa-pause-icon { display: none; }
+  .aa-pause[aria-pressed='true'] .aa-play-icon { display: block; }
+
+  @container (max-width: 420px) {
+    .aa-readout, .aa-foot { padding-inline: 8px; font-size: 8px; }
+    .aa-readout b { font-size: 17px; }
+    .aa-stage { margin-inline: 8px; }
+    .aa-vent { width: 44px; }
+  }
 </style>
